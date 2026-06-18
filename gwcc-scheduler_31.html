@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GWCC Scheduler</title>
+<style>
+  :root {
+    --navy: #1B2B4B;
+    --gold: #C9A84C;
+    --gold-light: #F5EDD6;
+    --cream: #FAF8F4;
+    --white: #FFFFFF;
+    --green: #2D7D4F;
+    --green-light: #E8F5EE;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --amber: #E67E22;
+    --amber-light: #FEF3E2;
+    --gray-100: #F4F4F6;
+    --gray-200: #E8E8EC;
+    --gray-400: #9B9BAD;
+    --gray-600: #5A5A72;
+    --gray-800: #2C2C3E;
+    --font: 'Georgia', serif;
+    --font-ui: 'Arial', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--cream);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-logo {
+    width: 42px; height: 42px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font);
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: bold;
+  }
+  .header-title {
+    font-family: var(--font);
+    color: var(--white);
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
+  .header-sub {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .header-week {
+    color: var(--gold-light);
+    font-size: 13px;
+    text-align: right;
+  }
+
+  /* NAV TABS */
+  .nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    padding: 0 28px;
+    gap: 4px;
+  }
+  .nav-tab {
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .nav-tab:hover { color: var(--navy); }
+  .nav-tab.active {
+    color: var(--navy);
+    border-bottom-color: var(--gold);
+  }
+
+  /* MAIN LAYOUT */
+  .main { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* WEEK NAV */
+  .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    background: var(--white);
+    padding: 14px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .week-nav-btn {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .week-nav-btn:hover { background: var(--gold); color: var(--navy); }
+  .week-label {
+    font-family: var(--font);
+    font-size: 16px;
+    color: var(--navy);
+    font-weight: bold;
+    flex: 1;
+  }
+  .week-nav-actions { display: flex; gap: 8px; margin-left: auto; }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { background: var(--gold); color: var(--navy); }
+  .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
+  .btn-secondary:hover { background: var(--gray-200); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--navy); color: var(--white); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ALERTS BAR */
+  .alerts-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .alert-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .alert-chip.error { background: var(--red-light); color: var(--red); }
+  .alert-chip.warning { background: var(--amber-light); color: var(--amber); }
+  .alert-chip.ok { background: var(--green-light); color: var(--green); }
+
+  /* CALENDAR GRID */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    gap: 0;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--white);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .cal-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .cal-header.day-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .cal-header .day-name { font-size: 11px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+  .cal-header .day-date { font-size: 16px; font-family: var(--font); }
+  .cal-header.holiday { background: var(--gold); color: var(--navy); }
+
+  .cal-row-label {
+    background: var(--gray-100);
+    border-right: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+  }
+
+  .cal-cell {
+    border-right: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 6px;
+    min-height: 90px;
+    vertical-align: top;
+    position: relative;
+    background: var(--white);
+  }
+  .cal-cell:last-child { border-right: none; }
+  .cal-cell.holiday-cell { background: #FFFBF0; }
+
+  /* SHIFT CARDS */
+  .shift-card {
+    border-radius: 5px;
+    padding: 5px 7px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    border-left: 3px solid;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .shift-card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .shift-card.confirmed { background: var(--green-light); border-color: var(--green); }
+  .shift-card.pending { background: #EEF2FF; border-color: #5B6FDB; }
+  .shift-card.training { background: var(--amber-light); border-color: var(--amber); }
+  .shift-card.holiday-shift { background: #FFF3CD; border-color: var(--gold); }
+  .shift-card.unintroduced { background: var(--red-light); border-color: var(--red); }
+
+  .shift-client { font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .shift-caregiver { color: var(--gray-600); }
+  .shift-time { color: var(--gray-400); font-size: 10px; margin-top: 2px; }
+  .shift-type-badge {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+    background: var(--navy);
+    color: var(--white);
+  }
+  .shift-confirmed-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    position: absolute;
+    top: 5px; right: 5px;
+  }
+
+  .add-shift-btn {
+    width: 100%;
+    padding: 4px;
+    border: 1px dashed var(--gray-200);
+    border-radius: 4px;
+    background: none;
+    color: var(--gray-400);
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    margin-top: 2px;
+  }
+  .add-shift-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(27,43,75,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 560px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-header {
+    background: var(--navy);
+    padding: 18px 24px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title { color: var(--white); font-family: var(--font); font-size: 16px; }
+  .modal-close {
+    background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; line-height: 1;
+  }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  /* FORM */
+  .form-row { margin-bottom: 16px; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .form-label .required { color: var(--red); }
+  .form-control {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--white);
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+  .form-control:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-light); }
+  .form-note { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+  .field-date-display {
+    padding: 9px 12px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* CAREGIVER ROWS IN MODAL */
+  .caregiver-rows { display: flex; flex-direction: column; gap: 10px; }
+  .caregiver-row {
+    display: grid;
+    grid-template-columns: 1fr 80px auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    background: var(--gray-100);
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
+  }
+  .caregiver-row.training-row { background: var(--amber-light); border-color: var(--amber); }
+  .training-badge {
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .remove-btn {
+    background: none; border: none; color: var(--red); font-size: 16px; cursor: pointer; padding: 2px 6px;
+  }
+  .add-caregiver-row {
+    display: flex; gap: 8px; align-items: center; margin-top: 6px;
+  }
+
+  /* RATE SECTION */
+  .rate-section {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 16px;
+  }
+  .rate-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .rate-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* HOLIDAY BANNER */
+  .holiday-banner {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* VIEWS - CLIENT / CAREGIVER */
+  .view-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .view-select { min-width: 200px; }
+
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--gray-200);
+  }
+  .schedule-table th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 11px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .schedule-table td {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: middle;
+  }
+  .schedule-table tr:last-child td { border-bottom: none; }
+  .schedule-table tr:hover td { background: var(--gray-100); }
+  .schedule-table tr.confirmed-row td { background: var(--green-light); }
+  .schedule-table tr.holiday-row td { background: #FFF3CD; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .status-badge.confirmed { background: var(--green-light); color: var(--green); }
+  .status-badge.pending { background: #EEF2FF; color: #5B6FDB; }
+  .status-badge.holiday { background: #FFF3CD; color: #8B6914; }
+
+  .type-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .type-short { background: #E8F0FF; color: #3B5BDB; }
+  .type-standard { background: #E8F5EE; color: var(--green); }
+  .type-extended { background: var(--gold-light); color: #7A5F00; }
+  .type-overnight { background: #F0E8FF; color: #6B3FA0; }
+  .type-livein { background: #FFE8F0; color: #A0205C; }
+
+  /* EMAIL PREVIEW */
+  .email-preview {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .email-header-bar {
+    background: var(--navy);
+    padding: 14px 20px;
+    color: var(--white);
+    font-size: 13px;
+  }
+  .email-header-bar .email-field { margin-bottom: 4px; }
+  .email-header-bar .label { color: var(--gold); font-weight: 700; margin-right: 8px; font-size: 11px; }
+  .email-body { padding: 24px; }
+  .email-greeting { font-family: var(--font); font-size: 15px; color: var(--navy); margin-bottom: 16px; }
+  .email-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .email-table th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .email-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .email-table tr:nth-child(even) td { background: var(--gray-100); }
+  .email-signature { margin-top: 20px; font-size: 13px; color: var(--gray-600); border-top: 1px solid var(--gray-200); padding-top: 16px; }
+  .email-confirm-btn {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    margin: 16px 0;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* WARNINGS PANEL */
+  .warnings-panel {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .warnings-panel-header {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .warnings-panel-header.ok { background: var(--green); }
+  .warning-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .warning-item:last-child { border-bottom: none; }
+  .warning-icon { font-size: 16px; }
+
+  /* CONFIRMATION TRACKER */
+  .confirm-tracker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .confirm-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px;
+    border-left: 4px solid;
+  }
+  .confirm-card.all-confirmed { border-color: var(--green); }
+  .confirm-card.partial { border-color: var(--amber); }
+  .confirm-card.none { border-color: var(--red); }
+  .confirm-name { font-weight: 700; font-size: 13px; color: var(--navy); margin-bottom: 6px; }
+  .confirm-shifts { font-size: 12px; color: var(--gray-600); }
+  .confirm-status { font-size: 11px; font-weight: 700; margin-top: 6px; }
+  .confirm-status.all-confirmed { color: var(--green); }
+  .confirm-status.partial { color: var(--amber); }
+  .confirm-status.none { color: var(--red); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: var(--font);
+    font-size: 18px;
+    color: var(--navy);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* COPY WEEK MODAL */
+  .copy-option {
+    padding: 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .copy-option:hover { border-color: var(--gold); background: var(--gold-light); }
+  .copy-option input { accent-color: var(--navy); }
+
+  .unintroduced-warning {
+    background: var(--red-light);
+    border: 1px solid var(--red);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .intro-map {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .intro-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    title: '';
+  }
+  .intro-dot.introduced { background: var(--green); }
+  .intro-dot.not-introduced { background: var(--red); }
+
+  .dollar-summary {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .dollar-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 12px 16px;
+    min-width: 140px;
+  }
+  .dollar-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
+  .dollar-value { font-family: var(--font); font-size: 22px; color: var(--navy); font-weight: bold; margin-top: 4px; }
+  .dollar-value.revenue { color: var(--green); }
+  .dollar-value.cost { color: var(--red); }
+
+  .empty-cell-hint { color: var(--gray-200); font-size: 10px; text-align: center; padding: 8px 0; }
+
+  /* PEOPLE MANAGEMENT */
+  .people-sub-tab {
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .people-sub-tab:hover { color: var(--navy); }
+  .people-sub-tab.active { color: var(--navy); border-bottom-color: var(--gold); }
+
+  .people-table { width:100%; border-collapse:collapse; background:var(--white); border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); border:1px solid var(--gray-200); }
+  .people-table th { background:var(--navy); color:var(--white); padding:10px 14px; font-size:12px; font-weight:700; text-align:left; text-transform:uppercase; letter-spacing:0.5px; }
+  .people-table td { padding:10px 14px; font-size:13px; border-bottom:1px solid var(--gray-200); vertical-align:middle; }
+  .people-table tr:last-child td { border-bottom:none; }
+  .people-table tr:hover td { background:var(--gray-100); cursor:pointer; }
+  .people-table tr.inactive td { opacity:0.45; }
+  .active-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+  .active-badge.active { background:var(--green-light); color:var(--green); }
+  .active-badge.inactive { background:var(--gray-100); color:var(--gray-400); }
+  /* EXPORT MODAL */
+  .export-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .export-option:hover { border-color: var(--gold); background: var(--gold-light); }
+  .export-icon { font-size: 24px; min-width: 36px; text-align: center; }
+  .export-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .export-desc { font-size: 12px; color: var(--gray-600); }
+
+  /* FINANCIAL SUMMARY */
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .fin-summary-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .fin-summary-header:hover { background: #243860; }
+  .fin-summary-toggle { font-size: 11px; color: var(--gold); }
+  .fin-summary-body { padding: 16px; display: none; }
+  .fin-summary-body.open { display: block; }
+  .fin-top-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .fin-top-card {
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 4px solid;
+  }
+  .fin-top-card.revenue { background: var(--green-light); border-color: var(--green); }
+  .fin-top-card.cost { background: var(--red-light); border-color: var(--red); }
+  .fin-top-card.margin { background: var(--gold-light); border-color: var(--gold); }
+  .fin-top-card.hours { background: #EEF2FF; border-color: #5B6FDB; }
+  .fin-top-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-600); margin-bottom: 4px; }
+  .fin-top-value { font-family: var(--font); font-size: 26px; font-weight: bold; color: var(--navy); }
+  .fin-top-value.positive { color: var(--green); }
+  .fin-top-value.negative { color: var(--red); }
+  .fin-top-sub { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+  .fin-breakdown-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .fin-breakdown-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .fin-breakdown-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .fin-breakdown-table td { padding: 6px 8px; border-bottom: 1px solid var(--gray-100); }
+  .fin-breakdown-table tr:last-child td { border-bottom: none; }
+  .fin-breakdown-table .name-col { color: var(--navy); font-weight: 600; }
+  .fin-breakdown-table .amount-col { text-align: right; font-weight: 700; }
+  .fin-breakdown-table .amount-col.revenue { color: var(--green); }
+  .fin-breakdown-table .amount-col.cost { color: var(--red); }
+  .fin-breakdown-table .hours-col { text-align: right; color: var(--gray-400); font-size: 11px; }
+  .fin-no-rates { font-size: 12px; color: var(--gray-400); font-style: italic; padding: 8px 0; }
+
+  /* INTRO MAP */
+  .intro-map-grid {
+    display: grid;
+    grid-template-columns: 180px repeat(var(--client-count, 4), 1fr);
+    gap: 0;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--white);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+  }
+  .intro-grid-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.4px;
+  }
+  .intro-grid-header.caregiver-col {
+    text-align: left;
+    background: var(--navy);
+  }
+  .intro-caregiver-cell {
+    padding: 10px 12px;
+    background: var(--gray-100);
+    border-right: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .intro-caregiver-cert {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .intro-caregiver-cert.certified { color: var(--green); }
+  .intro-caregiver-cert.in-process { color: var(--amber); }
+  .intro-toggle-cell {
+    border-right: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .intro-toggle-cell:hover { background: var(--gray-100); }
+  .intro-toggle-cell:last-child { border-right: none; }
+  .intro-toggle-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: none;
+    font-weight: 700;
+  }
+  .intro-toggle-btn.introduced {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .intro-toggle-btn.not-introduced {
+    background: var(--white);
+    border-color: var(--gray-200);
+    color: var(--gray-200);
+  }
+  .intro-toggle-btn.not-introduced:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .intro-toggle-btn.cert-pending {
+    background: var(--amber-light);
+    border-color: var(--amber);
+    color: var(--amber);
+    cursor: not-allowed;
+  }
+  .intro-date-label {
+    font-size: 10px;
+    color: var(--green);
+    text-align: center;
+    margin-top: 3px;
+    font-weight: 600;
+  }
+  .intro-summary-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .intro-summary-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 12px 16px;
+    min-width: 160px;
+    border-left: 4px solid var(--navy);
+  }
+  .intro-summary-name { font-weight: 700; font-size: 13px; color: var(--navy); margin-bottom: 4px; }
+  .intro-summary-count { font-size: 12px; color: var(--gray-600); }
+  .intro-summary-bar-inner {
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .intro-summary-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">GW</div>
+    <div>
+      <div class="header-title">Geriatric Wellness & Caregiving of California</div>
+      <div class="header-sub">Scheduling System — Phase 1</div>
+    </div>
+  </div>
+  <div class="header-week" id="headerWeekDisplay"></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showPanel('calendar')">📅 Calendar</button>
+  <button class="nav-tab" onclick="showPanel('client-view')">👤 By Client</button>
+  <button class="nav-tab" onclick="showPanel('caregiver-view')">🧑‍⚕️ By Caregiver</button>
+  <button class="nav-tab" onclick="showPanel('email-panel')">📧 Send Schedule</button>
+  <button class="nav-tab" onclick="showPanel('confirmations')">✅ Confirmations</button>
+  <button class="nav-tab" onclick="showPanel('warnings')">⚠️ Warnings</button>
+  <button class="nav-tab" onclick="showPanel('introductions')">🤝 Introductions</button>
+  <button class="nav-tab" onclick="showPanel('people')">👥 People</button>
+</nav>
+
+<div class="main">
+
+  <!-- CALENDAR PANEL -->
+  <div class="panel active" id="panel-calendar">
+    <div class="week-nav">
+      <button class="week-nav-btn" onclick="changeWeek(-1)">◀ Prev Week</button>
+      <div class="week-label" id="weekLabel"></div>
+      <button class="week-nav-btn" onclick="changeWeek(1)">Next Week ▶</button>
+      <div class="week-nav-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openCopyModal()">📋 Copy Week</button>
+        <button class="btn btn-secondary btn-sm" onclick="openExportModal()">💾 Export / Backup</button>
+        <button class="btn btn-secondary btn-sm" id="syncBtn" onclick="syncFromSheets()">🔄 Sync from Sheets</button>
+        <button class="btn btn-gold btn-sm" onclick="openShiftModal(null, formatDate(new Date()))">＋ Add Shift</button>
+      </div>
+    </div>
+
+    <div class="alerts-bar" id="alertsBar"></div>
+
+    <!-- FINANCIAL SUMMARY -->
+    <div id="financialSummary" style="margin-bottom:20px"></div>
+
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <!-- CLIENT VIEW -->
+  <div class="panel" id="panel-client-view">
+    <div class="section-title">📋 Weekly Schedule by Client</div>
+    <div class="view-controls">
+      <div>
+        <label class="form-label">Select Client</label>
+        <select class="form-control view-select" id="clientViewSelect" onchange="renderClientView()">
+          <option value="all">All Clients</option>
+        </select>
+      </div>
+    </div>
+    <div id="clientViewContent"></div>
+  </div>
+
+  <!-- CAREGIVER VIEW -->
+  <div class="panel" id="panel-caregiver-view">
+    <div class="section-title">🧑‍⚕️ Weekly Schedule by Caregiver</div>
+    <div class="view-controls">
+      <div>
+        <label class="form-label">Select Caregiver</label>
+        <select class="form-control view-select" id="caregiverViewSelect" onchange="renderCaregiverView()">
+          <option value="all">All Caregivers</option>
+        </select>
+      </div>
+    </div>
+    <div id="caregiverViewContent"></div>
+  </div>
+
+  <!-- EMAIL PANEL -->
+  <div class="panel" id="panel-email-panel">
+    <div class="section-title">📧 Send Weekly Schedule</div>
+    <div class="view-controls">
+      <div>
+        <label class="form-label">Recipient Type</label>
+        <select class="form-control view-select" id="emailTypeSelect" onchange="renderEmailPreview()">
+          <option value="caregiver">Caregiver Schedule</option>
+          <option value="client">Client Schedule</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Select Person</label>
+        <select class="form-control view-select" id="emailPersonSelect" onchange="renderEmailPreview()">
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="markEmailSent()">✉️ Mark as Sent (Lisa Reviewed)</button>
+    </div>
+    <div id="emailPreviewContent"></div>
+  </div>
+
+  <!-- CONFIRMATIONS -->
+  <div class="panel" id="panel-confirmations">
+    <div class="section-title">✅ Caregiver Confirmations</div>
+    <p style="color:var(--gray-600);font-size:13px;margin-bottom:16px;">Caregivers confirm their shifts via one-click link in their schedule email. Confirmed shifts appear green on the calendar.</p>
+    <div id="confirmationContent"></div>
+  </div>
+
+  <!-- WARNINGS -->
+  <div class="panel" id="panel-warnings">
+    <div class="section-title">⚠️ Schedule Warnings</div>
+    <div id="warningsContent"></div>
+  </div>
+
+  <!-- INTRODUCTIONS -->
+  <div class="panel" id="panel-introductions">
+    <div class="section-title">🤝 Caregiver–Client Introduction Map</div>
+    <p style="color:var(--gray-600);font-size:13px;margin-bottom:6px;">
+      Mark supervised handoff introductions as complete. A caregiver must be introduced before they can be scheduled independently with a client.
+      Changes save automatically.
+    </p>
+    <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:700">
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--green)"></div> Introduced — can be scheduled
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:700">
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--red-light);border:2px solid var(--red)"></div> Not yet introduced
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--amber);font-weight:700">
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--amber-light);border:2px solid var(--amber)"></div> Cert in process
+      </div>
+    </div>
+    <div id="introMapContent"></div>
+  </div>
+
+  <!-- PEOPLE MANAGEMENT -->
+  <div class="panel" id="panel-people">
+    <div class="section-title">👥 People Management</div>
+
+    <!-- SUB TABS -->
+    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--gray-200);padding-bottom:0">
+      <button class="people-sub-tab active" id="subtab-clients" onclick="showPeopleTab('clients')">👤 Clients (${CLIENTS.length})</button>
+      <button class="people-sub-tab" id="subtab-caregivers" onclick="showPeopleTab('caregivers')">🧑‍⚕️ Caregivers (${CAREGIVERS.length})</button>
+    </div>
+
+    <!-- CLIENTS SUB PANEL -->
+    <div id="people-clients">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button class="btn btn-gold" onclick="openPersonModal('client', null)">＋ Add Client</button>
+      </div>
+      <div id="clientsTableContent"></div>
+    </div>
+
+    <!-- CAREGIVERS SUB PANEL -->
+    <div id="people-caregivers" style="display:none">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button class="btn btn-gold" onclick="openPersonModal('caregiver', null)">＋ Add Caregiver</button>
+      </div>
+      <div id="caregiversTableContent"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SHIFT MODAL -->
+<div class="modal-overlay" id="shiftModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Shift</div>
+      <button class="modal-close" onclick="closeShiftModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="holidayBanner" style="display:none" class="holiday-banner">
+        🎉 Holiday Shift — Client billed at 2× rate · Caregiver paid at 1.5× rate
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Date <span class="required">*</span></label>
+        <input type="date" class="form-control" id="shiftDate" style="max-width:220px">
+      </div>
+
+      <div class="form-row-2">
+        <div>
+          <label class="form-label">Client <span class="required">*</span></label>
+          <select class="form-control" id="shiftClient">
+            <option value="">Select client...</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Shift Type <span class="required">*</span></label>
+          <select class="form-control" id="shiftType">
+            <option value="short">Short (1–3 hrs)</option>
+            <option value="standard" selected>Standard (3–5 hrs)</option>
+            <option value="extended">Extended (5+ hrs)</option>
+            <option value="overnight">Overnight (10pm–6am)</option>
+            <option value="livein">Live-In</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div>
+          <label class="form-label">Start Time <span class="required">*</span></label>
+          <select class="form-control" id="shiftStart" onchange="updateDurationDisplay()"></select>
+        </div>
+        <div>
+          <label class="form-label">End Time <span class="required">*</span></label>
+          <select class="form-control" id="shiftEnd" onchange="updateDurationDisplay()"></select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:-8px">
+        <div id="durationDisplay" style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--gold-light);border:1px solid var(--gold);border-radius:6px;font-size:13px;font-weight:700;color:var(--navy)">
+          ⏱ Duration: <span id="durationValue">—</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Caregivers <span class="required">*</span></label>
+        <div class="caregiver-rows" id="caregiverRows"></div>
+        <div class="add-caregiver-row">
+          <button class="btn btn-secondary btn-sm" onclick="addCaregiverRow(true)">＋ Add Training Caregiver</button>
+        </div>
+        <div class="form-note">Primary caregiver is billed. Training caregivers are not billed but appear on client schedule.</div>
+      </div>
+
+      <div class="rate-section">
+        <div class="rate-section-title">💰 Rates (Internal — Lisa Enters)</div>
+        <div class="rate-row">
+          <div>
+            <label class="form-label">Client Billing Rate ($/hr)</label>
+            <input type="number" class="form-control" id="clientRate" placeholder="e.g. 44.00" step="0.01">
+          </div>
+          <div>
+            <label class="form-label">Caregiver Pay Rate ($/hr)</label>
+            <input type="number" class="form-control" id="caregiverRate" placeholder="e.g. 20.00" step="0.01">
+          </div>
+        </div>
+        <div id="holidayRateNote" style="display:none;margin-top:8px;font-size:11px;color:var(--amber);font-weight:600;">
+          ⚠️ Holiday rates apply: client will be billed 2× entered rate · caregiver will be paid 1.5× entered rate
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:16px;">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="shiftNotes" rows="2" placeholder="Optional — only shown if populated"></textarea>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeShiftModal()">Cancel</button>
+      <button class="btn btn-secondary" id="deleteShiftBtn" onclick="deleteShift()" style="display:none;background:var(--red-light);color:var(--red);">🗑 Delete</button>
+      <button class="btn btn-primary" onclick="saveShift()">Save Shift</button>
+    </div>
+  </div>
+</div>
+
+<!-- COPY MODAL -->
+<div class="modal-overlay" id="copyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Copy Schedule</div>
+      <button class="modal-close" onclick="closeCopyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px;">Copy all shifts from a previous week to the current week as a starting point. You can then modify individual shifts.</p>
+      <div id="copyOptions"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCopyModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="executeCopy()">Copy Selected Week</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA STORE
+// ============================================================
+const HOLIDAYS_2026 = [
+  '2026-01-01','2026-05-25','2026-07-04','2026-09-07','2026-11-26','2026-12-25'
+];
+
+const CLIENTS = [{"id": "c_white_bill", "code": "WHIB041026", "name": "Bill White", "email": "jlynnsmo@gmail.com", "phone": "650-796-8853", "address": "5040 Whisper Way, Granite Bay, CA, 95746", "homeSituation": "Spouse - Janice", "contact": "Spouse \u2013 Janice White", "contactPhone": "650-796-8853", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_woods_bob", "code": "WOOR111625", "name": "Bob Woods", "email": "bwoods@nwtf.net", "phone": "", "address": "11276 Stanford Court Lane #508, Gold River, CA, 95670", "homeSituation": "Lives with Grandson Hunter", "contact": "Son \u2013 Barry Woods", "contactPhone": "620-417-0692", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_demauro_catherine", "code": "DEMC063025", "name": "Catherine DeMauro", "email": "yecatsketaws@yahoo.com", "phone": "916-989-3999", "address": "116 Grey Canyon Drive, Folsom, CA, 95630", "homeSituation": "Lives Alone", "contact": "Daughter \u2013 Stacey Huie", "contactPhone": "925-324-5823", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_evangelho_darlene", "code": "EVAD012426", "name": "Darlene Evangelho", "email": "ddgoodies@icloud.com", "phone": "916-534-0605", "address": "8077 Olive Place, Granite Bay, CA, 95746", "homeSituation": "Spouse - Daryl", "contact": "Spouse \u2013 Daryl Evangelho", "contactPhone": "916-534-0605", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_klassen_dennis", "code": "KLAD120225", "name": "Dennis Klassen", "email": "kklassen04@gmail.com", "phone": "805-742-7220", "address": "2596 Francisco Drive, El Dorado Hills, CA, 95762", "homeSituation": "Spouse - Terry", "contact": "Son \u2013 Matt Klassen", "contactPhone": "", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_christner_devin", "code": "CHRD092424", "name": "Devin Christner", "email": "christnerfamily5@gmail.com", "phone": "916-797-3622", "address": "5005 Chelshire Downs Road, Granite Bay, CA, 95746", "homeSituation": "parents - Richard / Annie", "contact": "Father \u2013 Richard Christner", "contactPhone": "916-300-6626", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_fujimoto_ed", "code": "FUJE122925", "name": "Ed Fujimoto", "email": "sharonfj@gmail.com", "phone": "916-698-4355", "address": "6528 Garland Way, Roseville, CA, 95747", "homeSituation": "Spouse - Karen", "contact": "Daughter \u2013 Sharon Fujimoto-Johnson", "contactPhone": "916-698-4355", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_parrish_elaine", "code": "", "name": "Elaine Parrish", "email": "arenglish12@gmail.com", "phone": "", "address": "1745 Green Valley Road, Yuba City, CA, 95993", "homeSituation": "Lives with Friend (Ingrid)", "contact": "Daughter \u2013 Andrea English", "contactPhone": "510-530-2304", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_revitt_evelyn", "code": "REVE022626", "name": "Evelyn Revitt", "email": "vibrationtravel@gmail.com", "phone": "916-927-4955", "address": "720 Dunbarton Circle, Sacramento, CA, 95825", "homeSituation": "Lives Alone", "contact": "Daughter \u2013 Evonne Reveitt", "contactPhone": "916-995-9506", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_wright_gene", "code": "WRIG707", "name": "Gene Wright", "email": "philup1@hotmail.com", "phone": "510-949-1677", "address": "707 Sunrise Ave #242, Roseville, CA, 95661", "homeSituation": "Lives alone - AT ALF", "contact": "Son \u2013 Philip Wright", "contactPhone": "510-320-0698", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_gaston_ingrid", "code": "", "name": "Ingrid Gaston", "email": "mercator154@gmail.com", "phone": "", "address": "1745 Green Valley Road, Yuba City, CA, 95993", "homeSituation": "Lives with Friend (Elaine)", "contact": "Son \u2013 Stefan Gaston", "contactPhone": "408-528-5132", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_steele_jim", "code": "STEJ041726", "name": "Jim Steele", "email": "pamelasteeleengman@gmail.com", "phone": "916-712-8989", "address": "2615 Third Street, Lincoln, CA, 95648", "homeSituation": "", "contact": "Daughter \u2013 Pamela Engman", "contactPhone": "916-712-8989", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_lopez_joan", "code": "LOPJ112425", "name": "Joan Lopez", "email": "joanlopez978@yahoo.com", "phone": "916-967-5876", "address": "5312 Bee Jay Court, Fair Oaks, CA, 95628", "homeSituation": "Lives Alone", "contact": "", "contactPhone": "", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_jang_lenora", "code": "JANL042326", "name": "Lenora Jang", "email": "teacherjang23@att.net", "phone": "916-245-2680", "address": "18 Kado Ct. ROOM # 1121, Sacramento, CA, 95831", "homeSituation": "Assisted Living Facility", "contact": "Daughter \u2013 Terri Jang-Hefner", "contactPhone": "916-995-8240", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_robinson_leonard", "code": "", "name": "Leonard Robinson", "email": "gigi@repfuel.com", "phone": "", "address": "500 J Street   #1710, Sacramento, CA, 95814", "homeSituation": "Spouse - Jeanne Haskell Robinson", "contact": "Spouse \u2013 Jeanne Haskell-Robinson", "contactPhone": "916-837-4451", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_farman_peggy", "code": "FARP011325", "name": "Peggy Farman", "email": "jerryfarman@gmail.com", "phone": "510-517-4490", "address": "5500 Freeman Circle, Rocklin, CA, 95677", "homeSituation": "Spouse - Jerry", "contact": "Spouse \u2013 Jerry Farman", "contactPhone": "510-579-3230", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_carelli_ron", "code": "", "name": "Ron Carelli", "email": "jcarelli@gmail.com", "phone": "916-207-9990", "address": "1134 Longhorn Lane, Lincoln, CA, 95648", "homeSituation": "Spouse - Julia", "contact": "Spouse \u2013 Julia Carelli", "contactPhone": "916-207-9990", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_richardson_dean", "code": "RICD051926", "name": "Dean Richardson", "email": "Linda1@mycci.net", "phone": "916-521-7755", "address": "4403 Whitland Court, Rocklin, CA, 95677", "homeSituation": "Spouse - Linda", "contact": "Spouse \u2013 Linda Richardson", "contactPhone": "916-316-4201", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_westbrook_beverly", "code": "WESB052126", "name": "Beverly Westbrook", "email": "bnbwestbrook@gmail.com", "phone": "916-718-4491", "address": "7421 Westgate Drive, Citrus Heights, CA, 95610", "homeSituation": "Lives alone - own home", "contact": "Daughter \u2013 Natalie Rickman", "contactPhone": "916-803-2950", "genderPref": "none", "notes": "", "active": true, "introductions": []}, {"id": "c_camarlinghi_al", "code": "", "name": "Al Camarlinghi", "email": "klcamarlinghi@gmail.com", "phone": "408-821-6995", "address": "4053 Harlington Circle, El Dorado Hills, CA, 95762", "homeSituation": "Lives with DTR", "contact": "Daughter \u2013 Khristine Camarlinghi", "contactPhone": "408-821-6995", "genderPref": "none", "notes": "no longer needed", "active": false, "introductions": []}, {"id": "c_westbrook_robert", "code": "WESB7421", "name": "Robert Westbrook", "email": "bnbwestbrook@gmail.com", "phone": "916-967-1345", "address": "7421 Westgate Drive, Citrus Heights, CA, 95610", "homeSituation": "Spouse - Beverly", "contact": "Beverly Westbrook", "contactPhone": "916-967-1345", "genderPref": "none", "notes": "expired", "active": false, "introductions": []}, {"id": "c_camarlinghi_carole", "code": "", "name": "Carole Camarlinghi", "email": "klcamarlinghi@gmail.com", "phone": "408-821-6995", "address": "4053 Harlington Circle, El Dorado Hills, CA, 95762", "homeSituation": "Lives with DTR", "contact": "Daughter \u2013 Khristine Camarlinghi", "contactPhone": "408-821-6995", "genderPref": "none", "notes": "no longer needed", "active": false, "introductions": []}, {"id": "c_knipp_debbie", "code": "", "name": "Debbie Knipp", "email": "arniek1240@comcast.net", "phone": "925-787-5613", "address": "715 Stockman Lane, Lincoln, CA, 95648", "homeSituation": "Spouse - Arnie", "contact": "Spouse \u2013 Arnie Knipp", "contactPhone": "925-787-5613", "genderPref": "none", "notes": "moved to ALF", "active": false, "introductions": []}, {"id": "c_hada_gary", "code": "HADG052525", "name": "Gary Hada", "email": "akacejay@comcast.net", "phone": "916-719-0900", "address": "4239 Arnold Way, Mather, CA, 95655", "homeSituation": "Spouse - Carole", "contact": "Spouse \u2013 Carole Hada", "contactPhone": "916-803-0109", "genderPref": "none", "notes": "Moved to ALF/expired", "active": false, "introductions": []}, {"id": "c_thomas_jim", "code": "THOJ082825", "name": "Jim Thomas", "email": "coinin4@yahoo.com", "phone": "916-300-5312", "address": "1871 Hidden View Lane, Roseville, CA, 95661", "homeSituation": "Spouse - Sheri", "contact": "Spouse \u2013 Sheri Thomas", "contactPhone": "916-300-5312", "genderPref": "none", "notes": "On Hold", "active": false, "introductions": []}, {"id": "c_mcpherson_linda", "code": "", "name": "Linda McPherson", "email": "lisakeane@mac.com", "phone": "916-933-0717", "address": "4037 Redondo Drive, El Dorado Hills, CA, 95762", "homeSituation": "Lives alone", "contact": "Daughter \u2013 Lisa Keane", "contactPhone": "916-747-6560", "genderPref": "none", "notes": "no longer needed", "active": false, "introductions": []}, {"id": "c_knipp_louise", "code": "", "name": "Louise Knipp", "email": "arniek1240@comcast.net", "phone": "916-253-9331", "address": "156 Stagsleap Lane, Lincoln, CA, 95648", "homeSituation": "Lives alone", "contact": "Son \u2013 Arnie Knipp", "contactPhone": "925-787-5613", "genderPref": "none", "notes": "expired", "active": false, "introductions": []}, {"id": "c_smith_mary", "code": "SMIM061225", "name": "Mary Smith", "email": "smithmat@surewest.net", "phone": "714-336-9627", "address": "2564 Ranchland Way, Roseville, CA, 95747", "homeSituation": "Son - Matt", "contact": "Son \u2013 Matt Smith", "contactPhone": "714-336-9627", "genderPref": "none", "notes": "Moved to ALF", "active": false, "introductions": []}, {"id": "c_d_agostini_mary_lou", "code": "", "name": "Mary Lou D'Agostini", "email": "danieldagostini.com", "phone": "209-245-3846", "address": "10650 Shenadoah Road, Plymouth, CA, 95669", "homeSituation": "Lives alone", "contact": "Nephew \u2013 Daniel D'Agostini", "contactPhone": "209-245-3846", "genderPref": "none", "notes": "Expired", "active": false, "introductions": []}, {"id": "c_schoomaker_neil", "code": "", "name": "Neil Schoomaker", "email": "justskinbysusan@gmail.com", "phone": "916-799-8881", "address": "451 Jewel Stone Court, Folsom, CA, 95630", "homeSituation": "Lives alone", "contact": "Daughter \u2013 Susan Ferriera", "contactPhone": "916-799-8881", "genderPref": "none", "notes": "Financial", "active": false, "introductions": []}, {"id": "c_streng_pat", "code": "", "name": "Pat Streng", "email": "lomarica01@sbcglobal.net", "phone": "805-574-3143", "address": "1450 W Stanford Ranch Road  IL 204, Rocklin, CA, 95765", "homeSituation": "Lives alone - IL at The Villas", "contact": "Son \u2013 Andrew Streng", "contactPhone": "530-845-3492", "genderPref": "none", "notes": "Moved to ALF", "active": false, "introductions": []}, {"id": "c_oldwin_rod", "code": "", "name": "Rod Oldwin", "email": "theperfectbuild@yahoo.com", "phone": "916-765-2983", "address": "3797 Val Verde, Loomis, CA, 95650", "homeSituation": "Lives alone", "contact": "Son \u2013 Chad Oldwin", "contactPhone": "916-765-2983", "genderPref": "none", "notes": "expired", "active": false, "introductions": []}, {"id": "c_shanklin_ron", "code": "", "name": "Ron Shanklin", "email": "lindashanklin4u@yahoo.com", "phone": "916-871-9505", "address": "6205 Two Towers Court, Rocklin, CA, 95765", "homeSituation": "Spouse - Linda", "contact": "Spouse \u2013 Linda Shanklin", "contactPhone": "916-871-9505", "genderPref": "none", "notes": "Financial", "active": false, "introductions": []}, {"id": "c_scoville_sandra", "code": "SCOS031325", "name": "Sandra Scoville", "email": "sscoville@pestcontrolcenter.com", "phone": "916-727-3428", "address": "8448 Cobble Creek Lane, Orangevale, CA, 95662", "homeSituation": "Lives Alone", "contact": "Son \u2013 Steve Scoville", "contactPhone": "916-601-7300", "genderPref": "none", "notes": "On Hold", "active": false, "introductions": []}, {"id": "c_lapolla_sheila", "code": "", "name": "Sheila LaPolla", "email": "hdjockey1948@outlook.com", "phone": "916-718-6856", "address": "8057 Poulson Drive, Citrus Heights, CA, 95610", "homeSituation": "Spouse - Ben", "contact": "Spouse \u2013 Ben LaPolla", "contactPhone": "916-718-6856", "genderPref": "none", "notes": "Moved out of state", "active": false, "introductions": []}]; // Seeded from CSV
+
+const CAREGIVERS = [{"id": "g_adamek_peter", "name": "Peter Adamek", "email": "peter@geriatricwellness.net", "phone": "916-390-1304", "visitId": "861304", "hireDate": "Owner", "gender": "male", "certStatus": "certified", "hcaId": "4600589691", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_adamek_lisa", "name": "Lisa Adamek", "email": "lisa@geriatricwellness.net", "phone": "916-945-6234", "visitId": "869625", "hireDate": "CEO/Nurse/Principal", "gender": "female", "certStatus": "certified", "hcaId": "NP 13394", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_ahumada_aurora", "name": "Aurora Ahumada", "email": "aurora.ahumada.n@gmail.com", "phone": "916-923-8551", "visitId": "866109", "hireDate": "3/29/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600360262", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_barksdale_charmane", "name": "Charmane Barksdale", "email": "cybarks@gmail.com", "phone": "916-792-5699", "visitId": "865150", "hireDate": "12/18/2024", "gender": "female", "certStatus": "certified", "hcaId": "4600678786", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_beaman_deeana", "name": "Deeana Beaman", "email": "deeana7@gmail.com", "phone": "916-257-6683", "visitId": "869572", "hireDate": "9/12/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600703783", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_bezdek_patricia", "name": "Patricia Bezdek", "email": "pbezdek@yahoo.com", "phone": "916-333-9143", "visitId": "867643", "hireDate": "10/14/2025", "gender": "female", "certStatus": "certified", "hcaId": "7501800575", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_brendel_aubrey", "name": "Aubrey Brendel", "email": "brendelaubrey@gmail.com", "phone": "916-660-3317", "visitId": "866110", "hireDate": "5/28/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600797602", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_cabanlit_lauryn", "name": "Lauryn Cabanlit", "email": "laumoncab@gmail.com", "phone": "760-819-2409", "visitId": "864072", "hireDate": "9/20/2025", "gender": "female", "certStatus": "certified", "hcaId": "7517546283", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_calderon_isabel", "name": "Isabel Calderon", "email": "santacruzbound89@gmail.com", "phone": "916-226-7562", "visitId": "860440", "hireDate": "5/15/2025", "gender": "female", "certStatus": "certified", "hcaId": "7508105649", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_dadi_berthe", "name": "Berthe Dadi", "email": "berthedadi313@gmail.com", "phone": "945-340-9972", "visitId": "866709", "hireDate": "10/15/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600680447", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_erbiti_romina", "name": "Romina Erbiti", "email": "erbitir@gmail.com", "phone": "916-390-8531", "visitId": "860382", "hireDate": "9/20/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600868361", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_finnigan_vanessa", "name": "Vanessa Finnigan", "email": "vilizcano@yahoo.com", "phone": "760-554-5242", "visitId": "860753", "hireDate": "9/20/2024", "gender": "female", "certStatus": "certified", "hcaId": "4600671070", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_fuentes_gloria", "name": "Gloria Fuentes", "email": "gloriafuentes890@yahoo.com", "phone": "916-346-1276", "visitId": "861090", "hireDate": "03/16/2026", "gender": "female", "certStatus": "certified", "hcaId": "7508067736", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_goodspeed_lisa", "name": "Lisa Goodspeed", "email": "lgoody36@yahoo.com", "phone": "707-857-6892", "visitId": "865589", "hireDate": "12/22/25", "gender": "female", "certStatus": "certified", "hcaId": "4600212264", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_gray_james", "name": "James Gray", "email": "jduzongray@gmail.com", "phone": "916-346-7026", "visitId": "865833", "hireDate": "2/25/2026", "gender": "male", "certStatus": "certified", "hcaId": "4600963187", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_guidi_shawna", "name": "Shawna Guidi", "email": "shawna.guidi@outlook.com", "phone": "916-690-9519", "visitId": "863321", "hireDate": "8/28/2025", "gender": "female", "certStatus": "certified", "hcaId": "7504005522", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_hehr_sukhdeep", "name": "Sukhdeep Hehr", "email": "sukhdeephehr@gmail.com", "phone": "916-230-5550", "visitId": "860340", "hireDate": "7/24/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600833274", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_herrera_luciana", "name": "Luciana Herrera", "email": "lucianaha6@gmail.com", "phone": "916-562-9651", "visitId": "868523", "hireDate": "11/12/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600763457", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_jones_patsy", "name": "Patsy Jones", "email": "precpat@gmail.com", "phone": "916-289-8588", "visitId": "868082", "hireDate": "12/22/2025", "gender": "female", "certStatus": "certified", "hcaId": "LVN 75657", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_kish_susanne", "name": "Susanne Kish", "email": "skish.heartland@gmail.com", "phone": "916-747-7901", "visitId": "868953", "hireDate": "3/3/2025", "gender": "female", "certStatus": "certified", "hcaId": "7506090854", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_larson_emma", "name": "Emma Larson", "email": "emmalarson2400@gmail.com", "phone": "720-292-8723", "visitId": "", "hireDate": "6/11/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600813288", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_lizcano_berkys", "name": "Berkys Lizcano", "email": "blizcanoribon@gmail.com", "phone": "279-264-9377", "visitId": "866311", "hireDate": "11/19/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600903272", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_nakayama_kaitlyn", "name": "Kaitlyn Nakayama", "email": "nakayama.aiko@gmail.com", "phone": "916-805-3777", "visitId": "869855", "hireDate": "10/22/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600832161", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_owens_jamie", "name": "Jamie Owens", "email": "jamieowens29@gmail.com", "phone": "530-412-1380", "visitId": "864821", "hireDate": "7/31/2025", "gender": "female", "certStatus": "certified", "hcaId": "7503019113", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_purvis_ashlyn", "name": "Ashlyn Purvis", "email": "purvis.ashlyn.n@gmail.com", "phone": "916-903-2894", "visitId": "863362", "hireDate": "1/31/2025", "gender": "female", "certStatus": "certified", "hcaId": "4600453908", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_ramalasou_karalaini", "name": "Karalaini Ramalasou", "email": "kararamalasou1802@gmail.com", "phone": "916-440-2780", "visitId": "864149", "hireDate": "1/26/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600927176", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_salazar_elija", "name": "Elija Salazar", "email": "lijsal@yahoo.com", "phone": "415-939-7170", "visitId": "868901", "hireDate": "11/25/25", "gender": "male", "certStatus": "certified", "hcaId": "7504002636", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_shannon_angela", "name": "Angela Shannon", "email": "angannshannon@gmail.com", "phone": "916-300-6099", "visitId": "862151", "hireDate": "4/4/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600972432", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_tikotani_mesake", "name": "Mesake Tikotani", "email": "mesake.tikotani82@gmail.com", "phone": "916-620-5960", "visitId": "861364", "hireDate": "03/11/2026", "gender": "male", "certStatus": "certified", "hcaId": "4600345578", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_wano_kerry", "name": "Kerry Wano", "email": "kerrywano@gmail.com", "phone": "405-414-0448", "visitId": "867744", "hireDate": "11/12/2025", "gender": "male", "certStatus": "certified", "hcaId": "4600899807", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_wilson_beverly", "name": "Beverly Wilson", "email": "wilson4you4@earthlink.net", "phone": "650-996-3783", "visitId": "865978", "hireDate": "03/11/2026", "gender": "female", "certStatus": "certified", "hcaId": "RN 265267", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_wright_alexia", "name": "Alexia Wright", "email": "alexiawright84@gmail.com", "phone": "916-289-4873", "visitId": "868869", "hireDate": "4/4/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600981637", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_ahmer_abeerah", "name": "Abeerah Ahmer", "email": "Szeedds@yahoo.com", "phone": "925-727-6885", "visitId": "868972", "hireDate": "4/13/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600967925", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_vulimerika_amelia", "name": "Amelia Vulimerika", "email": "melvueti29@gmail.com", "phone": "323-943-6864", "visitId": "867633", "hireDate": "4/9/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600802243", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_gonzales_jessica", "name": "Jessica Gonzales", "email": "Jessicaaa6921@yahoo.com", "phone": "530-844-3436", "visitId": "863142", "hireDate": "4/1/2026", "gender": "female", "certStatus": "certified", "hcaId": "4600110483", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_ciornea_valentina", "name": "Valentina Ciornea", "email": "valentinaciornea3@gmail.com", "phone": "209-280-6852", "visitId": "869685", "hireDate": "4/1/2026", "gender": "female", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_kessler_winter", "name": "Winter Kessler", "email": "winter.kessler@gmail.com", "phone": "916-693-2603", "visitId": "868212", "hireDate": "5/15/2026", "gender": "female", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_parafina_valentino", "name": "Valentino Parafina", "email": "valparcg@yahoo.com", "phone": "650-307-2622", "visitId": "863165", "hireDate": "5/15/2026", "gender": "male", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_mandal_shayan", "name": "Shayan Mandal", "email": "shayan.s.mandal@gmail.com", "phone": "916-532-3253", "visitId": "864580", "hireDate": "5/27/2026", "gender": "male", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_ouma_mollie", "name": "Mollie Ouma", "email": "mollieouma@gmail.com", "phone": "916-579-8248", "visitId": "868225", "hireDate": "6/1/2026", "gender": "female", "certStatus": "certified", "hcaId": "7516176072", "payRate": null, "transport": "car", "notes": "", "active": true, "introductions": []}, {"id": "g_aguilar_jose", "name": "Jose Aguilar", "email": "jaguilar159@gmail.com", "phone": "408-603-8916", "visitId": "863954", "hireDate": "4/1/2026", "gender": "male", "certStatus": "certified", "hcaId": "4600578739", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_baleinagasau_heather", "name": "Heather Baleinagasau", "email": "heatherbaleinagasau@gmail.com", "phone": "209-871-8883", "visitId": "869190", "hireDate": "8/23/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_banza_ruby", "name": "Ruby Banza", "email": "rubybanza@gmail.com'", "phone": "916-706-8476", "visitId": "866457", "hireDate": "1/26/2026", "gender": "", "certStatus": "certified", "hcaId": "7516149656", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_chikezie_chinyere", "name": "Chinyere Chikezie", "email": "chygiven16@gmail.com", "phone": "310-654-1571", "visitId": "861232", "hireDate": "10/1/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_davis_marisella", "name": "Marisella Davis", "email": "wemda@myyahoo.com", "phone": "702-825-4381", "visitId": "866751", "hireDate": "1/7/2026", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_labrasca_veronica", "name": "Veronica Labrasca", "email": "veronicalabrasca@gmail.com", "phone": "916-856-0829", "visitId": "863124", "hireDate": "9/12/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_majorado_marcia", "name": "Marcia Majorado", "email": "drmarciamejorado@gmail.com", "phone": "916-720-4669", "visitId": "868210", "hireDate": "8/23/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_mccarthy_jennifer", "name": "Jennifer McCarthy", "email": "jen.s.mccarthy@gmail.com", "phone": "916-284-6211", "visitId": "867710", "hireDate": "1/26/2026", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_okafor_genevive", "name": "Genevive Okafor", "email": "geneviadaniel@gmail.com", "phone": "214-900-7360", "visitId": "868816", "hireDate": "9/20/2025", "gender": "", "certStatus": "certified", "hcaId": "4600640500", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_tambatamba_perry", "name": "Perry TambaTamba", "email": "perrytambatamba@gmail.com", "phone": "407-492-2465", "visitId": "869447", "hireDate": "10/1/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_targa_concepcion", "name": "Concepcion Targa", "email": "concepciontarga@gmail.com", "phone": "530-329-4558", "visitId": "862053", "hireDate": "03/29/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_trexler_cynthia", "name": "Cynthia Trexler", "email": "", "phone": "916-498-4971", "visitId": "964915", "hireDate": "6/20/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_ului_taitusi", "name": "Taitusi Ului", "email": "matairavulataitusi@gmail.com", "phone": "916-530-7844", "visitId": "867210", "hireDate": "1/3/2025", "gender": "", "certStatus": "certified", "hcaId": "7517613021", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_bell_allyse", "name": "Allyse Bell", "email": "", "phone": "916-910-3103", "visitId": "", "hireDate": "9/26/2024", "gender": "", "certStatus": "certified", "hcaId": "7505139223", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_carrion_maria", "name": "Maria Carrion", "email": "carrionmaria636@gmail.com", "phone": "916-895-9988", "visitId": "864642", "hireDate": "10/31/2024", "gender": "", "certStatus": "certified", "hcaId": "7510033203", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_johnson_ashley", "name": "Ashley Johnson", "email": "", "phone": "916-229-7303", "visitId": "", "hireDate": "8/28/2024", "gender": "", "certStatus": "certified", "hcaId": "7512049635", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_johnson_ploghoft_sar", "name": "Sarah Johnson-Ploghoft", "email": "sarahjohnson_ploghoft@yahoo.com", "phone": "916-673-8053", "visitId": "862433", "hireDate": "12/6/2024", "gender": "", "certStatus": "certified", "hcaId": "7516069722", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_king_courtney", "name": "Courtney King", "email": "girlbytheocean@yahoo.com", "phone": "916-293-6816", "visitId": "864168", "hireDate": "7/8/2024", "gender": "", "certStatus": "certified", "hcaId": "7517280516", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_quiroz_acenat", "name": "Acenat Quiroz", "email": "aquiroz66@gmail.com", "phone": "916-997-1638", "visitId": "867184", "hireDate": "3/3/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_smith_delores", "name": "Delores Smith", "email": "deemaxdee@yahoo.com", "phone": "650-544-0298", "visitId": "865297", "hireDate": "1/31/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_watkins_kailyn", "name": "Kailyn Watkins", "email": "kailynwatkins@icloud.com", "phone": "530-906-7873", "visitId": "863461", "hireDate": "12/18/2024", "gender": "", "certStatus": "certified", "hcaId": "4600702148", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_wise_heaven", "name": "Heaven Wise", "email": "hwise090@gmail.com", "phone": "510-508-0607", "visitId": "861454", "hireDate": "10/1/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_zahidi_asrar", "name": "Asrar Zahidi", "email": "uz.zahidi@yahoo.com", "phone": "916-813-4910", "visitId": "866345", "hireDate": "3/29/2025", "gender": "", "certStatus": "in-process", "hcaId": "", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_knight_nina", "name": "Nina Knight", "email": "reylina833@gmail.com", "phone": "916-459-6648", "visitId": "867779", "hireDate": "4/10/2026", "gender": "", "certStatus": "certified", "hcaId": "7517369493", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}, {"id": "g_lopez_rosa", "name": "Rosa Lopez", "email": "Rosielopez20982@gmail.com", "phone": "209-495-5785", "visitId": "868660", "hireDate": "4/13/2026", "gender": "", "certStatus": "certified", "hcaId": "4600991339", "payRate": null, "transport": "car", "notes": "", "active": false, "introductions": []}]; // Seeded from CSV // Seeded from CSV
+
+// Shifts loaded from storage
+const DEFAULT_SHIFTS = [];
+
+let shifts = [...DEFAULT_SHIFTS];
+let currentWeekStart = getWeekStart(new Date());
+let editingShiftId = null;
+let copyWeekOffset = null;
+let storageReady = false;
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+async function saveData() {
+  if (!storageReady) return;
+  try {
+    await window.storage.set('gwcc-shifts', JSON.stringify(shifts));
+    await window.storage.set('gwcc-introductions', JSON.stringify(
+      CAREGIVERS.map(g => ({ id: g.id, introductions: g.introductions }))
+    ));
+    showSaveIndicator();
+  } catch(e) { console.error('Save failed:', e); }
+}
+
+async function loadData() {
+  try {
+    const clientsResult = await window.storage.get('gwcc-clients');
+    if (clientsResult && clientsResult.value) {
+      const saved = JSON.parse(clientsResult.value);
+      // Merge: saved data wins for editable fields, hardcoded wins for new entries
+      saved.forEach(s => {
+        const idx = CLIENTS.findIndex(c => c.id === s.id);
+        if (idx >= 0) {
+          // Preserve editable fields from storage
+          CLIENTS[idx] = { ...CLIENTS[idx], ...s };
+        } else {
+          CLIENTS.push(s);
+        }
+      });
+    }
+    const caregiversResult = await window.storage.get('gwcc-caregivers');
+    if (caregiversResult && caregiversResult.value) {
+      const saved = JSON.parse(caregiversResult.value);
+      saved.forEach(s => {
+        const idx = CAREGIVERS.findIndex(g => g.id === s.id);
+        if (idx >= 0) {
+          // Preserve gender, payRate, introductions, notes from storage
+          CAREGIVERS[idx] = { ...CAREGIVERS[idx], ...s };
+        } else {
+          CAREGIVERS.push(s);
+        }
+      });
+    }
+    const shiftsResult = await window.storage.get('gwcc-shifts');
+    if (shiftsResult && shiftsResult.value) {
+      shifts = JSON.parse(shiftsResult.value);
+    }
+    const introsResult = await window.storage.get('gwcc-introductions');
+    if (introsResult && introsResult.value) {
+      const saved = JSON.parse(introsResult.value);
+      saved.forEach(s => {
+        const cg = CAREGIVERS.find(g => g.id === s.id);
+        if (cg) cg.introductions = s.introductions;
+      });
+    }
+  } catch(e) {
+    console.error('Load error:', e);
+  }
+  // Always save current state so storage is up to date
+  storageReady = true;
+  await savePeopleData();
+  renderAll();
+}
+
+function showSaveIndicator() {
+  let el = document.getElementById('saveIndicator');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'saveIndicator';
+    el.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--green);color:white;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;transition:opacity 0.5s;box-shadow:0 2px 8px rgba(0,0,0,0.2)';
+    document.body.appendChild(el);
+  }
+  el.textContent = '✓ Saved';
+  el.style.opacity = '1';
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => { el.style.opacity = '0'; }, 2000);
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() - day);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function generateId() { return 's' + Date.now() + Math.random().toString(36).slice(2,6); }
+
+function formatDateDisplay(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+}
+
+function formatDateShort(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+function formatTime(t) {
+  const [h,m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function isHoliday(dateStr) {
+  return HOLIDAYS_2026.includes(dateStr);
+}
+
+function getHolidayName(dateStr) {
+  const map = {
+    '2026-01-01':'New Year\'s Day','2026-05-25':'Memorial Day',
+    '2026-07-04':'Fourth of July','2026-09-07':'Labor Day',
+    '2026-11-26':'Thanksgiving','2026-12-25':'Christmas Day'
+  };
+  return map[dateStr] || 'Holiday';
+}
+
+function getClient(id) { return CLIENTS.find(c=>c.id===id); }
+function getCaregiver(id) { return CAREGIVERS.find(g=>g.id===id); }
+
+function shiftHours(shift) {
+  if (shift.type === 'overnight') return 8;
+  if (shift.type === 'livein') return 24;
+  const [sh,sm] = shift.startTime.split(':').map(Number);
+  const [eh,em] = shift.endTime.split(':').map(Number);
+  return Math.abs((eh*60+em) - (sh*60+sm)) / 60;
+}
+
+function effectiveClientRate(shift) {
+  if (!shift.clientRate) return null;
+  if (shift.type === 'overnight') return shift.clientRate;
+  if (shift.type === 'livein') return shift.clientRate;
+  const rate = isHoliday(shift.date) ? shift.clientRate * 2 : shift.clientRate;
+  return rate;
+}
+
+function effectiveCaregiverRate(shift) {
+  if (!shift.caregiverRate) return null;
+  return isHoliday(shift.date) ? shift.caregiverRate * 1.5 : shift.caregiverRate;
+}
+
+function shiftRevenue(shift) {
+  const r = effectiveClientRate(shift);
+  if (!r) return null;
+  if (shift.type === 'overnight' || shift.type === 'livein') return r;
+  return r * shiftHours(shift);
+}
+
+function shiftCost(shift) {
+  const r = effectiveCaregiverRate(shift);
+  if (!r) return null;
+  if (shift.type === 'overnight') return r * 8;
+  if (shift.type === 'livein') return r * 24;
+  return r * shiftHours(shift);
+}
+
+function isIntroduced(caregiverId, clientId) {
+  const g = getCaregiver(caregiverId);
+  return g && g.introductions.includes(clientId);
+}
+
+function updateDurationDisplay() {
+  const type = document.getElementById('shiftType')?.value;
+  const start = document.getElementById('shiftStart')?.value;
+  const end = document.getElementById('shiftEnd')?.value;
+  const el = document.getElementById('durationValue');
+  if (!el) return;
+  if (type === 'overnight') { el.textContent = '8 hrs (flat)'; return; }
+  if (type === 'livein') { el.textContent = '24 hrs (flat)'; return; }
+  if (!start || !end) { el.textContent = '—'; return; }
+  const [sh,sm] = start.split(':').map(Number);
+  const [eh,em] = end.split(':').map(Number);
+  let mins = (eh*60+em) - (sh*60+sm);
+  if (mins <= 0) mins += 24*60;
+  const hrs = mins / 60;
+  el.textContent = Number.isInteger(hrs) ? hrs + ' hrs' : hrs.toFixed(1) + ' hrs';
+}
+
+
+
+function getWeekShifts() {
+  const start = formatDate(currentWeekStart);
+  const end = formatDate(addDays(currentWeekStart, 6));
+  return shifts.filter(s => s.date >= start && s.date <= end);
+}
+
+// ============================================================
+// TIME OPTIONS
+// ============================================================
+function buildTimeOptions(selectEl, selected) {
+  selectEl.innerHTML = '';
+  for (let h=0; h<24; h++) {
+    for (let m=0; m<60; m+=30) {
+      const val = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = formatTime(val);
+      if (val === selected) opt.selected = true;
+      selectEl.appendChild(opt);
+    }
+  }
+}
+
+// ============================================================
+// WEEK NAVIGATION
+// ============================================================
+function changeWeek(dir) {
+  currentWeekStart = addDays(currentWeekStart, dir * 7);
+  renderAll();
+}
+
+function updateWeekLabel() {
+  const end = addDays(currentWeekStart, 6);
+  const opts = { month:'long', day:'numeric' };
+  const label = `Week of ${currentWeekStart.toLocaleDateString('en-US', opts)} – ${end.toLocaleDateString('en-US', opts)}, ${end.getFullYear()}`;
+  document.getElementById('weekLabel').textContent = label;
+  document.getElementById('headerWeekDisplay').innerHTML = label + '<br><span style="font-size:11px;opacity:0.7">Lisa\'s Scheduling View</span>';
+}
+
+// ============================================================
+// CALENDAR RENDER
+// ============================================================
+function renderCalendar() {
+  updateWeekLabel();
+  renderFinancialSummary();
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+
+  // Header row
+  const cornerEl = document.createElement('div');
+  cornerEl.className = 'cal-header';
+  cornerEl.textContent = 'CLIENT';
+  grid.appendChild(cornerEl);
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for (let i=0; i<7; i++) {
+    const d = addDays(currentWeekStart, i);
+    const ds = formatDate(d);
+    const holiday = isHoliday(ds);
+    const el = document.createElement('div');
+    el.className = 'cal-header day-header' + (holiday ? ' holiday' : '');
+    el.innerHTML = `<span class="day-name">${days[i]}</span><span class="day-date">${d.getDate()}</span>${holiday ? `<span style="font-size:9px;font-weight:700">🎉 ${getHolidayName(ds)}</span>` : ''}`;
+    grid.appendChild(el);
+  }
+
+  // Client rows
+  const weekShifts = getWeekShifts();
+  CLIENTS.filter(c=>c.active).forEach(client => {
+    const labelEl = document.createElement('div');
+    labelEl.className = 'cal-row-label';
+    labelEl.textContent = client.name;
+    grid.appendChild(labelEl);
+
+    for (let i=0; i<7; i++) {
+      const d = addDays(currentWeekStart, i);
+      const ds = formatDate(d);
+      const holiday = isHoliday(ds);
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell' + (holiday ? ' holiday-cell' : '');
+
+      const cellShifts = weekShifts.filter(s => s.date === ds && s.clientId === client.id);
+      cellShifts.forEach(shift => {
+        const primaryCg = getCaregiver(shift.caregivers[0]?.id);
+        const introduced = shift.caregivers[0] && isIntroduced(shift.caregivers[0].id, client.id);
+        const hasTraining = shift.caregivers.some(c=>c.isTraining);
+
+        let cardClass = 'shift-card ';
+        if (!introduced) cardClass += 'unintroduced';
+        else if (shift.confirmed) cardClass += 'confirmed';
+        else if (holiday) cardClass += 'holiday-shift';
+        else if (hasTraining) cardClass += 'training';
+        else cardClass += 'pending';
+
+        const card = document.createElement('div');
+        card.className = cardClass;
+        card.onclick = () => openShiftModal(shift.id, ds);
+
+        const typePills = {short:'Short',standard:'Std',extended:'Ext',overnight:'Ovnt',livein:'Live-In'};
+        const hrs = shiftHours(shift);
+        const durLabel = (shift.type === 'overnight') ? '8 hrs' : (shift.type === 'livein') ? '24 hrs' : (Number.isInteger(hrs) ? hrs + ' hrs' : hrs.toFixed(1) + ' hrs');
+        card.innerHTML = `
+          ${shift.confirmed ? '<div class="shift-confirmed-dot"></div>' : ''}
+          <div class="shift-caregiver">${primaryCg ? primaryCg.name : '?'}</div>
+          <div class="shift-time">${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}</div>
+          <div class="shift-time" style="color:var(--gold);font-weight:700">⏱ ${durLabel}</div>
+          <div><span class="shift-type-badge">${typePills[shift.type]||shift.type}</span>${hasTraining?'<span class="shift-type-badge" style="background:var(--amber);margin-left:3px">+TRN</span>':''}</div>
+          ${!introduced ? '<div class="unintroduced-warning">⚠ Not introduced</div>' : ''}
+        `;
+        cell.appendChild(card);
+      });
+
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-shift-btn';
+      addBtn.textContent = '+ shift';
+      addBtn.onclick = () => openShiftModal(null, ds, client.id);
+      cell.appendChild(addBtn);
+
+      grid.appendChild(cell);
+    }
+  });
+
+  renderAlerts();
+}
+
+// ============================================================
+// ALERTS BAR
+// ============================================================
+function renderAlerts() {
+  const bar = document.getElementById('alertsBar');
+  const warnings = getWarnings();
+  const doubles = warnings.filter(w=>w.type==='double');
+  const unintro = warnings.filter(w=>w.type==='unintroduced');
+  const confirmed = getWeekShifts().filter(s=>s.confirmed).length;
+  const total = getWeekShifts().length;
+
+  bar.innerHTML = '';
+  if (doubles.length > 0) {
+    bar.innerHTML += `<div class="alert-chip error">🚨 ${doubles.length} Double Booking${doubles.length>1?'s':''}</div>`;
+  }
+  if (unintro.length > 0) {
+    bar.innerHTML += `<div class="alert-chip warning">⚠️ ${unintro.length} Unintroduced Caregiver${unintro.length>1?'s':''}</div>`;
+  }
+  if (doubles.length === 0 && unintro.length === 0) {
+    bar.innerHTML += `<div class="alert-chip ok">✓ No scheduling conflicts</div>`;
+  }
+  bar.innerHTML += `<div class="alert-chip ok">✅ ${confirmed}/${total} Shifts Confirmed</div>`;
+}
+
+// ============================================================
+// WARNINGS ENGINE
+// ============================================================
+function getWarnings() {
+  const warnings = [];
+  const weekShifts = getWeekShifts();
+
+  // Double bookings
+  CAREGIVERS.forEach(cg => {
+    const cgShifts = weekShifts.filter(s => s.caregivers.some(c=>c.id===cg.id));
+    for (let i=0; i<cgShifts.length; i++) {
+      for (let j=i+1; j<cgShifts.length; j++) {
+        const a = cgShifts[i], b = cgShifts[j];
+        if (a.date === b.date) {
+          const aStart = a.startTime, aEnd = a.endTime, bStart = b.startTime, bEnd = b.endTime;
+          if (aStart < bEnd && bStart < aEnd) {
+            warnings.push({ type:'double', msg:`${cg.name} double-booked on ${formatDateShort(a.date)}: ${formatTime(a.startTime)}–${formatTime(a.endTime)} AND ${formatTime(b.startTime)}–${formatTime(b.endTime)}`, shiftIds:[a.id,b.id] });
+          }
+        }
+      }
+    }
+  });
+
+  // Unintroduced caregivers
+  weekShifts.forEach(shift => {
+    shift.caregivers.forEach(c => {
+      if (!c.isTraining && !isIntroduced(c.id, shift.clientId)) {
+        const cg = getCaregiver(c.id);
+        const cl = getClient(shift.clientId);
+        warnings.push({ type:'unintroduced', msg:`${cg?.name} is not yet introduced to ${cl?.name} — shift on ${formatDateShort(shift.date)}`, shiftId:shift.id });
+      }
+    });
+  });
+
+  return warnings;
+}
+
+function renderWarnings() {
+  const warnings = getWarnings();
+  const el = document.getElementById('warningsContent');
+
+  if (warnings.length === 0) {
+    el.innerHTML = '<div class="warnings-panel"><div class="warnings-panel-header ok">✓ No warnings this week — schedule looks clean</div></div>';
+    return;
+  }
+
+  const doubles = warnings.filter(w=>w.type==='double');
+  const unintro = warnings.filter(w=>w.type==='unintroduced');
+
+  let html = '';
+  if (doubles.length > 0) {
+    html += `<div class="warnings-panel"><div class="warnings-panel-header">🚨 Double Bookings (${doubles.length})</div>`;
+    doubles.forEach(w => { html += `<div class="warning-item"><span class="warning-icon">🚨</span>${w.msg}</div>`; });
+    html += '</div>';
+  }
+  if (unintro.length > 0) {
+    html += `<div class="warnings-panel" style="margin-top:12px"><div class="warnings-panel-header" style="background:var(--amber)">⚠️ Unintroduced Caregivers (${unintro.length})</div>`;
+    unintro.forEach(w => { html += `<div class="warning-item"><span class="warning-icon">⚠️</span>${w.msg}</div>`; });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// ============================================================
+// CLIENT VIEW
+// ============================================================
+function renderClientView() {
+  const sel = document.getElementById('clientViewSelect').value;
+  const weekShifts = getWeekShifts();
+  let html = '';
+
+  const clientsToShow = sel === 'all' ? CLIENTS.filter(c=>c.active) : CLIENTS.filter(c=>c.id===sel);
+
+  clientsToShow.forEach(client => {
+    const cShifts = weekShifts.filter(s=>s.clientId===client.id).sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime));
+    let totalRev = 0; let hasRates = false;
+
+    html += `<div style="margin-bottom:24px">
+      <div style="font-family:var(--font);font-size:15px;font-weight:bold;color:var(--navy);margin-bottom:8px;padding:8px 12px;background:var(--gold-light);border-left:4px solid var(--gold);border-radius:0 6px 6px 0">
+        ${client.name} <span style="font-size:12px;color:var(--gray-600);font-family:var(--font-ui)">— Contact: ${client.contact}</span>
+      </div>`;
+
+    if (cShifts.length === 0) {
+      html += `<p style="color:var(--gray-400);font-size:13px;padding:12px">No shifts scheduled this week.</p>`;
+    } else {
+      html += `<table class="schedule-table"><thead><tr>
+        <th>Date</th><th>Caregiver(s)</th><th>Start</th><th>End</th><th>Duration</th><th>Type</th><th>Status</th><th>Notes</th>
+      </tr></thead><tbody>`;
+      cShifts.forEach(shift => {
+        const isHol = isHoliday(shift.date);
+        const rowClass = shift.confirmed ? 'confirmed-row' : (isHol ? 'holiday-row' : '');
+        const cgNames = shift.caregivers.map(c => {
+          const g = getCaregiver(c.id);
+          return g ? g.name + (c.isTraining ? ' (training)' : '') : '?';
+        }).join(', ');
+        const typeLabels = {short:'Short',standard:'Standard',extended:'Extended',overnight:'Overnight',livein:'Live-In'};
+        const typeClasses = {short:'type-short',standard:'type-standard',extended:'type-extended',overnight:'type-overnight',livein:'type-livein'};
+        const rev = shiftRevenue(shift);
+        if (rev) { totalRev += rev; hasRates = true; }
+        const hrs = shiftHours(shift);
+        const durLabel = (shift.type==='overnight') ? '8 hrs' : (shift.type==='livein') ? '24 hrs' : (Number.isInteger(hrs) ? hrs+' hrs' : hrs.toFixed(1)+' hrs');
+        html += `<tr class="${rowClass}">
+          <td>${formatDateShort(shift.date)}${isHol?` 🎉`:''}</td>
+          <td>${cgNames}</td>
+          <td>${formatTime(shift.startTime)}</td>
+          <td>${formatTime(shift.endTime)}</td>
+          <td style="font-weight:700;color:var(--navy)">${durLabel}</td>
+          <td><span class="type-pill ${typeClasses[shift.type]||''}">${typeLabels[shift.type]||shift.type}</span></td>
+          <td>${shift.confirmed ? '<span class="status-badge confirmed">✓ Confirmed</span>' : (isHol ? '<span class="status-badge holiday">🎉 Holiday</span>' : '<span class="status-badge pending">Pending</span>')}</td>
+          <td style="color:var(--gray-600)">${shift.notes || '—'}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      if (hasRates) {
+        html += `<div style="text-align:right;font-size:13px;color:var(--navy);font-weight:700;margin-top:8px;padding:8px 12px;background:var(--gold-light);border-radius:6px">
+          Est. Week Revenue: $${totalRev.toFixed(2)}
+        </div>`;
+      }
+    }
+    html += '</div>';
+  });
+
+  document.getElementById('clientViewContent').innerHTML = html;
+}
+
+// ============================================================
+// CAREGIVER VIEW
+// ============================================================
+function renderCaregiverView() {
+  const sel = document.getElementById('caregiverViewSelect').value;
+  const weekShifts = getWeekShifts();
+  let html = '';
+
+  const cgsToShow = sel === 'all' ? CAREGIVERS.filter(g=>g.active) : CAREGIVERS.filter(g=>g.id===sel);
+
+  cgsToShow.forEach(cg => {
+    const cgShifts = weekShifts.filter(s=>s.caregivers.some(c=>c.id===cg.id)).sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime));
+    let totalCost = 0; let hasRates = false;
+
+    html += `<div style="margin-bottom:24px">
+      <div style="font-family:var(--font);font-size:15px;font-weight:bold;color:var(--navy);margin-bottom:8px;padding:8px 12px;background:var(--navy);color:var(--gold-light);border-radius:6px">
+        ${cg.name} <span style="font-size:12px;opacity:0.7;font-family:var(--font-ui)">${cg.certStatus === 'certified' ? '✓ Certified' : '⏳ Cert In Process'} · ${cg.gender}</span>
+      </div>`;
+
+    if (cgShifts.length === 0) {
+      html += `<p style="color:var(--gray-400);font-size:13px;padding:12px">No shifts scheduled this week.</p>`;
+    } else {
+      html += `<table class="schedule-table"><thead><tr>
+        <th>Date</th><th>Client</th><th>Role</th><th>Start</th><th>End</th><th>Duration</th><th>Type</th><th>Status</th><th>Notes</th>
+      </tr></thead><tbody>`;
+      cgShifts.forEach(shift => {
+        const isHol = isHoliday(shift.date);
+        const rowClass = shift.confirmed ? 'confirmed-row' : (isHol ? 'holiday-row' : '');
+        const client = getClient(shift.clientId);
+        const myCg = shift.caregivers.find(c=>c.id===cg.id);
+        const role = myCg?.isTraining ? 'Training' : 'Primary';
+        const typeLabels = {short:'Short',standard:'Standard',extended:'Extended',overnight:'Overnight',livein:'Live-In'};
+        const typeClasses = {short:'type-short',standard:'type-standard',extended:'type-extended',overnight:'type-overnight',livein:'type-livein'};
+        const cost = !myCg?.isTraining ? shiftCost(shift) : null;
+        if (cost) { totalCost += cost; hasRates = true; }
+        const hrs = shiftHours(shift);
+        const durLabel = (shift.type==='overnight') ? '8 hrs' : (shift.type==='livein') ? '24 hrs' : (Number.isInteger(hrs) ? hrs+' hrs' : hrs.toFixed(1)+' hrs');
+        html += `<tr class="${rowClass}">
+          <td>${formatDateShort(shift.date)}${isHol?` 🎉`:''}</td>
+          <td>${client?.name||'?'}</td>
+          <td><span style="font-size:11px;font-weight:700;color:${role==='Training'?'var(--amber)':'var(--green)'}">${role}</span></td>
+          <td>${formatTime(shift.startTime)}</td>
+          <td>${formatTime(shift.endTime)}</td>
+          <td style="font-weight:700;color:var(--navy)">${durLabel}</td>
+          <td><span class="type-pill ${typeClasses[shift.type]||''}">${typeLabels[shift.type]||shift.type}</span></td>
+          <td>${shift.confirmed ? '<span class="status-badge confirmed">✓ Confirmed</span>' : (isHol ? '<span class="status-badge holiday">🎉 Holiday</span>' : '<span class="status-badge pending">Pending</span>')}</td>
+          <td style="color:var(--gray-600)">${shift.notes || '—'}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      if (hasRates) {
+        html += `<div style="text-align:right;font-size:13px;color:var(--navy);font-weight:700;margin-top:8px;padding:8px 12px;background:var(--green-light);border-radius:6px">
+          Est. Week Labor Cost: $${totalCost.toFixed(2)}
+        </div>`;
+      }
+    }
+    html += '</div>';
+  });
+
+  document.getElementById('caregiverViewContent').innerHTML = html;
+}
+
+// ============================================================
+// EMAIL PREVIEW
+// ============================================================
+function renderEmailPreview() {
+  const type = document.getElementById('emailTypeSelect').value;
+  const personSel = document.getElementById('emailPersonSelect');
+  const previewEl = document.getElementById('emailPreviewContent');
+
+  // Rebuild person list only if type changed, preserving current selection
+  const currentVal = personSel.value;
+  const expectedGroup = type === 'caregiver' ? 'cg' : 'cl';
+  const firstOpt = personSel.options[0];
+  const needsRebuild = !firstOpt || firstOpt.dataset.group !== expectedGroup;
+
+  if (needsRebuild) {
+    personSel.innerHTML = '';
+    if (type === 'caregiver') {
+      CAREGIVERS.filter(g=>g.active).forEach(g => {
+        const o = document.createElement('option');
+        o.value = g.id; o.textContent = g.name; o.dataset.group = 'cg';
+        personSel.appendChild(o);
+      });
+    } else {
+      CLIENTS.filter(c=>c.active).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id; o.textContent = c.name; o.dataset.group = 'cl';
+        personSel.appendChild(o);
+      });
+    }
+  }
+
+  const personId = personSel.value;
+  if (!personId) { previewEl.innerHTML = ''; return; }
+
+  const weekShifts = getWeekShifts();
+  const weekEnd = addDays(currentWeekStart, 6);
+  const weekStr = `${currentWeekStart.toLocaleDateString('en-US',{month:'long',day:'numeric'})} – ${weekEnd.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`;
+
+  let toName, toEmail, rows = '', greeting = '';
+
+  if (type === 'caregiver') {
+    const cg = getCaregiver(personId);
+    toName = cg.name; toEmail = cg.email;
+    greeting = `Hi ${cg.name.split(' ')[0]},`;
+    const myShifts = weekShifts.filter(s=>s.caregivers.some(c=>c.id===personId)).sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime));
+    if (myShifts.length === 0) { rows = '<tr><td colspan="5" style="text-align:center;color:#999">No shifts scheduled this week.</td></tr>'; }
+    myShifts.forEach(shift => {
+      const client = getClient(shift.clientId);
+      const myRole = shift.caregivers.find(c=>c.id===personId);
+      const isHol = isHoliday(shift.date);
+      rows += `<tr>
+        <td>${formatDateShort(shift.date)}${isHol?' 🎉':''}</td>
+        <td>${client?.name||'?'}${myRole?.isTraining?' <span style="color:#E67E22;font-size:11px;font-weight:700">(Training)</span>':''}</td>
+        <td>${formatTime(shift.startTime)}</td>
+        <td>${formatTime(shift.endTime)}</td>
+        <td>${shift.notes || ''}</td>
+      </tr>`;
+    });
+    previewEl.innerHTML = `
+      <div class="email-preview">
+        <div class="email-header-bar">
+          <div class="email-field"><span class="label">TO:</span>${toName} &lt;${toEmail}&gt;</div>
+          <div class="email-field"><span class="label">FROM:</span>Lisa — Geriatric Wellness & Caregiving of California</div>
+          <div class="email-field"><span class="label">SUBJECT:</span><input id="emailSubject" style="background:transparent;border:none;border-bottom:1px solid var(--gold);color:white;font-size:13px;width:60%;outline:none" value="Your Schedule — Week of ${weekStr}"></div>
+        </div>
+        <div class="email-body">
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Greeting</label>
+            <input id="emailGreeting" class="form-control" value="${greeting}">
+          </div>
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Opening Message</label>
+            <textarea id="emailOpening" class="form-control" rows="2">Please find your schedule for the week of ${weekStr} below. Review your shifts and reply to confirm your availability.</textarea>
+          </div>
+          <div style="background:var(--gray-100);border-radius:6px;padding:12px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Schedule (fixed — pulled from calendar)</div>
+            <table class="email-table">
+              <thead><tr><th>Date</th><th>Client</th><th>Start</th><th>End</th><th>Notes</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Closing Message</label>
+            <textarea id="emailClosing" class="form-control" rows="2">Please reply to this email to confirm your shifts. Thank you for your dedication to our clients.</textarea>
+          </div>
+          <div class="form-row">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Signature</label>
+            <textarea id="emailSignature" class="form-control" rows="3">With warmth,
+
+Lisa
+Geriatric Wellness and Caregiving of California
+Reliability · Dignity · Communication</textarea>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="openInGmail('${toEmail}', 'caregiver')">✉️ Open in Gmail</button>
+            <button class="btn btn-secondary" onclick="simulateConfirm('${personId}')">✓ Mark Caregiver Confirmed</button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    const client = getClient(personId);
+    toName = client.contact; toEmail = client.email;
+    greeting = `Dear ${client.contact},`;
+    const cShifts = weekShifts.filter(s=>s.clientId===personId).sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime));
+    if (cShifts.length === 0) { rows = '<tr><td colspan="5" style="text-align:center;color:#999">No visits scheduled this week.</td></tr>'; }
+    cShifts.forEach(shift => {
+      const cgNames = shift.caregivers.map(c => { const g=getCaregiver(c.id); return g?g.name+(c.isTraining?' (additional caregiver)':''):'?'; }).join(', ');
+      const isHol = isHoliday(shift.date);
+      rows += `<tr>
+        <td>${formatDateShort(shift.date)}${isHol?' 🎉':''}</td>
+        <td>${cgNames}</td>
+        <td>${formatTime(shift.startTime)}</td>
+        <td>${formatTime(shift.endTime)}</td>
+        <td>${shift.notes || ''}</td>
+      </tr>`;
+    });
+    previewEl.innerHTML = `
+      <div class="email-preview">
+        <div class="email-header-bar">
+          <div class="email-field"><span class="label">TO:</span>${toName} &lt;${toEmail}&gt;</div>
+          <div class="email-field"><span class="label">FROM:</span>Lisa — Geriatric Wellness & Caregiving of California</div>
+          <div class="email-field"><span class="label">SUBJECT:</span><input id="emailSubject" style="background:transparent;border:none;border-bottom:1px solid var(--gold);color:white;font-size:13px;width:60%;outline:none" value="Care Schedule for ${client.name} — Week of ${weekStr}"></div>
+        </div>
+        <div class="email-body">
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Greeting</label>
+            <input id="emailGreeting" class="form-control" value="${greeting}">
+          </div>
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Opening Message</label>
+            <textarea id="emailOpening" class="form-control" rows="2">Here is the care schedule for ${client.name} for the week of ${weekStr}. Please don't hesitate to reach out with any questions or changes.</textarea>
+          </div>
+          <div style="background:var(--gray-100);border-radius:6px;padding:12px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Schedule (fixed — pulled from calendar)</div>
+            <table class="email-table">
+              <thead><tr><th>Date</th><th>Caregiver</th><th>Start</th><th>End</th><th>Notes</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div class="form-row" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Closing Message</label>
+            <textarea id="emailClosing" class="form-control" rows="2">Please don't hesitate to call or email if you have any questions. We appreciate your trust in our team.</textarea>
+          </div>
+          <div class="form-row">
+            <label style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px">Signature</label>
+            <textarea id="emailSignature" class="form-control" rows="3">With warmth,
+
+Lisa
+Geriatric Wellness and Caregiving of California
+Reliability · Dignity · Communication</textarea>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-primary" onclick="openInGmail('${toEmail}', 'client')">✉️ Open in Gmail</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function openInGmail(toEmail, type) {
+  const subject = document.getElementById('emailSubject')?.value || '';
+  const greeting = document.getElementById('emailGreeting')?.value || '';
+  const opening = document.getElementById('emailOpening')?.value || '';
+  const closing = document.getElementById('emailClosing')?.value || '';
+  const signature = document.getElementById('emailSignature')?.value || '';
+
+  // Build plain text table from the schedule table
+  const tableRows = document.querySelectorAll('.email-table tbody tr');
+  let tableText = '';
+  if (type === 'caregiver') {
+    tableText += 'Date | Client | Start | End | Notes\n';
+  } else {
+    tableText += 'Date | Caregiver | Start | End | Notes\n';
+  }
+  tableText += '─'.repeat(60) + '\n';
+  tableRows.forEach(row => {
+    const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+    tableText += cells.join(' | ') + '\n';
+  });
+
+  const body = `${greeting}\n\n${opening}\n\n${tableText}\n${closing}\n\n${signature}`;
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+}
+
+function simulateConfirm(cgId) {
+  const weekShifts = getWeekShifts();
+  weekShifts.forEach(s => {
+    if (s.caregivers.some(c=>c.id===cgId)) s.confirmed = true;
+  });
+  saveData();
+  alert('✅ Shifts confirmed! Calendar updated with green confirmation markers.');
+  renderAll();
+}
+
+function markEmailSent() {
+  alert('✉️ Schedule marked as reviewed by Lisa. Ready to send.');
+}
+
+// ============================================================
+// CONFIRMATIONS
+// ============================================================
+function renderConfirmations() {
+  const weekShifts = getWeekShifts();
+  let html = '<div class="confirm-tracker">';
+  CAREGIVERS.filter(g=>g.active).forEach(cg => {
+    const myShifts = weekShifts.filter(s=>s.caregivers.some(c=>c.id===cg.id&&!c.isTraining));
+    if (myShifts.length === 0) return;
+    const confirmed = myShifts.filter(s=>s.confirmed).length;
+    const statusClass = confirmed === myShifts.length ? 'all-confirmed' : (confirmed > 0 ? 'partial' : 'none');
+    const statusText = confirmed === myShifts.length ? '✓ All shifts confirmed' : (confirmed > 0 ? `${confirmed}/${myShifts.length} confirmed` : 'Awaiting confirmation');
+    html += `<div class="confirm-card ${statusClass}">
+      <div class="confirm-name">${cg.name}</div>
+      <div class="confirm-shifts">${myShifts.length} shift${myShifts.length!==1?'s':''} this week</div>
+      <div class="confirm-status ${statusClass}">${statusText}</div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('confirmationContent').innerHTML = html;
+}
+
+// ============================================================
+// SHIFT MODAL
+// ============================================================
+function openShiftModal(shiftId, date, preClientId) {
+  editingShiftId = shiftId;
+  const modal = document.getElementById('shiftModal');
+  const shift = shiftId ? shifts.find(s=>s.id===shiftId) : null;
+  const dateToUse = shift ? shift.date : (date || formatDate(new Date()));
+
+  document.getElementById('modalTitle').textContent = shift ? 'Edit Shift' : 'Add Shift';
+  document.getElementById('deleteShiftBtn').style.display = shift ? 'inline-block' : 'none';
+
+  // Date
+  document.getElementById('shiftDate').value = dateToUse;
+
+  // Holiday
+  const isHol = isHoliday(dateToUse);
+  document.getElementById('holidayBanner').style.display = isHol ? 'flex' : 'none';
+  document.getElementById('holidayRateNote').style.display = isHol ? 'block' : 'none';
+
+  // Client dropdown
+  const clientSel = document.getElementById('shiftClient');
+  clientSel.innerHTML = '<option value="">Select client...</option>';
+  CLIENTS.filter(c=>c.active).forEach(c => {
+    clientSel.innerHTML += `<option value="${c.id}" ${(shift?shift.clientId:preClientId)===c.id?'selected':''}>${c.name}</option>`;
+  });
+
+  // Type
+  document.getElementById('shiftType').value = shift ? shift.type : 'standard';
+  document.getElementById('shiftType').onchange = updateDurationDisplay;
+
+  // Times
+  buildTimeOptions(document.getElementById('shiftStart'), shift ? shift.startTime : '08:00');
+  buildTimeOptions(document.getElementById('shiftEnd'), shift ? shift.endTime : '12:00');
+  setTimeout(updateDurationDisplay, 0);
+
+  // Caregivers
+  document.getElementById('caregiverRows').innerHTML = '';
+  if (shift) {
+    shift.caregivers.forEach(c => addCaregiverRow(c.isTraining, c.id));
+  } else {
+    addCaregiverRow(false, '');
+  }
+
+  // Rates
+  document.getElementById('clientRate').value = shift ? shift.clientRate || '' : '';
+  document.getElementById('caregiverRate').value = shift ? shift.caregiverRate || '' : '';
+
+  // Notes
+  document.getElementById('shiftNotes').value = shift ? shift.notes || '' : '';
+
+  modal.classList.add('open');
+}
+
+function addCaregiverRow(isTraining, selectedId) {
+  const rows = document.getElementById('caregiverRows');
+  const row = document.createElement('div');
+  row.className = 'caregiver-row' + (isTraining ? ' training-row' : '');
+  row.dataset.training = isTraining ? '1' : '0';
+
+  let opts = '<option value="">Select caregiver...</option>';
+  CAREGIVERS.filter(g=>g.active).forEach(g => {
+    opts += `<option value="${g.id}" ${selectedId===g.id?'selected':''}>${g.name}${g.certStatus==='in-process'?' ⏳':''}</option>`;
+  });
+
+  row.innerHTML = `
+    <select class="form-control" onchange="checkIntro(this)">${opts}</select>
+    <div style="font-size:11px;color:${isTraining?'var(--amber)':'var(--gray-600)'}">
+      ${isTraining ? '🟡 Training' : '🟢 Primary'}
+    </div>
+    <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+  `;
+  rows.appendChild(row);
+}
+
+function checkIntro(sel) {
+  const clientId = document.getElementById('shiftClient').value;
+  const cgId = sel.value;
+  if (clientId && cgId && !isIntroduced(cgId, clientId)) {
+    const row = sel.closest('.caregiver-row');
+    if (!row.querySelector('.unintroduced-warning')) {
+      const warn = document.createElement('div');
+      warn.className = 'unintroduced-warning';
+      warn.style.gridColumn = '1/-1';
+      warn.textContent = '⚠ This caregiver has not been introduced to this client';
+      row.appendChild(warn);
+    }
+  } else {
+    const warn = sel.closest('.caregiver-row')?.querySelector('.unintroduced-warning');
+    if (warn) warn.remove();
+  }
+}
+
+function closeShiftModal() {
+  document.getElementById('shiftModal').classList.remove('open');
+  editingShiftId = null;
+}
+
+function saveShift() {
+  try {
+    const date = document.getElementById('shiftDate').value;
+    const clientId = document.getElementById('shiftClient').value;
+    const type = document.getElementById('shiftType').value;
+    const startTime = document.getElementById('shiftStart').value;
+    const endTime = document.getElementById('shiftEnd').value;
+    const clientRate = parseFloat(document.getElementById('clientRate').value) || null;
+    const caregiverRate = parseFloat(document.getElementById('caregiverRate').value) || null;
+    const notes = document.getElementById('shiftNotes').value.trim();
+
+    if (!date) { showModalError('No date found. Please close and try again.'); return; }
+    if (!clientId) { showModalError('Please select a client.'); return; }
+
+    const caregiverRowEls = Array.from(document.querySelectorAll('#caregiverRows .caregiver-row'));
+    const caregivers = [];
+    for (const row of caregiverRowEls) {
+      const sel = row.querySelector('select');
+      if (!sel || !sel.value) {
+        showModalError('Please select a caregiver, or remove the empty caregiver row.');
+        return;
+      }
+      caregivers.push({ id: sel.value, isTraining: row.dataset.training === '1' });
+    }
+    if (caregivers.length === 0) { showModalError('Please add at least one caregiver.'); return; }
+
+    if (editingShiftId) {
+      const idx = shifts.findIndex(s=>s.id===editingShiftId);
+      if (idx >= 0) shifts[idx] = { ...shifts[idx], date, clientId, caregivers, startTime, endTime, type, clientRate, caregiverRate, notes };
+    } else {
+      shifts.push({ id:generateId(), date, clientId, caregivers, startTime, endTime, type, clientRate, caregiverRate, notes, confirmed:false });
+    }
+
+    closeShiftModal();
+    saveData();
+    renderAll();
+  } catch(err) {
+    showModalError('Unexpected error: ' + err.message);
+  }
+}
+
+function showModalError(msg) {
+  let el = document.getElementById('modalError');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'modalError';
+    el.style.cssText = 'background:var(--red-light);border:1px solid var(--red);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--red);font-weight:600;margin-bottom:12px';
+    const footer = document.querySelector('.modal-footer');
+    footer.parentElement.insertBefore(el, footer);
+  }
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+  setTimeout(() => { if (el) el.style.display = 'none'; }, 5000);
+}
+
+function deleteShift() {
+  if (!editingShiftId) return;
+  if (!confirm('Delete this shift?')) return;
+  shifts = shifts.filter(s=>s.id!==editingShiftId);
+  closeShiftModal();
+  saveData();
+  renderAll();
+}
+
+// ============================================================
+// COPY WEEK MODAL
+// ============================================================
+function openCopyModal() {
+  const el = document.getElementById('copyOptions');
+  el.innerHTML = '';
+  // Show last 4 weeks that have shifts
+  const weeks = [];
+  for (let i=1; i<=8; i++) {
+    const ws = getWeekStart(addDays(currentWeekStart, -i*7));
+    const wsStr = formatDate(ws);
+    const we = formatDate(addDays(ws,6));
+    const count = shifts.filter(s=>s.date>=wsStr&&s.date<=we).length;
+    if (count > 0) weeks.push({ws, wsStr, we, count});
+    if (weeks.length >= 4) break;
+  }
+  if (weeks.length === 0) {
+    el.innerHTML = '<p style="color:var(--gray-400);font-size:13px">No previous weeks with shifts found.</p>';
+  } else {
+    weeks.forEach((w,i) => {
+      el.innerHTML += `<label class="copy-option">
+        <input type="radio" name="copyWeek" value="${i}" ${i===0?'checked':''}>
+        <div>
+          <div style="font-weight:700;font-size:13px">${w.ws.toLocaleDateString('en-US',{month:'long',day:'numeric'})} – ${addDays(w.ws,6).toLocaleDateString('en-US',{month:'long',day:'numeric'})}</div>
+          <div style="font-size:11px;color:var(--gray-600)">${w.count} shift${w.count!==1?'s':''}</div>
+        </div>
+      </label>`;
+    });
+    el.dataset.weeks = JSON.stringify(weeks.map(w=>w.wsStr));
+  }
+  document.getElementById('copyModal').classList.add('open');
+}
+
+function closeCopyModal() {
+  document.getElementById('copyModal').classList.remove('open');
+}
+
+function executeCopy() {
+  const checked = document.querySelector('input[name="copyWeek"]:checked');
+  if (!checked) return;
+  const weeks = JSON.parse(document.getElementById('copyOptions').dataset.weeks || '[]');
+  const srcWeekStart = weeks[parseInt(checked.value)];
+  if (!srcWeekStart) return;
+
+  const srcEnd = formatDate(addDays(new Date(srcWeekStart+'T12:00:00'), 6));
+  const srcShifts = shifts.filter(s=>s.date>=srcWeekStart&&s.date<=srcEnd);
+  const diff = (currentWeekStart - new Date(srcWeekStart+'T12:00:00')) / (1000*60*60*24);
+
+  srcShifts.forEach(s => {
+    const newDate = formatDate(addDays(new Date(s.date+'T12:00:00'), diff));
+    shifts.push({
+      ...s,
+      id: generateId(),
+      date: newDate,
+      confirmed: false
+    });
+  });
+
+  closeCopyModal();
+  saveData();
+  renderAll();
+  alert(`✅ Copied ${srcShifts.length} shifts to current week. Review and adjust as needed.`);
+}
+
+// ============================================================
+// POPULATE DROPDOWNS
+// ============================================================
+function populateDropdowns() {
+  const clientSels = [document.getElementById('clientViewSelect')];
+  clientSels.forEach(sel => {
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="all">All Clients</option>';
+    CLIENTS.filter(c=>c.active).forEach(c => sel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+    sel.value = cur;
+  });
+  const cgSel = document.getElementById('caregiverViewSelect');
+  if (cgSel) {
+    const cur = cgSel.value;
+    cgSel.innerHTML = '<option value="all">All Caregivers</option>';
+    CAREGIVERS.filter(g=>g.active).forEach(g => cgSel.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    cgSel.value = cur;
+  }
+}
+
+// ============================================================
+// PANEL SWITCHING
+// ============================================================
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.target.classList.add('active');
+
+  if (name==='client-view') renderClientView();
+  if (name==='caregiver-view') renderCaregiverView();
+  if (name==='email-panel') { populateEmailDropdowns(); renderEmailPreview(); }
+  if (name==='confirmations') renderConfirmations();
+  if (name==='warnings') renderWarnings();
+  if (name==='introductions') renderIntroMap();
+  if (name==='people') { renderClientsTable(); }
+}
+
+function populateEmailDropdowns() {
+  // Force rebuild by clearing group markers, then render
+  const sel = document.getElementById('emailPersonSelect');
+  if (sel.options[0]) sel.options[0].dataset.group = '';
+  renderEmailPreview();
+}
+
+// ============================================================
+// FINANCIAL SUMMARY
+// ============================================================
+function renderFinancialSummary() {
+  const weekShifts = getWeekShifts();
+  const el = document.getElementById('financialSummary');
+  if (!el) return;
+
+  // Totals
+  let totalRevenue = 0, totalCost = 0, totalHours = 0;
+  let hasAnyRates = false;
+
+  // Per client
+  const clientTotals = {};
+  CLIENTS.filter(c=>c.active).forEach(c => { clientTotals[c.id] = { revenue:0, hours:0, hasRates:false }; });
+
+  // Per caregiver
+  const cgTotals = {};
+  CAREGIVERS.filter(g=>g.active).forEach(g => { cgTotals[g.id] = { cost:0, hours:0, hasRates:false }; });
+
+  weekShifts.forEach(shift => {
+    const hrs = shiftHours(shift);
+    totalHours += hrs;
+
+    const rev = shiftRevenue(shift);
+    if (rev !== null) {
+      totalRevenue += rev;
+      hasAnyRates = true;
+      if (clientTotals[shift.clientId]) {
+        clientTotals[shift.clientId].revenue += rev;
+        clientTotals[shift.clientId].hours += hrs;
+        clientTotals[shift.clientId].hasRates = true;
+      }
+    }
+
+    // Only primary caregiver costs
+    const primaryCg = shift.caregivers.find(c=>!c.isTraining);
+    if (primaryCg) {
+      const cost = shiftCost(shift);
+      if (cost !== null) {
+        totalCost += cost;
+        if (cgTotals[primaryCg.id]) {
+          cgTotals[primaryCg.id].cost += cost;
+          cgTotals[primaryCg.id].hours += hrs;
+          cgTotals[primaryCg.id].hasRates = true;
+        }
+      }
+    }
+  });
+
+  const margin = totalRevenue - totalCost;
+  const marginPct = totalRevenue > 0 ? Math.round((margin/totalRevenue)*100) : 0;
+  const laborRatio = totalRevenue > 0 ? Math.round((totalCost/totalRevenue)*100) : 0;
+
+  // Top cards
+  const revenueDisplay = hasAnyRates ? `$${totalRevenue.toFixed(2)}` : '—';
+  const costDisplay = hasAnyRates ? `$${totalCost.toFixed(2)}` : '—';
+  const marginDisplay = hasAnyRates ? `$${margin.toFixed(2)}` : '—';
+  const marginClass = margin >= 0 ? 'positive' : 'negative';
+  const laborRatioDisplay = hasAnyRates ? `${laborRatio}% labor ratio` : 'Enter rates on shifts to see financials';
+
+  // Client breakdown rows
+  let clientRows = '';
+  CLIENTS.filter(c=>c.active).forEach(c => {
+    const t = clientTotals[c.id];
+    if (!t.hasRates) {
+      clientRows += `<tr><td class="name-col">${c.name}</td><td class="hours-col">${t.hours > 0 ? t.hours.toFixed(1)+' hrs' : '—'}</td><td class="amount-col revenue">—</td></tr>`;
+    } else {
+      clientRows += `<tr><td class="name-col">${c.name}</td><td class="hours-col">${t.hours.toFixed(1)} hrs</td><td class="amount-col revenue">$${t.revenue.toFixed(2)}</td></tr>`;
+    }
+  });
+
+  // Caregiver breakdown rows
+  let cgRows = '';
+  CAREGIVERS.filter(g=>g.active).forEach(g => {
+    const t = cgTotals[g.id];
+    if (t.hours === 0) return;
+    if (!t.hasRates) {
+      cgRows += `<tr><td class="name-col">${g.name}</td><td class="hours-col">${t.hours.toFixed(1)} hrs</td><td class="amount-col cost">—</td></tr>`;
+    } else {
+      cgRows += `<tr><td class="name-col">${g.name}</td><td class="hours-col">${t.hours.toFixed(1)} hrs</td><td class="amount-col cost">$${t.cost.toFixed(2)}</td></tr>`;
+    }
+  });
+  if (!cgRows) cgRows = '<tr><td colspan="3" class="fin-no-rates">No shifts scheduled this week</td></tr>';
+
+  el.innerHTML = `
+    <div class="fin-summary">
+      <div class="fin-summary-header" onclick="toggleFinSummary()">
+        💰 Weekly Financial Summary
+        <span class="fin-summary-toggle" id="finToggleLabel">▼ Show</span>
+      </div>
+      <div class="fin-summary-body" id="finSummaryBody">
+        <div class="fin-top-row">
+          <div class="fin-top-card revenue">
+            <div class="fin-top-label">Total Revenue</div>
+            <div class="fin-top-value positive">${revenueDisplay}</div>
+            <div class="fin-top-sub">${weekShifts.length} shifts · ${totalHours.toFixed(1)} hrs</div>
+          </div>
+          <div class="fin-top-card cost">
+            <div class="fin-top-label">Total Labor Cost</div>
+            <div class="fin-top-value negative">${costDisplay}</div>
+            <div class="fin-top-sub">Primary caregivers only</div>
+          </div>
+          <div class="fin-top-card margin">
+            <div class="fin-top-label">Net Margin</div>
+            <div class="fin-top-value ${marginClass}">${marginDisplay}</div>
+            <div class="fin-top-sub">${hasAnyRates ? marginPct+'% margin · '+laborRatio+'% labor' : '—'}</div>
+          </div>
+          <div class="fin-top-card hours">
+            <div class="fin-top-label">Total Hours</div>
+            <div class="fin-top-value" style="color:#3B5BDB">${totalHours.toFixed(1)}</div>
+            <div class="fin-top-sub">across ${weekShifts.length} shifts</div>
+          </div>
+        </div>
+        ${!hasAnyRates ? `<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--amber);font-weight:600;margin-bottom:16px">⚠ Enter billing and pay rates on shifts to see financial totals</div>` : ''}
+        <div class="fin-breakdown-row">
+          <div>
+            <div class="fin-breakdown-title">Revenue by Client</div>
+            <table class="fin-breakdown-table">
+              <tbody>${clientRows}</tbody>
+              ${hasAnyRates ? `<tr style="border-top:2px solid var(--navy)"><td class="name-col" style="font-weight:700;color:var(--navy)">Total</td><td class="hours-col">${totalHours.toFixed(1)} hrs</td><td class="amount-col revenue" style="font-size:13px">$${totalRevenue.toFixed(2)}</td></tr>` : ''}
+            </table>
+          </div>
+          <div>
+            <div class="fin-breakdown-title">Labor Cost by Caregiver</div>
+            <table class="fin-breakdown-table">
+              <tbody>${cgRows}</tbody>
+              ${hasAnyRates ? `<tr style="border-top:2px solid var(--navy)"><td class="name-col" style="font-weight:700;color:var(--navy)">Total</td><td class="hours-col">${totalHours.toFixed(1)} hrs</td><td class="amount-col cost" style="font-size:13px">$${totalCost.toFixed(2)}</td></tr>` : ''}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleFinSummary() {
+  const body = document.getElementById('finSummaryBody');
+  const label = document.getElementById('finToggleLabel');
+  const isOpen = body.classList.toggle('open');
+  label.textContent = isOpen ? '▲ Hide' : '▼ Show';
+}
+
+
+function renderIntroMap() {
+  const activeClients = CLIENTS.filter(c=>c.active);
+  const activeCaregivers = CAREGIVERS.filter(g=>g.active);
+  const el = document.getElementById('introMapContent');
+
+  // Summary — per caregiver (collapsible to save space)
+  let summaryHtml = `<details style="margin-bottom:16px">
+    <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--navy);padding:8px 12px;background:var(--gray-100);border-radius:6px;border:1px solid var(--gray-200)">
+      📊 Caregiver Introduction Summary (click to expand)
+    </summary>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px">`;
+  activeCaregivers.forEach(cg => {
+    const count = cg.introductions.filter(id => activeClients.find(c=>c.id===id)).length;
+    const total = activeClients.length;
+    const pct = total > 0 ? Math.round((count/total)*100) : 0;
+    summaryHtml += `<div class="intro-summary-card">
+      <div class="intro-summary-name">${cg.name}</div>
+      <div class="intro-summary-count">${count} of ${total} clients</div>
+      <div class="intro-summary-bar-inner"><div class="intro-summary-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  summaryHtml += '</div></details>';
+
+  // Grid — clients as ROWS, caregivers as COLUMNS
+  const cgCount = activeCaregivers.length;
+  let gridHtml = `
+    <div style="overflow-x:auto;border:1px solid var(--gray-200);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+    <table style="border-collapse:collapse;background:var(--white);min-width:100%">
+    <thead>
+      <tr>
+        <th style="background:var(--navy);color:var(--white);padding:10px 14px;font-size:12px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;left:0;z-index:2;min-width:160px">Client</th>`;
+
+  activeCaregivers.forEach(cg => {
+    const certDot = cg.certStatus === 'certified'
+      ? '<span style="color:var(--gold);font-size:9px"> ✓</span>'
+      : '<span style="color:var(--amber);font-size:9px"> ⏳</span>';
+    // Split name for compact display
+    const nameParts = cg.name.split(' ');
+    const shortName = nameParts.length > 1 ? `${nameParts[0]}<br><span style="opacity:0.8">${nameParts.slice(1).join(' ')}</span>` : cg.name;
+    gridHtml += `<th style="background:var(--navy);color:var(--white);padding:8px 6px;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:80px;max-width:90px">${shortName}${certDot}</th>`;
+  });
+
+  gridHtml += '</tr></thead><tbody>';
+
+  // Client rows
+  activeClients.forEach((client, rowIdx) => {
+    const rowBg = rowIdx % 2 === 0 ? 'var(--white)' : 'var(--gray-100)';
+    const introCount = activeCaregivers.filter(cg => cg.introductions.includes(client.id)).length;
+    gridHtml += `<tr>
+      <td style="background:${rowBg};padding:8px 14px;font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap;position:sticky;left:0;z-index:1;border-bottom:1px solid var(--gray-200);border-right:2px solid var(--gold)">
+        ${client.name}
+        <div style="font-size:10px;font-weight:400;color:var(--gray-400)">${introCount} of ${activeCaregivers.length} caregivers</div>
+      </td>`;
+
+    activeCaregivers.forEach(cg => {
+      const introduced = cg.introductions.includes(client.id);
+      const certPending = cg.certStatus === 'in-process';
+      const genderBlock = client.genderPref !== 'none' && client.genderPref !== '' && cg.gender !== '' && client.genderPref !== cg.gender;
+
+      let btnClass = introduced ? 'introduced' : (certPending ? 'cert-pending' : 'not-introduced');
+      let btnContent = introduced ? '✓' : (certPending ? '⏳' : '');
+      let title = introduced
+        ? `${cg.name} introduced to ${client.name} — click to remove`
+        : certPending
+          ? `${cg.name} cert in process`
+          : `Mark ${cg.name} as introduced to ${client.name}`;
+      if (genderBlock && !introduced) title += ` ⚠ Client prefers ${client.genderPref}`;
+
+      const onclick = !certPending ? `toggleIntro('${cg.id}','${client.id}')` : '';
+      gridHtml += `<td style="background:${rowBg};padding:6px 4px;text-align:center;border-bottom:1px solid var(--gray-200);border-right:1px solid var(--gray-200)" onclick="${onclick}" title="${title}" ${!certPending ? 'style="cursor:pointer"' : ''}>
+        <button class="intro-toggle-btn ${btnClass}" title="${title}" style="width:32px;height:32px;font-size:14px" ${certPending ? 'disabled' : ''}>${btnContent}</button>
+        ${genderBlock && !introduced ? `<div style="font-size:9px;color:var(--amber);margin-top:2px">⚠</div>` : ''}
+      </td>`;
+    });
+
+    gridHtml += '</tr>';
+  });
+
+  gridHtml += '</tbody></table></div>';
+
+  const notesHtml = `<div style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--navy);margin-top:12px">
+    <strong>How to use:</strong> Click any cell to toggle introduction status.
+    ✓ Green = supervised handoff complete, caregiver can be independently scheduled.
+    ⏳ = cert in process — blocked until certified. ⚠ = client gender preference mismatch.
+  </div>`;
+
+  el.innerHTML = summaryHtml + gridHtml + notesHtml;
+}
+
+function toggleIntro(cgId, clientId) {
+  const cg = CAREGIVERS.find(g=>g.id===cgId);
+  if (!cg) return;
+  if (cg.introductions.includes(clientId)) {
+    if (!confirm(`Remove introduction record for ${cg.name} with ${getClient(clientId)?.name}? This will flag any existing scheduled shifts.`)) return;
+    cg.introductions = cg.introductions.filter(id=>id!==clientId);
+  } else {
+    cg.introductions.push(clientId);
+  }
+  saveData();
+  renderIntroMap();
+  renderAlerts();
+}
+
+
+// ============================================================
+// GOOGLE SHEETS SYNC — via Apps Script
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYUSUwaO7DmZXlPB6TKYntNAKoXi8TCc2fSBQYw5j13v1AjYhDDuZEoti7Qonc0dlbXQ/exec';
+
+async function syncFromSheets() {
+  const btn = document.getElementById('syncBtn');
+  btn.textContent = '🔄 Syncing...';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+
+    const freshCaregivers = parseCaregivers(data.caregivers);
+    const freshClients = parseClients(data.clients);
+
+    const mergedCaregivers = mergepeople(CAREGIVERS, freshCaregivers);
+    const mergedClients = mergepeople(CLIENTS, freshClients);
+
+    CAREGIVERS.length = 0;
+    mergedCaregivers.forEach(g => CAREGIVERS.push(g));
+    CLIENTS.length = 0;
+    mergedClients.forEach(c => CLIENTS.push(c));
+
+    await savePeopleData();
+    renderAll();
+
+    btn.textContent = '✅ Synced!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'white';
+    setTimeout(() => {
+      btn.textContent = '🔄 Sync from Sheets';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 3000);
+
+    alert(`✅ Sync complete!\n${CAREGIVERS.filter(g=>g.active).length} active caregivers\n${CLIENTS.filter(c=>c.active).length} active clients\n\nGender, introductions and pay rates preserved.`);
+
+  } catch(err) {
+    console.error('Sync error:', err);
+    btn.textContent = '🔄 Sync from Sheets';
+    btn.disabled = false;
+    alert('❌ Sync failed: ' + err.message);
+  }
+}
+
+
+function parseCaregivers(rows) {
+  const result = [];
+  const cell = (row, i) => String(row[i] || '').trim();
+  rows.slice(1).forEach(row => {
+    if (!row[0]) return;
+    const last = cell(row, 0);
+    if (!last || ['City','State','Zip Code'].includes(last)) return;
+    const isInactive = last.toLowerCase().startsWith('zzz');
+    const cleanLast = isInactive ? last.slice(3).trim() : last;
+    const first = cell(row, 1).replace(/\s*"[^"]*"\s*/g,' ').replace(/\s*\([^)]*\)\s*/g,' ').trim();
+    const phone = cell(row, 3);
+    const email = cell(row, 4);
+    const genderRaw = cell(row, 7).toLowerCase();
+    const gender = genderRaw.startsWith('f') ? 'female' : genderRaw.startsWith('m') ? 'male' : '';
+    const hireDate = cell(row, 9);
+    const hcaId = cell(row, 17);
+    const visitId = cell(row, 2);
+    const cert = hcaId && !['pending','','n/a'].includes(hcaId.toLowerCase()) ? 'certified' : 'in-process';
+    const cgId = 'g_' + (cleanLast+'_'+first).toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20);
+    result.push({
+      id: cgId, name: `${first} ${cleanLast}`.trim(),
+      email, phone, visitId, hireDate,
+      gender, certStatus: cert, hcaId,
+      payRate: null, transport: 'car',
+      notes: '', active: !isInactive, introductions: []
+    });
+  });
+  return result;
+}
+
+function parseClients(rows) {
+  const result = [];
+  const cell = (row, i) => String(row[i] || '').trim();
+  rows.slice(1).forEach(row => {
+    if (!row[2]) return;
+    const last = cell(row, 2);
+    if (!last || ['City','State','Zip Code','Acitve/Inactive','If Inactive- FILL Reason'].includes(last)) return;
+    const first = cell(row, 3).replace(/\s*"[^"]*"\s*/g,' ').replace(/\s*\([^)]*\)\s*/g,' ').trim();
+    if (last === 'Steele' && first === 'James') return;
+    const cleanLast = last === 'Westbrok' ? 'Westbrook' : last;
+    const code = cell(row, 0);
+    const isActive = cell(row, 16).toLowerCase() === 'active';
+    const inactiveReason = cell(row, 17);
+    const address = [cell(row,4), cell(row,5), cell(row,6), cell(row,7)].filter(Boolean).join(', ');
+    const email = cell(row, 11);
+    const phone = cell(row, 9);
+    const poaFirst = cell(row, 13);
+    const poaLast = cell(row, 12);
+    const relationship = cell(row, 15);
+    const poaPhone = cell(row, 14);
+    const homeSituation = cell(row, 8);
+    let contact = '';
+    if (poaFirst.toUpperCase() !== 'N/A' && poaLast.toUpperCase() !== 'N/A') {
+      const contactName = `${poaFirst} ${poaLast}`.trim();
+      contact = relationship ? `${relationship} \u2013 ${contactName}` : contactName;
+    }
+    const cid = 'c_' + (cleanLast+'_'+first).toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20);
+    result.push({
+      id: cid, code, name: `${first} ${cleanLast}`.trim(),
+      email, phone, address, homeSituation,
+      contact, contactPhone: poaPhone,
+      genderPref: 'none',
+      notes: isActive ? '' : inactiveReason,
+      active: isActive, introductions: []
+    });
+  });
+  return result;
+}
+
+function mergepeople(existing, fresh, type) {
+  // Preserve introductions, gender, payRate from existing
+  // Update name, email, phone, status from fresh
+  const merged = fresh.map(f => {
+    const ex = existing.find(e => e.id === f.id);
+    if (ex) {
+      return {
+        ...f,
+        introductions: ex.introductions || [],
+        gender: ex.gender || f.gender,
+        payRate: ex.payRate || f.payRate,
+        notes: ex.notes || f.notes,
+      };
+    }
+    return f;
+  });
+  // Keep any existing people not in fresh (edge case)
+  existing.forEach(e => {
+    if (!merged.find(m => m.id === e.id)) merged.push(e);
+  });
+  return merged;
+}
+
+
+function openExportModal() { document.getElementById('exportModal').classList.add('open'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('open'); }
+
+function downloadFile(filename, content, type='text/csv') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function shiftsToCSV(shiftList) {
+  const headers = ['Date','Client','Caregiver','Role','Start','End','Duration','Type','Client Rate','Caregiver Rate','Confirmed','Holiday','Notes'];
+  const rows = shiftList.map(s => {
+    const client = getClient(s.clientId);
+    const hrs = shiftHours(s);
+    const durLabel = s.type==='overnight' ? '8' : s.type==='livein' ? '24' : hrs.toFixed(1);
+    const typeLabels = {short:'Short',standard:'Standard',extended:'Extended',overnight:'Overnight',livein:'Live-In'};
+    return s.caregivers.map(c => {
+      const cg = getCaregiver(c.id);
+      return [
+        s.date,
+        client?.name || '',
+        cg?.name || '',
+        c.isTraining ? 'Training' : 'Primary',
+        formatTime(s.startTime),
+        formatTime(s.endTime),
+        durLabel,
+        typeLabels[s.type] || s.type,
+        s.clientRate ? (isHoliday(s.date) ? (s.clientRate*2).toFixed(2) : s.clientRate) : '',
+        s.caregiverRate ? (isHoliday(s.date) ? (s.caregiverRate*1.5).toFixed(2) : s.caregiverRate) : '',
+        s.confirmed ? 'Yes' : 'No',
+        isHoliday(s.date) ? getHolidayName(s.date) : '',
+        s.notes || ''
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+    }).join('\n');
+  });
+  return [headers.map(h=>`"${h}"`).join(','), ...rows].join('\n');
+}
+
+function exportWeekCSV() {
+  const weekShifts = getWeekShifts();
+  const end = addDays(currentWeekStart, 6);
+  const label = `${currentWeekStart.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}).replace(/\//g,'-')}`;
+  downloadFile(`GWCC_Schedule_Week_${label}.csv`, shiftsToCSV(weekShifts));
+  closeExportModal();
+}
+
+function exportAllShiftsCSV() {
+  const sorted = [...shifts].sort((a,b)=>a.date.localeCompare(b.date));
+  downloadFile(`GWCC_All_Shifts_${new Date().toISOString().split('T')[0]}.csv`, shiftsToCSV(sorted));
+  closeExportModal();
+}
+
+function exportCaregiversCSV() {
+  const headers = ['Name','Email','Phone','Gender','Cert Status','HCA ID','Pay Rate','Transport','Active','Clients Introduced','Notes'];
+  const rows = CAREGIVERS.map(g => [
+    g.name, g.email, g.phone, g.gender,
+    g.certStatus === 'certified' ? 'Certified' : 'In Process',
+    g.hcaId || '', g.payRate || '', g.transport,
+    g.active ? 'Active' : 'Inactive',
+    g.introductions.length,
+    g.notes || ''
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.map(h=>`"${h}"`).join(','), ...rows].join('\n');
+  downloadFile(`GWCC_Caregivers_${new Date().toISOString().split('T')[0]}.csv`, csv);
+  closeExportModal();
+}
+
+function exportClientsCSV() {
+  const headers = ['Name','Code','Email','Phone','Address','Home Situation','Contact','Contact Phone','Gender Pref','Active','Notes'];
+  const rows = CLIENTS.map(c => [
+    c.name, c.code||'', c.email, c.phone||'', c.address||'',
+    c.homeSituation||'', c.contact||'', c.contactPhone||'',
+    c.genderPref==='none'?'No preference':c.genderPref,
+    c.active?'Active':'Inactive', c.notes||''
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.map(h=>`"${h}"`).join(','), ...rows].join('\n');
+  downloadFile(`GWCC_Clients_${new Date().toISOString().split('T')[0]}.csv`, csv);
+  closeExportModal();
+}
+
+function exportFullBackup() {
+  const backup = {
+    exportDate: new Date().toISOString(),
+    version: '1.0',
+    clients: CLIENTS,
+    caregivers: CAREGIVERS,
+    shifts: shifts
+  };
+  downloadFile(
+    `GWCC_Full_Backup_${new Date().toISOString().split('T')[0]}.json`,
+    JSON.stringify(backup, null, 2),
+    'application/json'
+  );
+  closeExportModal();
+}
+
+
+let editingPersonType = null;
+let editingPersonId = null;
+
+function showPeopleTab(tab) {
+  document.getElementById('people-clients').style.display = tab === 'clients' ? 'block' : 'none';
+  document.getElementById('people-caregivers').style.display = tab === 'caregivers' ? 'block' : 'none';
+  document.getElementById('subtab-clients').classList.toggle('active', tab === 'clients');
+  document.getElementById('subtab-caregivers').classList.toggle('active', tab === 'caregivers');
+  if (tab === 'clients') renderClientsTable();
+  else renderCaregiversTable();
+}
+
+function renderClientsTable() {
+  const el = document.getElementById('clientsTableContent');
+  if (!el) return;
+  let html = `<table class="people-table"><thead><tr>
+    <th>Name</th><th>Contact Email</th><th>Contact Person</th><th>Gender Pref</th><th>Status</th>
+  </tr></thead><tbody>`;
+  if (CLIENTS.length === 0) {
+    html += '<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:24px">No clients yet — click Add Client to get started</td></tr>';
+  }
+  CLIENTS.forEach(c => {
+    const prefLabel = c.genderPref === 'none' ? 'No preference' : c.genderPref === 'female' ? '♀ Female' : '♂ Male';
+    html += `<tr class="${c.active ? '' : 'inactive'}" onclick="openPersonModal('client','${c.id}')">
+      <td style="font-weight:700;color:var(--navy)">${c.name}</td>
+      <td>${c.email || '—'}</td>
+      <td>${c.contact || '—'}</td>
+      <td>${prefLabel}</td>
+      <td><span class="active-badge ${c.active ? 'active' : 'inactive'}">${c.active ? 'Active' : 'Inactive'}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+  document.getElementById('subtab-clients').textContent = `👤 Clients (${CLIENTS.filter(c=>c.active).length})`;
+}
+
+function renderCaregiversTable() {
+  const el = document.getElementById('caregiversTableContent');
+  if (!el) return;
+  let html = `<table class="people-table"><thead><tr>
+    <th>Name</th><th>Email</th><th>Gender</th><th>Cert Status</th><th>Pay Rate</th><th>Intros</th><th>Status</th>
+  </tr></thead><tbody>`;
+  if (CAREGIVERS.length === 0) {
+    html += '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:24px">No caregivers yet — click Add Caregiver to get started</td></tr>';
+  }
+  CAREGIVERS.forEach(g => {
+    const certColor = g.certStatus === 'certified' ? 'var(--green)' : 'var(--amber)';
+    const certLabel = g.certStatus === 'certified' ? '✓ Certified' : '⏳ In Process';
+    html += `<tr class="${g.active ? '' : 'inactive'}" onclick="openPersonModal('caregiver','${g.id}')">
+      <td style="font-weight:700;color:var(--navy)">${g.name}</td>
+      <td>${g.email || '—'}</td>
+      <td>${g.gender === 'female' ? '♀ Female' : '♂ Male'}</td>
+      <td style="color:${certColor};font-weight:700">${certLabel}</td>
+      <td>${g.payRate ? '$'+g.payRate+'/hr' : '—'}</td>
+      <td>${g.introductions.length} of ${CLIENTS.filter(c=>c.active).length}</td>
+      <td><span class="active-badge ${g.active ? 'active' : 'inactive'}">${g.active ? 'Active' : 'Inactive'}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+  document.getElementById('subtab-caregivers').textContent = `🧑‍⚕️ Caregivers (${CAREGIVERS.filter(g=>g.active).length})`;
+}
+
+function openPersonModal(type, id) {
+  editingPersonType = type;
+  editingPersonId = id;
+  const isEdit = !!id;
+  document.getElementById('deletePersonBtn').style.display = isEdit ? 'inline-block' : 'none';
+
+  if (type === 'client') {
+    const c = isEdit ? CLIENTS.find(x=>x.id===id) : null;
+    document.getElementById('personModalTitle').textContent = isEdit ? 'Edit Client' : 'Add Client';
+    document.getElementById('personModalBody').innerHTML = `
+      <div class="form-row-2">
+        <div><label class="form-label">First Name <span class="required">*</span></label>
+          <input class="form-control" id="pFirstName" value="${c ? c.name.split(' ')[0] : ''}" placeholder="Margaret"></div>
+        <div><label class="form-label">Last Name <span class="required">*</span></label>
+          <input class="form-control" id="pLastName" value="${c ? c.name.split(' ').slice(1).join(' ') : ''}" placeholder="Roberts"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Contact Email</label>
+          <input class="form-control" id="pEmail" type="email" value="${c ? c.email || '' : ''}" placeholder="family@email.com"></div>
+        <div><label class="form-label">Contact Person</label>
+          <input class="form-control" id="pContact" value="${c ? c.contact || '' : ''}" placeholder="Daughter – Susan"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Caregiver Gender Preference</label>
+        <select class="form-control" id="pGenderPref">
+          <option value="none" ${(!c||c.genderPref==='none')?'selected':''}>No preference</option>
+          <option value="female" ${c&&c.genderPref==='female'?'selected':''}>Female caregiver only</option>
+          <option value="male" ${c&&c.genderPref==='male'?'selected':''}>Male caregiver only</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="pNotes" rows="2" placeholder="Special notes about this client">${c ? c.notes || '' : ''}</textarea>
+      </div>
+      ${isEdit ? `<div class="form-row"><label class="form-label">Status</label>
+        <select class="form-control" id="pActive">
+          <option value="1" ${c&&c.active?'selected':''}>Active</option>
+          <option value="0" ${c&&!c.active?'selected':''}>Inactive</option>
+        </select></div>` : ''}`;
+  } else {
+    const g = isEdit ? CAREGIVERS.find(x=>x.id===id) : null;
+    document.getElementById('personModalTitle').textContent = isEdit ? 'Edit Caregiver' : 'Add Caregiver';
+    document.getElementById('personModalBody').innerHTML = `
+      <div class="form-row-2">
+        <div><label class="form-label">First Name <span class="required">*</span></label>
+          <input class="form-control" id="pFirstName" value="${g ? g.name.split(' ')[0] : ''}" placeholder="Sandra"></div>
+        <div><label class="form-label">Last Name <span class="required">*</span></label>
+          <input class="form-control" id="pLastName" value="${g ? g.name.split(' ').slice(1).join(' ') : ''}" placeholder="Martinez"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Email <span class="required">*</span></label>
+          <input class="form-control" id="pEmail" type="email" value="${g ? g.email || '' : ''}" placeholder="caregiver@email.com"></div>
+        <div><label class="form-label">Phone</label>
+          <input class="form-control" id="pPhone" value="${g ? g.phone || '' : ''}" placeholder="(916) 555-0000"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Gender <span class="required">*</span></label>
+          <select class="form-control" id="pGender">
+            <option value="female" ${(!g||g.gender==='female')?'selected':''}>Female</option>
+            <option value="male" ${g&&g.gender==='male'?'selected':''}>Male</option>
+          </select></div>
+        <div><label class="form-label">Certification Status <span class="required">*</span></label>
+          <select class="form-control" id="pCertStatus">
+            <option value="certified" ${(!g||g.certStatus==='certified')?'selected':''}>Certified</option>
+            <option value="in-process" ${g&&g.certStatus==='in-process'?'selected':''}>In Process</option>
+          </select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Base Pay Rate ($/hr)</label>
+          <input class="form-control" id="pPayRate" type="number" step="0.01" value="${g ? g.payRate || '' : ''}" placeholder="20.00"></div>
+        <div><label class="form-label">Transportation</label>
+          <select class="form-control" id="pTransport">
+            <option value="car" ${(!g||g.transport==='car')?'selected':''}>Has car</option>
+            <option value="transit" ${g&&g.transport==='transit'?'selected':''}>Public transit</option>
+            <option value="both" ${g&&g.transport==='both'?'selected':''}>Both</option>
+          </select></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="pNotes" rows="2" placeholder="Any notes about this caregiver">${g ? g.notes || '' : ''}</textarea>
+      </div>
+      ${isEdit ? `<div class="form-row"><label class="form-label">Status</label>
+        <select class="form-control" id="pActive">
+          <option value="1" ${g&&g.active?'selected':''}>Active</option>
+          <option value="0" ${g&&!g.active?'selected':''}>Inactive</option>
+        </select></div>` : ''}`;
+  }
+  document.getElementById('personModal').classList.add('open');
+}
+
+function closePersonModal() {
+  document.getElementById('personModal').classList.remove('open');
+  editingPersonType = null;
+  editingPersonId = null;
+}
+
+function savePerson() {
+  const firstName = document.getElementById('pFirstName')?.value.trim();
+  const lastName = document.getElementById('pLastName')?.value.trim();
+  const email = document.getElementById('pEmail')?.value.trim();
+  if (!firstName || !lastName) { alert('Please enter first and last name.'); return; }
+
+  const fullName = `${firstName} ${lastName}`;
+  const isEdit = !!editingPersonId;
+  const activeVal = document.getElementById('pActive') ? document.getElementById('pActive').value === '1' : true;
+
+  if (editingPersonType === 'caregiver' && !email) { alert('Please enter an email address for the caregiver.'); return; }
+
+  if (editingPersonType === 'client') {
+    const data = {
+      name: fullName, email,
+      contact: document.getElementById('pContact')?.value.trim() || '',
+      genderPref: document.getElementById('pGenderPref')?.value || 'none',
+      notes: document.getElementById('pNotes')?.value.trim() || '',
+      active: activeVal,
+    };
+    if (isEdit) {
+      const idx = CLIENTS.findIndex(c=>c.id===editingPersonId);
+      if (idx >= 0) {
+        CLIENTS[idx] = { ...CLIENTS[idx], ...data };
+      } else {
+        return;
+      }
+    } else {
+      CLIENTS.push({ id:'c'+Date.now(), introductions:[], ...data });
+    }
+  } else {
+    const data = {
+      name: fullName, email,
+      phone: document.getElementById('pPhone')?.value.trim() || '',
+      gender: document.getElementById('pGender')?.value || 'female',
+      certStatus: document.getElementById('pCertStatus')?.value || 'certified',
+      payRate: parseFloat(document.getElementById('pPayRate')?.value) || null,
+      transport: document.getElementById('pTransport')?.value || 'car',
+      notes: document.getElementById('pNotes')?.value.trim() || '',
+      active: activeVal,
+    };
+    if (isEdit) {
+      const idx = CAREGIVERS.findIndex(g=>g.id===editingPersonId);
+      if (idx >= 0) {
+        CAREGIVERS[idx] = { ...CAREGIVERS[idx], ...data };
+      } else {
+        return;
+      }
+    } else {
+      CAREGIVERS.push({ id:'g'+Date.now(), introductions:[], ...data });
+    }
+  }
+
+  const savedType = editingPersonType;
+  savePeopleData();
+  closePersonModal();
+  populateDropdowns();
+  renderAll();
+  setTimeout(() => {
+    if (savedType === 'client') renderClientsTable();
+    else renderCaregiversTable();
+  }, 50);
+}
+
+function deletePerson() {
+  if (!editingPersonId || !editingPersonType) return;
+  const name = editingPersonType === 'client'
+    ? CLIENTS.find(c=>c.id===editingPersonId)?.name
+    : CAREGIVERS.find(g=>g.id===editingPersonId)?.name;
+  if (!confirm(`Deactivate ${name}? They will remain in the system but won't appear in scheduling dropdowns.`)) return;
+  if (editingPersonType === 'client') {
+    const idx = CLIENTS.findIndex(c=>c.id===editingPersonId);
+    if (idx >= 0) CLIENTS[idx].active = false;
+  } else {
+    const idx = CAREGIVERS.findIndex(g=>g.id===editingPersonId);
+    if (idx >= 0) CAREGIVERS[idx].active = false;
+  }
+  savePeopleData();
+  closePersonModal();
+  populateDropdowns();
+  renderAll();
+}
+
+async function savePeopleData() {
+  try {
+    await window.storage.set('gwcc-clients', JSON.stringify(CLIENTS));
+    await window.storage.set('gwcc-caregivers', JSON.stringify(CAREGIVERS));
+    showSaveIndicator();
+  } catch(e) { console.error('People save failed:', e); }
+}
+
+function renderAll() {
+  populateDropdowns();
+  renderCalendar();
+}
+
+// ============================================================
+// INIT — load from storage first, then render
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Show loading state briefly while storage loads
+  document.getElementById('calendarGrid').innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-400);font-size:13px">Loading your schedule...</div>';
+  loadData();
+});
+</script>
+<!-- PERSON MODAL -->
+<div class="modal-overlay" id="personModal">
+  <div class="modal" style="width:620px">
+    <div class="modal-header">
+      <div class="modal-title" id="personModalTitle">Add Client</div>
+      <button class="modal-close" onclick="closePersonModal()">✕</button>
+    </div>
+    <div class="modal-body" id="personModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closePersonModal()">Cancel</button>
+      <button class="btn btn-secondary" id="deletePersonBtn" onclick="deletePerson()" style="display:none;background:var(--red-light);color:var(--red)">🗑 Deactivate</button>
+      <button class="btn btn-primary" onclick="savePerson()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal" style="width:500px">
+    <div class="modal-header">
+      <div class="modal-title">💾 Export / Backup</div>
+      <button class="modal-close" onclick="closeExportModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:20px">Download your data as a backup or to share with your team. All exports reflect your current saved data.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="export-option" onclick="exportWeekCSV()">
+          <div class="export-icon">📅</div>
+          <div>
+            <div class="export-title">This Week's Schedule — CSV</div>
+            <div class="export-desc">Current week shifts with all details. Open in Excel or Google Sheets.</div>
+          </div>
+        </div>
+        <div class="export-option" onclick="exportAllShiftsCSV()">
+          <div class="export-icon">📊</div>
+          <div>
+            <div class="export-title">All Shifts — CSV</div>
+            <div class="export-desc">Complete shift history across all weeks. Full backup of schedule data.</div>
+          </div>
+        </div>
+        <div class="export-option" onclick="exportCaregiversCSV()">
+          <div class="export-icon">🧑‍⚕️</div>
+          <div>
+            <div class="export-title">Caregiver Roster — CSV</div>
+            <div class="export-desc">All caregivers with contact info, cert status, and pay rates.</div>
+          </div>
+        </div>
+        <div class="export-option" onclick="exportClientsCSV()">
+          <div class="export-icon">👤</div>
+          <div>
+            <div class="export-title">Client List — CSV</div>
+            <div class="export-desc">All clients with contact info, address, and family contacts.</div>
+          </div>
+        </div>
+        <div class="export-option" onclick="exportFullBackup()">
+          <div class="export-icon">🔒</div>
+          <div>
+            <div class="export-title">Full System Backup — JSON</div>
+            <div class="export-desc">Complete backup of all data. Use this to restore your system if needed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeExportModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
