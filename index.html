@@ -1057,7 +1057,7 @@
     <!-- SUB TABS -->
     <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--gray-200);padding-bottom:0">
       <button class="people-sub-tab active" id="subtab-clients" onclick="showPeopleTab('clients')">👤 Clients (${CLIENTS.length})</button>
-      <button class="people-sub-tab" id="subtab-caregivers" onclick="showPeopleTab('caregivers')">🧑‍⚕️ Caregivers (${CAREGIVERS.length})</button>
+      <button class="people-sub-tab" id="subtab-caregivers" onclick="showPeopleTab('caregivers')">🧑‍⚕️ Caregivers</button>
     </div>
 
     <!-- CLIENTS SUB PANEL -->
@@ -2361,7 +2361,11 @@ function showPanel(name) {
   if (name==='confirmations') renderConfirmations();
   if (name==='warnings') renderWarnings();
   if (name==='introductions') renderIntroMap();
-  if (name==='people') { renderClientsTable(); }
+  if (name==='people') { 
+    renderClientsTable(); 
+    document.getElementById('subtab-caregivers').textContent = `🧑‍⚕️ Caregivers (${CAREGIVERS.filter(g=>g.active).length})`;
+    document.getElementById('subtab-clients').textContent = `👤 Clients (${CLIENTS.filter(c=>c.active).length})`;
+  }
 }
 
 function populateEmailDropdowns() {
