@@ -1213,66 +1213,201 @@ let copyWeekOffset = null;
 let storageReady = false;
 
 // ============================================================
-// PERSISTENCE
+// SUPABASE CONNECTION
+// ============================================================
+const SUPABASE_URL = 'https://sodqfwqyhfgixpusdvwn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvZHFmd3F5aGZnaXhwdXNkdnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDA4NjQsImV4cCI6MjA5NzMxNjg2NH0.3JsW7KVNPagRakuzT83lAH75BQCPd8kdEv18bs_f72s';
+
+async function sbFetch(path, options = {}) {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': options.prefer || 'return=minimal',
+    ...options.headers
+  };
+  const resp = await fetch(url, { ...options, headers });
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error(`Supabase error: ${resp.status} ${err}`);
+  }
+  if (resp.status === 204) return null;
+  return resp.json();
+}
+
+// ============================================================
+// PERSISTENCE — Supabase
 // ============================================================
 async function saveData() {
   if (!storageReady) return;
   try {
-    await window.storage.set('gwcc-shifts', JSON.stringify(shifts));
-    await window.storage.set('gwcc-introductions', JSON.stringify(
-      CAREGIVERS.map(g => ({ id: g.id, introductions: g.introductions }))
-    ));
+    await saveShiftsToSupabase();
+    await saveIntrosToSupabase();
     showSaveIndicator();
-  } catch(e) { console.error('Save failed:', e); }
+  } catch(e) {
+    console.error('Save failed:', e);
+    // Fallback to localStorage
+    try {
+      localStorage.setItem('gwcc-shifts', JSON.stringify(shifts));
+      showSaveIndicator();
+    } catch(e2) { console.error('LocalStorage fallback failed:', e2); }
+  }
+}
+
+async function saveShiftsToSupabase() {
+  // Upsert all shifts
+  const rows = shifts.map(s => ({
+    id: s.id,
+    date: s.date,
+    client_id: s.clientId,
+    client_name: getClient(s.clientId)?.name || '',
+    caregivers: s.caregivers,
+    start_time: s.startTime,
+    end_time: s.endTime,
+    type: s.type,
+    client_rate: s.clientRate || null,
+    caregiver_rate: s.caregiverRate || null,
+    notes: s.notes || '',
+    confirmed: s.confirmed || false,
+    updated_at: new Date().toISOString()
+  }));
+  if (rows.length === 0) return;
+  await sbFetch('shifts', {
+    method: 'POST',
+    prefer: 'resolution=merge-duplicates,return=minimal',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify(rows)
+  });
+}
+
+async function saveIntrosToSupabase() {
+  const rows = [];
+  CAREGIVERS.forEach(cg => {
+    cg.introductions.forEach(clientId => {
+      rows.push({ caregiver_id: cg.id, client_id: clientId });
+    });
+  });
+  // Delete all then re-insert
+  await sbFetch('introductions', { method: 'DELETE', headers: { 'Prefer': '' } });
+  if (rows.length > 0) {
+    await sbFetch('introductions', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify(rows)
+    });
+  }
+}
+
+async function savePeopleData() {
+  try {
+    // Save caregiver overrides (gender, payRate, notes, active, introductions)
+    const cgRows = CAREGIVERS.map(g => ({
+      caregiver_id: g.id,
+      gender: g.gender || '',
+      pay_rate: g.payRate || null,
+      transport: g.transport || 'car',
+      notes: g.notes || '',
+      active: g.active !== false,
+      updated_at: new Date().toISOString()
+    }));
+    if (cgRows.length > 0) {
+      await sbFetch('caregiver_overrides', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(cgRows)
+      });
+    }
+    // Save client overrides
+    const clRows = CLIENTS.map(c => ({
+      client_id: c.id,
+      gender_pref: c.genderPref || 'none',
+      notes: c.notes || '',
+      active: c.active !== false,
+      updated_at: new Date().toISOString()
+    }));
+    if (clRows.length > 0) {
+      await sbFetch('client_overrides', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(clRows)
+      });
+    }
+    await saveIntrosToSupabase();
+    showSaveIndicator();
+  } catch(e) { console.error('People save failed:', e); }
 }
 
 async function loadData() {
   try {
-    const clientsResult = await window.storage.get('gwcc-clients');
-    if (clientsResult && clientsResult.value) {
-      const saved = JSON.parse(clientsResult.value);
-      // Merge: saved data wins for editable fields, hardcoded wins for new entries
-      saved.forEach(s => {
-        const idx = CLIENTS.findIndex(c => c.id === s.id);
-        if (idx >= 0) {
-          // Preserve editable fields from storage
-          CLIENTS[idx] = { ...CLIENTS[idx], ...s };
-        } else {
-          CLIENTS.push(s);
+    // Load shifts from Supabase
+    const dbShifts = await sbFetch('shifts?select=*&order=date.asc');
+    if (dbShifts && dbShifts.length > 0) {
+      shifts = dbShifts.map(s => ({
+        id: s.id,
+        date: s.date,
+        clientId: s.client_id,
+        caregivers: s.caregivers,
+        startTime: s.start_time,
+        endTime: s.end_time,
+        type: s.type,
+        clientRate: s.client_rate,
+        caregiverRate: s.caregiver_rate,
+        notes: s.notes || '',
+        confirmed: s.confirmed || false
+      }));
+    }
+
+    // Load introductions from Supabase
+    const dbIntros = await sbFetch('introductions?select=*');
+    if (dbIntros && dbIntros.length > 0) {
+      // Clear existing intros
+      CAREGIVERS.forEach(g => g.introductions = []);
+      dbIntros.forEach(row => {
+        const cg = CAREGIVERS.find(g => g.id === row.caregiver_id);
+        if (cg && !cg.introductions.includes(row.client_id)) {
+          cg.introductions.push(row.client_id);
         }
       });
     }
-    const caregiversResult = await window.storage.get('gwcc-caregivers');
-    if (caregiversResult && caregiversResult.value) {
-      const saved = JSON.parse(caregiversResult.value);
-      saved.forEach(s => {
-        const idx = CAREGIVERS.findIndex(g => g.id === s.id);
-        if (idx >= 0) {
-          // Preserve gender, payRate, introductions, notes from storage
-          CAREGIVERS[idx] = { ...CAREGIVERS[idx], ...s };
-        } else {
-          CAREGIVERS.push(s);
+
+    // Load caregiver overrides (gender, payRate etc)
+    const cgOverrides = await sbFetch('caregiver_overrides?select=*');
+    if (cgOverrides && cgOverrides.length > 0) {
+      cgOverrides.forEach(row => {
+        const cg = CAREGIVERS.find(g => g.id === row.caregiver_id);
+        if (cg) {
+          if (row.gender) cg.gender = row.gender;
+          if (row.pay_rate) cg.payRate = row.pay_rate;
+          if (row.transport) cg.transport = row.transport;
+          if (row.notes) cg.notes = row.notes;
+          cg.active = row.active !== false;
         }
       });
     }
-    const shiftsResult = await window.storage.get('gwcc-shifts');
-    if (shiftsResult && shiftsResult.value) {
-      shifts = JSON.parse(shiftsResult.value);
-    }
-    const introsResult = await window.storage.get('gwcc-introductions');
-    if (introsResult && introsResult.value) {
-      const saved = JSON.parse(introsResult.value);
-      saved.forEach(s => {
-        const cg = CAREGIVERS.find(g => g.id === s.id);
-        if (cg) cg.introductions = s.introductions;
+
+    // Load client overrides
+    const clOverrides = await sbFetch('client_overrides?select=*');
+    if (clOverrides && clOverrides.length > 0) {
+      clOverrides.forEach(row => {
+        const cl = CLIENTS.find(c => c.id === row.client_id);
+        if (cl) {
+          if (row.gender_pref) cl.genderPref = row.gender_pref;
+          if (row.notes) cl.notes = row.notes;
+          cl.active = row.active !== false;
+        }
       });
     }
+
   } catch(e) {
     console.error('Load error:', e);
+    // Fallback to localStorage
+    try {
+      const saved = localStorage.getItem('gwcc-shifts');
+      if (saved) shifts = JSON.parse(saved);
+    } catch(e2) {}
   }
-  // Always save current state so storage is up to date
   storageReady = true;
-  await savePeopleData();
   renderAll();
 }
 
@@ -2117,7 +2252,11 @@ function showModalError(msg) {
 function deleteShift() {
   if (!editingShiftId) return;
   if (!confirm('Delete this shift?')) return;
-  shifts = shifts.filter(s=>s.id!==editingShiftId);
+  const idToDelete = editingShiftId;
+  shifts = shifts.filter(s=>s.id!==idToDelete);
+  // Delete from Supabase
+  sbFetch(`shifts?id=eq.${idToDelete}`, { method: 'DELETE', headers: { 'Prefer': '' } })
+    .catch(e => console.error('Delete from Supabase failed:', e));
   closeShiftModal();
   saveData();
   renderAll();
