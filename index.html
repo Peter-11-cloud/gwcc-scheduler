@@ -2072,7 +2072,7 @@ async function markEmailSent() {
     setTimeout(() => { btn.disabled = false; btn.textContent = '✉️ Schedule Sent — Log It'; }, 2000);
   } catch(e) {
     console.error('Failed to log email send:', e);
-    alert('Failed to save — check console.');
+    alert('Failed to save: ' + e.message);
     btn.disabled = false;
     btn.textContent = '✉️ Schedule Sent — Log It';
   }
