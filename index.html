@@ -1243,11 +1243,10 @@ async function saveData() {
   if (!storageReady) return;
   try {
     await saveShiftsToSupabase();
-    await saveIntrosToSupabase();
+    // NOTE: Introductions saved separately via toggleIntro() only
     showSaveIndicator();
   } catch(e) {
     console.error('Save failed:', e);
-    // Fallback to localStorage
     try {
       localStorage.setItem('gwcc-shifts', JSON.stringify(shifts));
       showSaveIndicator();
@@ -1279,26 +1278,7 @@ async function saveShiftsToSupabase() {
   });
 }
 
-async function saveIntrosToSupabase() {
-  const rows = [];
-  CAREGIVERS.forEach(cg => {
-    cg.introductions.forEach(clientId => {
-      rows.push({ caregiver_id: cg.id, client_id: clientId });
-    });
-  });
-  // Delete all then re-insert
-  await sbFetch('introductions?caregiver_id=neq.null', {
-    method: 'DELETE',
-    headers: { 'Prefer': 'return=minimal' }
-  });
-  if (rows.length > 0) {
-    await sbFetch('introductions', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify(rows)
-    });
-  }
-}
+// Introductions are saved individually via toggleIntro() — no bulk save function needed
 
 async function savePeopleData() {
   try {
@@ -1332,7 +1312,8 @@ async function savePeopleData() {
         body: JSON.stringify(clRows)
       });
     }
-    await saveIntrosToSupabase();
+    // NOTE: Introductions are NOT saved here — they are only saved
+    // when explicitly toggled in the Introduction tab via toggleIntro()
     showSaveIndicator();
   } catch(e) { console.error('People save failed:', e); }
 }
@@ -2607,16 +2588,31 @@ function renderIntroMap() {
   el.innerHTML = summaryHtml + gridHtml + notesHtml;
 }
 
-function toggleIntro(cgId, clientId) {
+async function toggleIntro(cgId, clientId) {
   const cg = CAREGIVERS.find(g=>g.id===cgId);
   if (!cg) return;
   if (cg.introductions.includes(clientId)) {
     if (!confirm(`Remove introduction record for ${cg.name} with ${getClient(clientId)?.name}? This will flag any existing scheduled shifts.`)) return;
     cg.introductions = cg.introductions.filter(id=>id!==clientId);
+    // Delete this specific introduction from Supabase
+    try {
+      await sbFetch(`introductions?caregiver_id=eq.${cgId}&client_id=eq.${clientId}`, {
+        method: 'DELETE',
+        headers: { 'Prefer': 'return=minimal' }
+      });
+    } catch(e) { console.error('Failed to delete introduction:', e); }
   } else {
     cg.introductions.push(clientId);
+    // Insert this specific introduction to Supabase
+    try {
+      await sbFetch('introductions', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{ caregiver_id: cgId, client_id: clientId }])
+      });
+    } catch(e) { console.error('Failed to save introduction:', e); }
   }
-  saveData();
+  showSaveIndicator();
   renderIntroMap();
   renderAlerts();
 }
