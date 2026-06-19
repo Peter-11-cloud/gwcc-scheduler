@@ -2001,7 +2001,7 @@ Reliability · Dignity · Communication</textarea>
   }
 }
 
-function openInGmail(toEmail, type) {
+async function openInGmail(toEmail, type) {
   const subject = document.getElementById('emailSubject')?.value || '';
   const greeting = document.getElementById('emailGreeting')?.value || '';
   const opening = document.getElementById('emailOpening')?.value || '';
@@ -2023,9 +2023,26 @@ function openInGmail(toEmail, type) {
   });
 
   const body = `${greeting}\n\n${opening}\n\n${tableText}\n${closing}\n\n${signature}`;
-
   const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.open(gmailUrl, '_blank');
+
+  // Auto-log the send if this is a caregiver schedule
+  if (type === 'caregiver') {
+    const cgId = document.getElementById('emailPersonSelect').value;
+    const cg = getCaregiver(cgId);
+    if (cg) {
+      const weekStart = formatDate(currentWeekStart);
+      try {
+        await sbFetch('email_sends', {
+          method: 'POST',
+          headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify({ caregiver_id: cgId, caregiver_name: cg.name, week_start: weekStart, sent_at: new Date().toISOString(), sent_by: 'Lisa' })
+        });
+        emailSends = emailSends.filter(r => !(r.caregiver_id === cgId && r.week_start === weekStart));
+        emailSends.push({ caregiver_id: cgId, caregiver_name: cg.name, week_start: weekStart, sent_by: 'Lisa' });
+      } catch(e) { console.warn('Could not log email send:', e.message); }
+    }
+  }
 }
 
 function simulateConfirm(cgId) {
