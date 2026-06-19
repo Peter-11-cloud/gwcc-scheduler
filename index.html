@@ -1347,9 +1347,11 @@ async function loadData() {
       });
     }
 
-    // Load email send log
-    const dbSends = await sbFetch('email_sends?select=*');
-    if (dbSends) emailSends = dbSends;
+    // Load email send log (table may not exist yet)
+    try {
+      const dbSends = await sbFetch('email_sends?select=*&order=sent_at.desc');
+      if (dbSends) emailSends = dbSends;
+    } catch(e) { console.warn('email_sends table not found — skipping:', e.message); }
 
     // Load caregiver overrides (gender, payRate etc)
     const cgOverrides = await sbFetch('caregiver_overrides?select=*');
@@ -2084,20 +2086,25 @@ function renderConfirmations() {
   const weekStart = formatDate(currentWeekStart);
   const weekSends = emailSends.filter(r => r.week_start === weekStart);
 
-  // Section 1: Schedule sent status
-  const scheduledCgs = CAREGIVERS.filter(g => g.active && weekShifts.some(s => s.caregivers.some(c => c.id === g.id && !c.isTraining)));
+  // Section 1: Schedule sent — show all caregivers with shifts, plus anyone already logged
+  const scheduledCgIds = new Set(weekShifts.flatMap(s => s.caregivers.filter(c => !c.isTraining).map(c => c.id)));
+  weekSends.forEach(r => scheduledCgIds.add(r.caregiver_id)); // include anyone already logged even if week changed
+  const scheduledCgs = CAREGIVERS.filter(g => scheduledCgIds.has(g.id));
 
   let sentHtml = '<div class="confirm-tracker">';
-  scheduledCgs.forEach(cg => {
-    const sent = weekSends.find(r => r.caregiver_id === cg.id);
-    const cls = sent ? 'all-confirmed' : 'none';
-    const statusText = sent ? `✉️ Sent by ${sent.sent_by}` : '⏳ Not yet sent';
-    sentHtml += `<div class="confirm-card ${cls}">
-      <div class="confirm-name">${cg.name}</div>
-      <div class="confirm-status ${cls}" style="margin-top:6px">${statusText}</div>
-    </div>`;
-  });
-  if (scheduledCgs.length === 0) sentHtml += '<p style="color:var(--gray-400);font-size:13px">No caregivers scheduled this week.</p>';
+  if (scheduledCgs.length === 0) {
+    sentHtml += '<p style="color:var(--gray-400);font-size:13px">No caregivers scheduled this week.</p>';
+  } else {
+    scheduledCgs.forEach(cg => {
+      const sent = weekSends.find(r => r.caregiver_id === cg.id);
+      const cls = sent ? 'all-confirmed' : 'none';
+      const statusText = sent ? `✉️ Sent by ${sent.sent_by}` : '⏳ Not yet sent';
+      sentHtml += `<div class="confirm-card ${cls}">
+        <div class="confirm-name">${cg.name}</div>
+        <div class="confirm-status ${cls}" style="margin-top:6px">${statusText}</div>
+      </div>`;
+    });
+  }
   sentHtml += '</div>';
 
   // Section 2: Shift confirmation status
