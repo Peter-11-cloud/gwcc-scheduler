@@ -1006,7 +1006,7 @@
         <select class="form-control view-select" id="emailPersonSelect" onchange="renderEmailPreview()">
         </select>
       </div>
-      <button class="btn btn-primary" onclick="markEmailSent()">✉️ Mark as Sent (Lisa Reviewed)</button>
+      <button class="btn btn-primary" id="markSentBtn" onclick="markEmailSent()">✉️ Schedule Sent — Log It</button>
     </div>
     <div id="emailPreviewContent"></div>
   </div>
@@ -1202,6 +1202,7 @@ const CAREGIVERS = [{"id": "g_adamek_peter", "name": "Peter Adamek", "email": "p
 const DEFAULT_SHIFTS = [];
 
 let shifts = [...DEFAULT_SHIFTS];
+let emailSends = [];
 let currentWeekStart = getWeekStart(new Date());
 let editingShiftId = null;
 let copyWeekOffset = null;
@@ -1345,6 +1346,10 @@ async function loadData() {
         }
       });
     }
+
+    // Load email send log
+    const dbSends = await sbFetch('email_sends?select=*');
+    if (dbSends) emailSends = dbSends;
 
     // Load caregiver overrides (gender, payRate etc)
     const cgOverrides = await sbFetch('caregiver_overrides?select=*');
@@ -2031,8 +2036,44 @@ function simulateConfirm(cgId) {
   renderAll();
 }
 
-function markEmailSent() {
-  alert('✉️ Schedule marked as reviewed by Lisa. Ready to send.');
+async function markEmailSent() {
+  const type = document.getElementById('emailTypeSelect').value;
+  if (type !== 'caregiver') {
+    alert('Schedule logging is only tracked for caregiver schedules.');
+    return;
+  }
+  const personSel = document.getElementById('emailPersonSelect');
+  const cgId = personSel.value;
+  const cg = getCaregiver(cgId);
+  if (!cg) { alert('Please select a caregiver first.'); return; }
+
+  const weekStart = formatDate(currentWeekStart);
+  const btn = document.getElementById('markSentBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Logging…';
+
+  try {
+    await sbFetch('email_sends', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({
+        caregiver_id: cgId,
+        caregiver_name: cg.name,
+        week_start: weekStart,
+        sent_at: new Date().toISOString(),
+        sent_by: 'Lisa'
+      })
+    });
+    emailSends = emailSends.filter(r => !(r.caregiver_id === cgId && r.week_start === weekStart));
+    emailSends.push({ caregiver_id: cgId, caregiver_name: cg.name, week_start: weekStart, sent_by: 'Lisa' });
+    btn.textContent = '✓ Logged!';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '✉️ Schedule Sent — Log It'; }, 2000);
+  } catch(e) {
+    console.error('Failed to log email send:', e);
+    alert('Failed to save — check console.');
+    btn.disabled = false;
+    btn.textContent = '✉️ Schedule Sent — Log It';
+  }
 }
 
 // ============================================================
@@ -2040,21 +2081,52 @@ function markEmailSent() {
 // ============================================================
 function renderConfirmations() {
   const weekShifts = getWeekShifts();
-  let html = '<div class="confirm-tracker">';
-  CAREGIVERS.filter(g=>g.active).forEach(cg => {
-    const myShifts = weekShifts.filter(s=>s.caregivers.some(c=>c.id===cg.id&&!c.isTraining));
+  const weekStart = formatDate(currentWeekStart);
+  const weekSends = emailSends.filter(r => r.week_start === weekStart);
+
+  // Section 1: Schedule sent status
+  const scheduledCgs = CAREGIVERS.filter(g => g.active && weekShifts.some(s => s.caregivers.some(c => c.id === g.id && !c.isTraining)));
+
+  let sentHtml = '<div class="confirm-tracker">';
+  scheduledCgs.forEach(cg => {
+    const sent = weekSends.find(r => r.caregiver_id === cg.id);
+    const cls = sent ? 'all-confirmed' : 'none';
+    const statusText = sent ? `✉️ Sent by ${sent.sent_by}` : '⏳ Not yet sent';
+    sentHtml += `<div class="confirm-card ${cls}">
+      <div class="confirm-name">${cg.name}</div>
+      <div class="confirm-status ${cls}" style="margin-top:6px">${statusText}</div>
+    </div>`;
+  });
+  if (scheduledCgs.length === 0) sentHtml += '<p style="color:var(--gray-400);font-size:13px">No caregivers scheduled this week.</p>';
+  sentHtml += '</div>';
+
+  // Section 2: Shift confirmation status
+  let confirmHtml = '<div class="confirm-tracker">';
+  let anyConfirm = false;
+  scheduledCgs.forEach(cg => {
+    const myShifts = weekShifts.filter(s => s.caregivers.some(c => c.id === cg.id && !c.isTraining));
     if (myShifts.length === 0) return;
-    const confirmed = myShifts.filter(s=>s.confirmed).length;
+    anyConfirm = true;
+    const confirmed = myShifts.filter(s => s.confirmed).length;
     const statusClass = confirmed === myShifts.length ? 'all-confirmed' : (confirmed > 0 ? 'partial' : 'none');
     const statusText = confirmed === myShifts.length ? '✓ All shifts confirmed' : (confirmed > 0 ? `${confirmed}/${myShifts.length} confirmed` : 'Awaiting confirmation');
-    html += `<div class="confirm-card ${statusClass}">
+    confirmHtml += `<div class="confirm-card ${statusClass}">
       <div class="confirm-name">${cg.name}</div>
-      <div class="confirm-shifts">${myShifts.length} shift${myShifts.length!==1?'s':''} this week</div>
+      <div class="confirm-shifts">${myShifts.length} shift${myShifts.length !== 1 ? 's' : ''} this week</div>
       <div class="confirm-status ${statusClass}">${statusText}</div>
     </div>`;
   });
-  html += '</div>';
-  document.getElementById('confirmationContent').innerHTML = html;
+  if (!anyConfirm) confirmHtml += '<p style="color:var(--gray-400);font-size:13px">No shifts to confirm this week.</p>';
+  confirmHtml += '</div>';
+
+  document.getElementById('confirmationContent').innerHTML = `
+    <div class="section-title" style="font-size:15px;margin-bottom:12px">📬 Schedule Sent</div>
+    <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px">Logged when Lisa clicks "Schedule Sent — Log It" on the Send Schedule tab.</p>
+    ${sentHtml}
+    <div class="section-title" style="font-size:15px;margin-top:28px;margin-bottom:12px">✅ Shift Confirmations</div>
+    <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px">Caregivers confirm their shifts via one-click link in their schedule email.</p>
+    ${confirmHtml}
+  `;
 }
 
 // ============================================================
