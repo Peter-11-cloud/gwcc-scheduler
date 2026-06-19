@@ -1903,7 +1903,7 @@ function renderEmailPreview() {
         <div class="email-header-bar">
           <div class="email-field"><span class="label">TO:</span>${toName} &lt;${toEmail}&gt;</div>
           <div class="email-field"><span class="label">FROM:</span>Lisa — Geriatric Wellness & Caregiving of California</div>
-          <div class="email-field"><span class="label">SUBJECT:</span><input id="emailSubject" style="background:transparent;border:none;border-bottom:1px solid var(--gold);color:white;font-size:13px;width:60%;outline:none" value="Your Schedule — Week of ${weekStr}"></div>
+          <div class="email-field"><span class="label">SUBJECT:</span><input id="emailSubject" style="background:transparent;border:none;border-bottom:1px solid var(--gold);color:white;font-size:13px;width:60%;outline:none" value="Hi ${cg.name.split(' ')[0]} — your shifts for ${currentWeekStart.toLocaleDateString('en-US',{month:'long',day:'numeric'})}"></div>
         </div>
         <div class="email-body">
           <div class="form-row" style="margin-bottom:12px">
