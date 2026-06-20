@@ -564,6 +564,7 @@ function renderClients() {
         ${c.intake_date ? `<div class="meta-row"><span class="meta-label">Intake</span><span>${fmtDate(c.intake_date)}</span></div>` : ''}
         ${c.home_situation ? `<div class="meta-row"><span class="meta-label">Home</span><span>${c.home_situation}</span></div>` : ''}
         ${c.primary_contact_name ? `<div class="meta-row"><span class="meta-label">Contact</span><span>${c.primary_contact_name}${c.primary_contact_relation ? ' ('+c.primary_contact_relation+')' : ''}</span></div>` : ''}
+        ${c.primary_contact_phone ? `<div class="meta-row"><span class="meta-label">Phone</span><span><a href="tel:${c.primary_contact_phone}" onclick="event.stopPropagation()">${c.primary_contact_phone}</a></span></div>` : ''}
         ${urgentAlerts.length ? `<div class="meta-row" style="color:var(--red);font-size:11px;font-weight:600">⚠️ ${urgentAlerts[0]}</div>` : ''}
         ${daysToB !== null && daysToB <= 21 ? `<div class="meta-row" style="color:var(--amber);font-size:11px">🎂 Birthday in ${daysToB}d</div>` : ''}
       </div>
