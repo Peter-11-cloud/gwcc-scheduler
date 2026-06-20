@@ -29,69 +29,26 @@
     --font: 'Georgia', serif;
     --font-ui: 'Arial', sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-ui); background: var(--cream); color: var(--gray-800); min-height: 100vh; }
 
-  body {
-    font-family: var(--font-ui);
-    background: var(--cream);
-    color: var(--gray-800);
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  .header {
-    background: var(--navy);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid var(--gold);
-  }
+  .header { background: var(--navy); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--gold); }
   .header-brand { display: flex; align-items: center; gap: 14px; }
-  .header-logo {
-    height: 52px; width: auto; display: block;
-    background: white; border-radius: 6px; padding: 4px 8px;
-  }
-  .header-sub {
-    color: var(--gold); font-size: 11px;
-    letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;
-  }
-  .header-right { color: var(--gold-light); font-size: 13px; text-align: right; }
-  .header-nav-link {
-    color: var(--gold); font-size: 12px; text-decoration: none;
-    border: 1px solid var(--gold); border-radius: 4px;
-    padding: 4px 10px; display: inline-block;
-    transition: all 0.15s;
-  }
+  .header-logo { height: 52px; width: auto; display: block; background: white; border-radius: 6px; padding: 4px 8px; }
+  .header-sub { color: var(--gold); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+  .header-nav-link { color: var(--gold); font-size: 12px; text-decoration: none; border: 1px solid var(--gold); border-radius: 4px; padding: 4px 10px; transition: all 0.15s; }
   .header-nav-link:hover { background: var(--gold); color: var(--navy); }
 
-  /* NAV TABS */
-  .nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-    display: flex; padding: 0 28px; gap: 4px;
-  }
-  .nav-tab {
-    padding: 12px 20px; font-size: 13px; font-weight: 600;
-    color: var(--gray-600); cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.15s; letter-spacing: 0.3px;
-    background: none; border-top: none; border-left: none; border-right: none;
-  }
+  .nav { background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; padding: 0 28px; gap: 4px; }
+  .nav-tab { padding: 12px 20px; font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
   .nav-tab:hover { color: var(--navy); }
   .nav-tab.active { color: var(--navy); border-bottom-color: var(--gold); }
 
-  /* MAIN LAYOUT */
   .main { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* BUTTONS */
-  .btn {
-    padding: 8px 16px; border-radius: 6px; font-size: 13px;
-    font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
-  }
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
   .btn-primary { background: var(--navy); color: var(--white); }
   .btn-primary:hover { background: var(--gold); color: var(--navy); }
   .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
@@ -100,244 +57,125 @@
   .btn-gold:hover { background: var(--navy); color: var(--white); }
   .btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #f5c6c2; }
   .btn-danger:hover { background: var(--red); color: white; }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
   .btn-green { background: var(--green-light); color: var(--green); border: 1px solid #b3dfc5; }
   .btn-green:hover { background: var(--green); color: white; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
 
-  /* TOOLBAR */
-  .toolbar {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 20px; flex-wrap: wrap;
-  }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .search-box {
-    flex: 1; min-width: 220px; max-width: 380px;
-    padding: 8px 14px 8px 36px;
-    border: 1px solid var(--gray-200); border-radius: 6px;
-    font-size: 13px; background: var(--white);
+    flex: 1; min-width: 220px; max-width: 380px; padding: 8px 14px 8px 36px;
+    border: 1px solid var(--gray-200); border-radius: 6px; font-size: 13px;
+    background: var(--white); outline: none; transition: border-color 0.15s;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239B9BAD' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: 10px center;
-    outline: none;
   }
   .search-box:focus { border-color: var(--navy); }
-  .filter-btn {
-    padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: 1px solid var(--gray-200);
-    background: var(--white); color: var(--gray-600);
-    transition: all 0.15s;
-  }
+  .filter-btn { padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--gray-200); background: var(--white); color: var(--gray-600); transition: all 0.15s; }
   .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
 
   /* CLIENT GRID */
-  .clients-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-  .client-card {
-    background: var(--white); border-radius: 10px;
-    border: 1px solid var(--gray-200);
-    padding: 18px; cursor: pointer;
-    transition: all 0.15s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    position: relative;
-  }
+  .clients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+  .client-card { background: var(--white); border-radius: 10px; border: 1px solid var(--gray-200); padding: 18px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: relative; }
   .client-card:hover { border-color: var(--navy); box-shadow: 0 3px 12px rgba(27,43,75,0.12); transform: translateY(-1px); }
   .client-card.selected { border-color: var(--gold); box-shadow: 0 3px 12px rgba(201,168,76,0.2); }
   .client-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
   .client-name { font-size: 15px; font-weight: 700; color: var(--navy); font-family: var(--font); }
   .client-preferred { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
-  .status-badge {
-    font-size: 10px; font-weight: 700; padding: 3px 8px;
-    border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
+  .status-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
   .status-active { background: var(--green-light); color: var(--green); }
   .status-inactive { background: var(--gray-100); color: var(--gray-600); }
   .status-on-hold { background: var(--amber-light); color: var(--amber); }
-  .client-card-meta { font-size: 12px; color: var(--gray-600); line-height: 1.6; }
-  .client-card-meta .meta-row { display: flex; gap: 6px; align-items: baseline; }
-  .meta-label { color: var(--gray-400); font-size: 11px; min-width: 52px; }
+  .client-card-meta { font-size: 12px; color: var(--gray-600); line-height: 1.7; }
+  .meta-row { display: flex; gap: 6px; align-items: baseline; }
+  .meta-label { color: var(--gray-400); font-size: 11px; min-width: 56px; flex-shrink: 0; }
   .client-code { font-size: 10px; color: var(--gray-400); position: absolute; bottom: 10px; right: 14px; font-family: monospace; }
 
+  /* TOUCHPOINT PROGRESS BAR */
+  .touch-progress { margin-top: 10px; }
+  .touch-progress-bar { background: var(--gray-200); border-radius: 4px; height: 5px; overflow: hidden; }
+  .touch-progress-fill { background: var(--green); height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .touch-progress-label { font-size: 10px; color: var(--gray-400); margin-top: 3px; display: flex; justify-content: space-between; }
+
   /* DETAIL PANEL */
-  .detail-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.3);
-    z-index: 100; display: none; align-items: flex-start; justify-content: flex-end;
-  }
+  .detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; display: none; align-items: flex-start; justify-content: flex-end; }
   .detail-overlay.open { display: flex; }
-  .detail-panel {
-    width: 600px; max-width: 95vw; height: 100vh;
-    background: var(--white); overflow-y: auto;
-    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
-    display: flex; flex-direction: column;
-  }
-  .detail-header {
-    background: var(--navy); padding: 20px 24px;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    flex-shrink: 0;
-  }
+  .detail-panel { width: 660px; max-width: 98vw; height: 100vh; background: var(--white); overflow-y: auto; box-shadow: -4px 0 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+  .detail-header { background: var(--navy); padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0; }
   .detail-name { font-family: var(--font); font-size: 20px; color: white; }
   .detail-sub { color: var(--gold); font-size: 12px; margin-top: 4px; }
-  .detail-close {
-    background: none; border: none; color: white; font-size: 22px;
-    cursor: pointer; padding: 0 4px; line-height: 1; opacity: 0.7;
-  }
+  .detail-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1; opacity: 0.7; }
   .detail-close:hover { opacity: 1; }
-  .detail-tabs {
-    display: flex; border-bottom: 1px solid var(--gray-200);
-    padding: 0 24px; background: var(--gray-100); flex-shrink: 0;
-  }
-  .detail-tab {
-    padding: 10px 16px; font-size: 12px; font-weight: 600;
-    color: var(--gray-600); cursor: pointer;
-    border-bottom: 2px solid transparent;
-    background: none; border-top: none; border-left: none; border-right: none;
-    transition: all 0.15s;
-  }
+  .detail-tabs { display: flex; border-bottom: 1px solid var(--gray-200); padding: 0 24px; background: var(--gray-100); flex-shrink: 0; }
+  .detail-tab { padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
   .detail-tab.active { color: var(--navy); border-bottom-color: var(--gold); }
   .detail-body { padding: 20px 24px; flex: 1; }
-  .detail-section { margin-bottom: 22px; }
-  .detail-section-title {
-    font-size: 11px; font-weight: 700; color: var(--gray-400);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 10px; padding-bottom: 6px;
-    border-bottom: 1px solid var(--gray-200);
-  }
-  .detail-field { margin-bottom: 10px; }
-  .detail-field-label { font-size: 11px; color: var(--gray-400); margin-bottom: 2px; }
-  .detail-field-value { font-size: 13px; color: var(--gray-800); }
-  .detail-field-value.empty { color: var(--gray-400); font-style: italic; }
-  .detail-actions {
-    display: flex; gap: 8px; padding: 16px 24px;
-    border-top: 1px solid var(--gray-200); flex-shrink: 0;
-    background: var(--gray-100);
-  }
+  .detail-actions { display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--gray-200); flex-shrink: 0; background: var(--gray-100); }
 
-  /* FORM */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group.span-2 { grid-column: span 2; }
-  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); }
-  .form-input, .form-select, .form-textarea {
-    padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 5px;
-    font-size: 13px; font-family: var(--font-ui); color: var(--gray-800);
-    background: var(--white); outline: none; transition: border-color 0.15s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--navy); }
-  .form-textarea { resize: vertical; min-height: 70px; }
-  .form-section-divider {
-    grid-column: span 2; margin: 4px 0;
-    font-size: 11px; font-weight: 700; color: var(--gray-400);
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 8px 0 4px; border-bottom: 1px solid var(--gray-200);
-  }
+  .info-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .info-label { font-size: 12px; color: var(--gray-400); min-width: 120px; flex-shrink: 0; }
+  .info-value { font-size: 13px; color: var(--gray-800); flex: 1; }
+  .info-value a { color: var(--teal); text-decoration: none; }
+  .info-value a:hover { text-decoration: underline; }
+  .info-value.empty { color: var(--gray-400); font-style: italic; }
 
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-    z-index: 200; display: none; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--white); border-radius: 12px;
-    width: 100%; max-width: 720px; max-height: 90vh;
-    overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-  }
-  .modal-header {
-    background: var(--navy); padding: 18px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-radius: 12px 12px 0 0;
-  }
-  .modal-title { font-family: var(--font); font-size: 18px; color: white; }
-  .modal-close {
-    background: none; border: none; color: white; font-size: 22px;
-    cursor: pointer; padding: 0 4px; opacity: 0.7;
-  }
-  .modal-close:hover { opacity: 1; }
-  .modal-body { padding: 24px; }
-  .modal-footer {
-    display: flex; gap: 8px; justify-content: flex-end;
-    padding: 16px 24px; border-top: 1px solid var(--gray-200);
-  }
+  .section-header-sm { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
 
-  /* TOUCH LOG */
-  .touch-entry {
-    display: flex; gap: 14px; padding: 12px 0;
-    border-bottom: 1px solid var(--gray-200);
-    align-items: flex-start;
-  }
-  .touch-icon {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; flex-shrink: 0;
-  }
-  .touch-date { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
-  .touch-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
-  .touch-client { font-size: 11px; color: var(--teal); font-weight: 600; }
-  .touch-notes { font-size: 12px; color: var(--gray-600); margin-top: 3px; }
-  .touch-type-badge {
-    font-size: 10px; font-weight: 700; padding: 2px 7px;
-    border-radius: 8px; text-transform: uppercase; letter-spacing: 0.3px;
-  }
+  /* TOUCHPOINT CHECKLIST */
+  .tp-checklist { }
+  .tp-group { margin-bottom: 20px; }
+  .tp-group-title { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .tp-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; transition: background 0.1s; }
+  .tp-item:hover { background: var(--gray-100); }
+  .tp-item.done { opacity: 0.65; }
+  .tp-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--gray-300); cursor: pointer; appearance: none; -webkit-appearance: none; flex-shrink: 0; background: white; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .tp-checkbox:checked { background: var(--green); border-color: var(--green); }
+  .tp-checkbox:checked::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+  .tp-label { flex: 1; font-size: 13px; color: var(--gray-800); }
+  .tp-item.done .tp-label { text-decoration: line-through; color: var(--gray-400); }
+  .tp-due { font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+  .tp-due.overdue { color: var(--red); font-weight: 700; }
+  .tp-due.soon { color: var(--amber); font-weight: 700; }
+  .tp-due.done-date { color: var(--green); }
+  .tp-done-by { font-size: 10px; color: var(--gray-400); }
 
   /* ALERTS */
-  .alert-card {
-    background: var(--white); border-radius: 8px;
-    border: 1px solid var(--gray-200); padding: 14px 18px;
-    display: flex; gap: 14px; align-items: center;
-    margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
-  }
+  .alert-section { margin-bottom: 28px; }
+  .section-header { font-size: 14px; font-weight: 700; color: var(--navy); margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--gold); display: flex; align-items: center; gap: 8px; }
+  .count-chip { background: var(--navy); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .alert-card { background: var(--white); border-radius: 8px; border: 1px solid var(--gray-200); padding: 12px 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
   .alert-card:hover { border-color: var(--navy); }
   .alert-card.urgent { border-left: 4px solid var(--red); }
   .alert-card.warning { border-left: 4px solid var(--amber); }
   .alert-card.info { border-left: 4px solid var(--teal); }
-  .alert-icon { font-size: 22px; }
-  .alert-text .alert-title { font-size: 13px; font-weight: 700; color: var(--gray-800); }
-  .alert-text .alert-sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
-  .alert-days {
-    margin-left: auto; font-size: 12px; font-weight: 700;
-    padding: 4px 10px; border-radius: 10px;
-  }
+  .alert-icon { font-size: 20px; flex-shrink: 0; }
+  .alert-title { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .alert-sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
+  .alert-days { margin-left: auto; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
   .alert-days.urgent { background: var(--red-light); color: var(--red); }
   .alert-days.warning { background: var(--amber-light); color: var(--amber); }
   .alert-days.info { background: var(--teal-light); color: var(--teal); }
-
-  .section-header {
-    font-size: 14px; font-weight: 700; color: var(--navy);
-    margin: 20px 0 12px; padding-bottom: 8px;
-    border-bottom: 2px solid var(--gold);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .count-chip {
-    background: var(--navy); color: white;
-    font-size: 11px; padding: 2px 8px; border-radius: 10px;
-  }
-
-  .empty-state {
-    text-align: center; padding: 40px 20px;
-    color: var(--gray-400); font-size: 14px;
-  }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-400); font-size: 14px; }
   .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
 
-  /* SAVE INDICATOR */
-  .save-indicator {
-    position: fixed; bottom: 20px; right: 20px;
-    background: var(--green); color: white;
-    padding: 8px 16px; border-radius: 6px;
-    font-size: 12px; font-weight: 600;
-    opacity: 0; transition: opacity 0.3s;
-    z-index: 500; pointer-events: none;
-  }
-  .save-indicator.amber { background: var(--amber); }
-  .save-indicator.visible { opacity: 1; }
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 12px; width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
+  .modal-header { background: var(--navy); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-radius: 12px 12px 0 0; }
+  .modal-title { font-family: var(--font); font-size: 18px; color: white; }
+  .modal-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 0 4px; opacity: 0.7; }
+  .modal-close:hover { opacity: 1; }
+  .modal-body { padding: 24px; }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--gray-200); }
 
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .info-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .info-label { font-size: 12px; color: var(--gray-400); min-width: 100px; flex-shrink: 0; }
-  .info-value { font-size: 13px; color: var(--gray-800); flex: 1; }
-  .info-value a { color: var(--teal); text-decoration: none; }
-  .info-value a:hover { text-decoration: underline; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.span-2 { grid-column: span 2; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); }
+  .form-input, .form-select, .form-textarea { padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 5px; font-size: 13px; font-family: var(--font-ui); color: var(--gray-800); background: var(--white); outline: none; transition: border-color 0.15s; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--navy); }
+  .form-textarea { resize: vertical; min-height: 70px; }
+  .form-section-divider { grid-column: span 2; margin: 4px 0; font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; padding: 8px 0 4px; border-bottom: 1px solid var(--gray-200); }
 
   .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
   .tag-amber { background: var(--amber-light); color: var(--amber); }
@@ -346,77 +184,52 @@
   .tag-gray { background: var(--gray-100); color: var(--gray-600); }
   .tag-teal { background: var(--teal-light); color: var(--teal); }
 
-  .log-touch-row {
-    display: flex; gap: 10px; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid var(--gray-200);
-  }
+  .save-indicator { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: white; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 500; pointer-events: none; }
+  .save-indicator.amber { background: var(--amber); }
+  .save-indicator.visible { opacity: 1; }
 
-  @media (max-width: 768px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.span-2 { grid-column: span 1; }
-    .clients-grid { grid-template-columns: 1fr; }
-    .detail-panel { width: 100%; }
-  }
+  /* MARK DONE MINI-MODAL */
+  .done-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; display: none; align-items: center; justify-content: center; }
+  .done-modal.open { display: flex; }
+  .done-box { background: white; border-radius: 10px; padding: 24px; width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+  .done-box h3 { font-size: 15px; color: var(--navy); margin-bottom: 14px; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-brand">
     <img class="header-logo" src="GWCC-Logo-Transparent.png" alt="GWCC Logo">
-    <div>
-      <div class="header-sub">Client Management — Phase 1</div>
-    </div>
+    <div><div class="header-sub">Client Management — Phase 1</div></div>
   </div>
-  <div class="header-right">
-    <a href="index.html" class="header-nav-link">← Scheduler</a>
-  </div>
+  <a href="index.html" class="header-nav-link">← Scheduler</a>
 </div>
 
-<!-- NAV TABS -->
 <div class="nav">
-  <button class="nav-tab active" onclick="switchTab('clients')">👥 Clients</button>
-  <button class="nav-tab" onclick="switchTab('alerts')">🔔 Alerts</button>
-  <button class="nav-tab" onclick="switchTab('touchlog')">📋 Touch Log</button>
+  <button class="nav-tab active" onclick="switchTab('clients',this)">👥 Clients</button>
+  <button class="nav-tab" onclick="switchTab('alerts',this)">🔔 Alerts</button>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-  <!-- CLIENTS TAB -->
   <div id="panel-clients" class="panel active">
     <div class="toolbar">
-      <input class="search-box" type="text" id="clientSearch" placeholder="Search clients..." oninput="renderClients()">
+      <input class="search-box" type="text" id="clientSearch" placeholder="Search clients…" oninput="renderClients()">
       <button class="filter-btn active" id="filter-active" onclick="setFilter('active')">Active</button>
-      <button class="filter-btn" id="filter-inactive" onclick="setFilter('inactive')">Inactive</button>
+      <button class="filter-btn" id="filter-inactive" onclick="setFilter('inactive')">Inactive / On Hold</button>
       <button class="filter-btn" id="filter-all" onclick="setFilter('all')">All</button>
       <button class="btn btn-primary" style="margin-left:auto" onclick="openAddClient()">+ Add Client</button>
     </div>
     <div id="clientsGrid" class="clients-grid"></div>
   </div>
 
-  <!-- ALERTS TAB -->
   <div id="panel-alerts" class="panel">
     <div id="alertsContent"></div>
   </div>
-
-  <!-- TOUCH LOG TAB -->
-  <div id="panel-touchlog" class="panel">
-    <div class="toolbar">
-      <select id="touchlogFilter" class="form-select" style="width:220px" onchange="renderTouchLog()">
-        <option value="">All Clients</option>
-      </select>
-      <button class="btn btn-gold" style="margin-left:auto" onclick="openLogTouch(null)">+ Log a Touch</button>
-    </div>
-    <div id="touchlogContent"></div>
-  </div>
-
 </div>
 
 <!-- CLIENT DETAIL PANEL -->
 <div class="detail-overlay" id="detailOverlay" onclick="handleOverlayClick(event)">
-  <div class="detail-panel" id="detailPanel">
+  <div class="detail-panel">
     <div class="detail-header">
       <div>
         <div class="detail-name" id="detailName"></div>
@@ -425,10 +238,10 @@
       <button class="detail-close" onclick="closeDetail()">✕</button>
     </div>
     <div class="detail-tabs">
-      <button class="detail-tab active" onclick="switchDetailTab('overview')">Overview</button>
-      <button class="detail-tab" onclick="switchDetailTab('care')">Care</button>
-      <button class="detail-tab" onclick="switchDetailTab('contacts')">Contacts</button>
-      <button class="detail-tab" onclick="switchDetailTab('touches')">Touches</button>
+      <button class="detail-tab active" onclick="switchDetailTab('overview',this)">Overview</button>
+      <button class="detail-tab" onclick="switchDetailTab('touchpoints',this)">Touchpoints</button>
+      <button class="detail-tab" onclick="switchDetailTab('care',this)">Care</button>
+      <button class="detail-tab" onclick="switchDetailTab('contacts',this)">Contacts</button>
     </div>
     <div class="detail-body" id="detailBody"></div>
     <div class="detail-actions" id="detailActions"></div>
@@ -443,138 +256,53 @@
       <button class="modal-close" onclick="closeClientModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid" id="clientForm">
+      <div class="form-grid">
         <div class="form-section-divider">Basic Information</div>
-        <div class="form-group">
-          <label class="form-label">Full Name *</label>
-          <input class="form-input" id="f-full_name" placeholder="First Last" required>
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="f-full_name" placeholder="First Last"></div>
+        <div class="form-group"><label class="form-label">Preferred Name / Goes By</label><input class="form-input" id="f-preferred_name" placeholder="e.g., Bill, JJ"></div>
+        <div class="form-group"><label class="form-label">Client Code</label><input class="form-input" id="f-client_code" placeholder="e.g., WHIB041026"></div>
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="form-select" id="f-status"><option value="active">Active</option><option value="on-hold">On Hold</option><option value="inactive">Inactive</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Preferred Name / Goes by</label>
-          <input class="form-input" id="f-preferred_name" placeholder="e.g., Bill, Bobby">
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date" id="f-dob"></div>
+        <div class="form-group"><label class="form-label">Intake / Service Start Date</label><input class="form-input" type="date" id="f-intake_date"></div>
+        <div class="form-group"><label class="form-label">Client Phone</label><input class="form-input" id="f-client_phone" placeholder="916-555-0000"></div>
+        <div class="form-group"><label class="form-label">Client Email</label><input class="form-input" type="email" id="f-client_email"></div>
+        <div class="form-group span-2"><label class="form-label">Address</label><input class="form-input" id="f-address" placeholder="123 Main St, Roseville, CA 95661"></div>
+        <div class="form-group span-2"><label class="form-label">Home Situation</label><input class="form-input" id="f-home_situation" placeholder="e.g., Lives alone, Spouse – Jane, Assisted Living"></div>
+        <div class="form-group"><label class="form-label">Deposit Status</label>
+          <select class="form-select" id="f-deposit_status"><option value="received">Received</option><option value="pending">Pending</option><option value="waived">Waived</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Date of Birth</label>
-          <input class="form-input" type="date" id="f-dob">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="f-status">
-            <option value="active">Active</option>
-            <option value="on-hold">On Hold</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Service Start Date</label>
-          <input class="form-input" type="date" id="f-service_start_date">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Deposit Status</label>
-          <select class="form-select" id="f-deposit_status">
-            <option value="received">Received</option>
-            <option value="pending">Pending</option>
-            <option value="waived">Waived</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Client Phone</label>
-          <input class="form-input" id="f-client_phone" placeholder="916-555-0000">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Client Email</label>
-          <input class="form-input" type="email" id="f-client_email" placeholder="email@example.com">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Address</label>
-          <input class="form-input" id="f-address" placeholder="123 Main St, Roseville, CA 95661">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Home Situation</label>
-          <input class="form-input" id="f-home_situation" placeholder="e.g., Lives alone, Spouse – Jane, Assisted Living">
-        </div>
+        <div class="form-group"><label class="form-label">Referral Source</label><input class="form-input" id="f-referral_source" placeholder="e.g., Google, LeTip, Dr. Mandal"></div>
 
         <div class="form-section-divider">Care Information</div>
-        <div class="form-group span-2">
-          <label class="form-label">Care Needs / Diagnosis</label>
-          <textarea class="form-textarea" id="f-care_needs" placeholder="e.g., Dementia, fall risk, mobility assistance needed..."></textarea>
+        <div class="form-group span-2"><label class="form-label">Care Needs / Diagnosis</label><textarea class="form-textarea" id="f-care_needs" placeholder="e.g., Dementia, fall risk, mobility assistance…"></textarea></div>
+        <div class="form-group"><label class="form-label">Mobility / Fall Risk</label>
+          <select class="form-select" id="f-mobility_risk"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mobility / Fall Risk</label>
-          <select class="form-select" id="f-mobility_risk">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
+        <div class="form-group"><label class="form-label">Gender Preference</label>
+          <select class="form-select" id="f-gender_pref"><option value="none">No Preference</option><option value="female">Female</option><option value="male">Male</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Gender Preference for Caregiver</label>
-          <select class="form-select" id="f-gender_pref">
-            <option value="none">No Preference</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Language</label>
-          <input class="form-input" id="f-language" placeholder="English" value="English">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Client Code</label>
-          <input class="form-input" id="f-client_code" placeholder="e.g., WHIB041026">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Preferences / Special Notes</label>
-          <textarea class="form-textarea" id="f-preferences" placeholder="Dietary restrictions, pet allergies, routines, likes/dislikes..."></textarea>
-        </div>
+        <div class="form-group"><label class="form-label">Language</label><input class="form-input" id="f-language" value="English"></div>
+        <div class="form-group span-2"><label class="form-label">Preferences / Notes</label><textarea class="form-textarea" id="f-preferences" placeholder="Dietary, routines, likes/dislikes, special instructions…"></textarea></div>
 
         <div class="form-section-divider">Primary Contact</div>
-        <div class="form-group">
-          <label class="form-label">Primary Contact Name</label>
-          <input class="form-input" id="f-primary_contact_name" placeholder="Jane Doe">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Relationship</label>
-          <input class="form-input" id="f-primary_contact_relation" placeholder="e.g., Daughter, Spouse, Son">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Primary Contact Phone</label>
-          <input class="form-input" id="f-primary_contact_phone" placeholder="916-555-0000">
-        </div>
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="f-primary_contact_name"></div>
+        <div class="form-group"><label class="form-label">Relationship</label><input class="form-input" id="f-primary_contact_relation" placeholder="e.g., Daughter, Spouse"></div>
+        <div class="form-group span-2"><label class="form-label">Phone</label><input class="form-input" id="f-primary_contact_phone"></div>
 
         <div class="form-section-divider">Secondary Contact</div>
-        <div class="form-group">
-          <label class="form-label">Secondary Contact Name</label>
-          <input class="form-input" id="f-secondary_contact_name" placeholder="John Doe">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Relationship</label>
-          <input class="form-input" id="f-secondary_contact_relation" placeholder="e.g., Son, Power of Attorney">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Secondary Contact Phone</label>
-          <input class="form-input" id="f-secondary_contact_phone" placeholder="916-555-0000">
-        </div>
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="f-secondary_contact_name"></div>
+        <div class="form-group"><label class="form-label">Relationship</label><input class="form-input" id="f-secondary_contact_relation"></div>
+        <div class="form-group span-2"><label class="form-label">Phone</label><input class="form-input" id="f-secondary_contact_phone"></div>
 
-        <div class="form-section-divider">Billing Contact</div>
-        <div class="form-group">
-          <label class="form-label">Billing Contact Name</label>
-          <input class="form-input" id="f-billing_contact_name" placeholder="If different from primary">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Billing Contact Phone</label>
-          <input class="form-input" id="f-billing_contact_phone" placeholder="916-555-0000">
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Billing Contact Email</label>
-          <input class="form-input" type="email" id="f-billing_contact_email" placeholder="billing@example.com">
-        </div>
+        <div class="form-section-divider">Billing Contact (if different)</div>
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="f-billing_contact_name"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="f-billing_contact_phone"></div>
+        <div class="form-group span-2"><label class="form-label">Email</label><input class="form-input" type="email" id="f-billing_contact_email"></div>
 
-        <div class="form-section-divider">Notes</div>
-        <div class="form-group span-2">
-          <label class="form-label">Internal Notes</label>
-          <textarea class="form-textarea" id="f-notes" placeholder="Any internal notes..."></textarea>
-        </div>
+        <div class="form-section-divider">Internal Notes</div>
+        <div class="form-group span-2"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes"></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -584,81 +312,33 @@
   </div>
 </div>
 
-<!-- LOG TOUCH MODAL -->
-<div class="modal-overlay" id="touchModal">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-header">
-      <div class="modal-title">Log a Touch</div>
-      <button class="modal-close" onclick="closeTouchModal()">✕</button>
+<!-- MARK DONE MODAL -->
+<div class="done-modal" id="doneModal">
+  <div class="done-box">
+    <h3 id="doneModalTitle">Mark as Done</h3>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Date Completed</label>
+      <input class="form-input" type="date" id="doneDate">
     </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-group span-2">
-          <label class="form-label">Client *</label>
-          <select class="form-select" id="t-client_id" onchange="updateTouchClientName()">
-            <option value="">Select client...</option>
-          </select>
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Touch Type *</label>
-          <select class="form-select" id="t-touch_type">
-            <option value="quarterly-checkin">📞 Quarterly Check-in Call</option>
-            <option value="birthday-card">🎂 Birthday Card — Client</option>
-            <option value="family-birthday">🎂 Birthday Card — Family Member</option>
-            <option value="anniversary">🌟 Service Anniversary</option>
-            <option value="welcome-gift">🎁 Welcome Gift</option>
-            <option value="holiday-card">🎄 Holiday Card</option>
-            <option value="in-person-visit">🏠 In-Person Visit</option>
-            <option value="family-call">📱 Family/Contact Call</option>
-            <option value="custom">✏️ Other / Custom</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Date *</label>
-          <input class="form-input" type="date" id="t-touch_date">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Method</label>
-          <select class="form-select" id="t-method">
-            <option value="call">Phone Call</option>
-            <option value="card">Card / Mail</option>
-            <option value="visit">In-Person Visit</option>
-            <option value="email">Email</option>
-            <option value="gift">Gift Delivered</option>
-            <option value="text">Text Message</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Performed By</label>
-          <select class="form-select" id="t-performed_by">
-            <option value="Lisa">Lisa</option>
-            <option value="Peter">Peter</option>
-            <option value="Coordinator">Coordinator</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Outcome</label>
-          <select class="form-select" id="t-outcome">
-            <option value="completed">✅ Completed</option>
-            <option value="left-voicemail">📱 Left Voicemail</option>
-            <option value="no-answer">No Answer</option>
-            <option value="mailed">📬 Mailed</option>
-          </select>
-        </div>
-        <div class="form-group span-2">
-          <label class="form-label">Notes</label>
-          <textarea class="form-textarea" id="t-notes" placeholder="What was discussed, how they seemed, any follow-up needed..."></textarea>
-        </div>
-      </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Completed By</label>
+      <select class="form-select" id="doneBy">
+        <option value="Lisa">Lisa</option>
+        <option value="Peter">Peter</option>
+        <option value="Coordinator">Coordinator</option>
+      </select>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeTouchModal()">Cancel</button>
-      <button class="btn btn-gold" onclick="saveTouch()">Log Touch</button>
+    <div class="form-group" style="margin-bottom:18px">
+      <label class="form-label">Notes (optional)</label>
+      <input class="form-input" id="doneNotes" placeholder="Any notes…">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-secondary btn-sm" onclick="closeDoneModal()">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="confirmMarkDone()">✓ Mark Done</button>
     </div>
   </div>
 </div>
 
-<!-- SAVE INDICATOR -->
 <div class="save-indicator" id="saveIndicator">✓ Saved</div>
 
 <script>
@@ -670,129 +350,168 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 async function sbFetch(path, options = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json',
-    ...options.headers
-  };
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...options.headers };
   const resp = await fetch(url, { ...options, headers });
-  if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(`Supabase error: ${resp.status} ${err}`);
-  }
+  if (!resp.ok) { const err = await resp.text(); throw new Error(`Supabase ${resp.status}: ${err}`); }
   if (resp.status === 204 || resp.status === 201) return null;
   const text = await resp.text();
   return text ? JSON.parse(text) : null;
 }
 
 // ============================================================
-// SEED DATA — existing clients from scheduler
+// TOUCHPOINT DEFINITIONS
+// ============================================================
+const TP_TYPES = [
+  // Time-based from intake date
+  { key: 'day1-call',          label: '24-Hour Follow-Up Call',            icon: '📞', group: 'Onboarding',  daysFromIntake: 1 },
+  { key: 'day3-letter',        label: '3-Day Welcome Letter',              icon: '✉️', group: 'Onboarding',  daysFromIntake: 3 },
+  { key: 'day5-call',          label: 'Day 5 Follow-Up Call',              icon: '📞', group: 'Onboarding',  daysFromIntake: 5 },
+  { key: 'day5-physician',     label: 'Day 5 Physician Notification Letter',icon: '🏥', group: 'Onboarding',  daysFromIntake: 5 },
+  { key: 'day14-survey',       label: 'Day 14 Satisfaction Survey',        icon: '📋', group: 'Onboarding',  daysFromIntake: 14 },
+  { key: 'day30-visit',        label: 'Day 30 Check-In Call / Home Visit', icon: '🏠', group: 'Onboarding',  daysFromIntake: 30 },
+  { key: 'month3-survey',      label: '3-Month Satisfaction Survey',       icon: '📋', group: 'Ongoing',     daysFromIntake: 90 },
+  { key: 'month6-survey',      label: '6-Month Satisfaction Survey',       icon: '📋', group: 'Ongoing',     daysFromIntake: 180 },
+  { key: 'month9-survey',      label: '9-Month Satisfaction Survey',       icon: '📋', group: 'Ongoing',     daysFromIntake: 270 },
+  { key: 'month12-survey',     label: '12-Month Satisfaction Survey',      icon: '📋', group: 'Ongoing',     daysFromIntake: 365 },
+  { key: 'anniversary-1',      label: '1-Year Service Anniversary',        icon: '🌟', group: 'Ongoing',     daysFromIntake: 365 },
+  { key: 'anniversary-2',      label: '2-Year Service Anniversary',        icon: '🌟', group: 'Ongoing',     daysFromIntake: 730 },
+  // Date-based (fixed annual / special)
+  { key: 'welcome-gift',       label: 'Client Welcome Gift',               icon: '🎁', group: 'Special',     daysFromIntake: 7 },
+  { key: 'birthday',           label: 'Birthday Card',                     icon: '🎂', group: 'Special',     annual: 'dob' },
+  { key: 'christmas',          label: 'Christmas Card / Gift',             icon: '🎄', group: 'Special',     annual: '12-25' },
+  { key: 'valentine',          label: "Valentine's Card (Feb 14)",         icon: '💝', group: 'Special',     annual: '02-14' },
+  { key: 'holiday-gift',       label: 'Holiday Gift (December)',           icon: '🎁', group: 'Special',     annual: '12-15' },
+  // Event-based
+  { key: 'care-ends',          label: 'Care Ends Letter',                  icon: '📄', group: 'Events',      manual: true },
+  { key: 'sympathy',           label: 'Sympathy Card (if passes)',         icon: '🕊️', group: 'Events',      manual: true },
+  { key: 'discharge',          label: 'Discharge Letter',                  icon: '📄', group: 'Events',      manual: true },
+];
+
+function calculateDueDate(tp, client) {
+  if (!tp) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yr = today.getFullYear();
+
+  if (tp.daysFromIntake !== undefined && client.intake_date) {
+    const d = new Date(client.intake_date);
+    d.setDate(d.getDate() + tp.daysFromIntake);
+    return d.toISOString().split('T')[0];
+  }
+  if (tp.annual === 'dob' && client.dob) {
+    const [, m, day] = client.dob.split('-');
+    let d = new Date(yr, +m - 1, +day);
+    if (d < today) d = new Date(yr + 1, +m - 1, +day);
+    return d.toISOString().split('T')[0];
+  }
+  if (tp.annual && tp.annual !== 'dob') {
+    const [m, day] = tp.annual.split('-').map(Number);
+    let d = new Date(yr, m - 1, day);
+    if (d < today) d = new Date(yr + 1, m - 1, day);
+    return d.toISOString().split('T')[0];
+  }
+  return null;
+}
+
+// ============================================================
+// SEED DATA — from ClientRT spreadsheet
 // ============================================================
 const SEED_CLIENTS = [
-  {id:'c_white_bill',full_name:'Bill White',client_phone:'650-796-8853',client_email:'jlynnsmo@gmail.com',address:'5040 Whisper Way, Granite Bay, CA 95746',home_situation:'Spouse – Janice',primary_contact_name:'Janice White',primary_contact_relation:'Spouse',primary_contact_phone:'650-796-8853',status:'active',client_code:'WHIB041026'},
-  {id:'c_woods_bob',full_name:'Bob Woods',client_phone:'',client_email:'bwoods@nwtf.net',address:'11276 Stanford Court Lane #508, Gold River, CA 95670',home_situation:'Lives with Grandson Hunter',primary_contact_name:'Barry Woods',primary_contact_relation:'Son',primary_contact_phone:'620-417-0692',status:'active',client_code:'WOOR111625'},
-  {id:'c_demauro_catherine',full_name:'Catherine DeMauro',client_phone:'916-989-3999',client_email:'yecatsketaws@yahoo.com',address:'116 Grey Canyon Drive, Folsom, CA 95630',home_situation:'Lives Alone',primary_contact_name:'Stacey Huie',primary_contact_relation:'Daughter',primary_contact_phone:'925-324-5823',status:'active',client_code:'DEMC063025'},
-  {id:'c_evangelho_darlene',full_name:'Darlene Evangelho',client_phone:'916-534-0605',client_email:'ddgoodies@icloud.com',address:'8077 Olive Place, Granite Bay, CA 95746',home_situation:'Spouse – Daryl',primary_contact_name:'Daryl Evangelho',primary_contact_relation:'Spouse',primary_contact_phone:'916-534-0605',status:'active',client_code:'EVAD012426'},
-  {id:'c_klassen_dennis',full_name:'Dennis Klassen',client_phone:'805-742-7220',client_email:'kklassen04@gmail.com',address:'2596 Francisco Drive, El Dorado Hills, CA 95762',home_situation:'Spouse – Terry',primary_contact_name:'Matt Klassen',primary_contact_relation:'Son',primary_contact_phone:'',status:'active',client_code:'KLAD120225'},
-  {id:'c_christner_devin',full_name:'Devin Christner',client_phone:'916-797-3622',client_email:'christnerfamily5@gmail.com',address:'5005 Chelshire Downs Road, Granite Bay, CA 95746',home_situation:'Parents – Richard / Annie',primary_contact_name:'Richard Christner',primary_contact_relation:'Father',primary_contact_phone:'916-300-6626',status:'active',client_code:'CHRD092424'},
-  {id:'c_fujimoto_ed',full_name:'Ed Fujimoto',client_phone:'916-698-4355',client_email:'sharonfj@gmail.com',address:'6528 Garland Way, Roseville, CA 95747',home_situation:'Spouse – Karen',primary_contact_name:'Sharon Fujimoto-Johnson',primary_contact_relation:'Daughter',primary_contact_phone:'916-698-4355',status:'active',client_code:'FUJE122925'},
-  {id:'c_parrish_elaine',full_name:'Elaine Parrish',client_phone:'',client_email:'arenglish12@gmail.com',address:'1745 Green Valley Road, Yuba City, CA 95993',home_situation:'Lives with Friend (Ingrid)',primary_contact_name:'Andrea English',primary_contact_relation:'Daughter',primary_contact_phone:'510-530-2304',status:'active',client_code:''},
-  {id:'c_revitt_evelyn',full_name:'Evelyn Revitt',client_phone:'916-927-4955',client_email:'vibrationtravel@gmail.com',address:'720 Dunbarton Circle, Sacramento, CA 95825',home_situation:'Lives Alone',primary_contact_name:'Evonne Reveitt',primary_contact_relation:'Daughter',primary_contact_phone:'916-995-9506',status:'active',client_code:'REVE022626'},
-  {id:'c_wright_gene',full_name:'Gene Wright',client_phone:'510-949-1677',client_email:'philup1@hotmail.com',address:'707 Sunrise Ave #242, Roseville, CA 95661',home_situation:'Lives alone — Assisted Living',primary_contact_name:'Philip Wright',primary_contact_relation:'Son',primary_contact_phone:'510-320-0698',status:'active',client_code:'WRIG707'},
-  {id:'c_gaston_ingrid',full_name:'Ingrid Gaston',client_phone:'',client_email:'mercator154@gmail.com',address:'1745 Green Valley Road, Yuba City, CA 95993',home_situation:'Lives with Friend (Elaine)',primary_contact_name:'Stefan Gaston',primary_contact_relation:'Son',primary_contact_phone:'408-528-5132',status:'active',client_code:''},
-  {id:'c_steele_jim',full_name:'Jim Steele',client_phone:'916-712-8989',client_email:'pamelasteeleengman@gmail.com',address:'2615 Third Street, Lincoln, CA 95648',home_situation:'',primary_contact_name:'Pamela Engman',primary_contact_relation:'Daughter',primary_contact_phone:'916-712-8989',status:'active',client_code:'STEJ041726'},
-  {id:'c_lopez_joan',full_name:'Joan Lopez',client_phone:'916-967-5876',client_email:'joanlopez978@yahoo.com',address:'5312 Bee Jay Court, Fair Oaks, CA 95628',home_situation:'Lives Alone',primary_contact_name:'',primary_contact_relation:'',primary_contact_phone:'',status:'active',client_code:'LOPJ112425'},
-  {id:'c_jang_lenora',full_name:'Lenora Jang',client_phone:'916-245-2680',client_email:'teacherjang23@att.net',address:'18 Kado Ct. Room #1121, Sacramento, CA 95831',home_situation:'Assisted Living Facility',primary_contact_name:'Terri Jang-Hefner',primary_contact_relation:'Daughter',primary_contact_phone:'916-995-8240',status:'active',client_code:'JANL042326'},
-  {id:'c_robinson_leonard',full_name:'Leonard Robinson',client_phone:'',client_email:'gigi@repfuel.com',address:'500 J Street #1710, Sacramento, CA 95814',home_situation:'Spouse – Jeanne Haskell Robinson',primary_contact_name:'Jeanne Haskell-Robinson',primary_contact_relation:'Spouse',primary_contact_phone:'916-837-4451',status:'active',client_code:''},
-  {id:'c_farman_peggy',full_name:'Peggy Farman',client_phone:'510-517-4490',client_email:'jerryfarman@gmail.com',address:'5500 Freeman Circle, Rocklin, CA 95677',home_situation:'Spouse – Jerry',primary_contact_name:'Jerry Farman',primary_contact_relation:'Spouse',primary_contact_phone:'510-579-3230',status:'active',client_code:'FARP011325'},
-  {id:'c_carelli_ron',full_name:'Ron Carelli',client_phone:'916-207-9990',client_email:'jcarelli@gmail.com',address:'1134 Longhorn Lane, Lincoln, CA 95648',home_situation:'Spouse – Julia',primary_contact_name:'Julia Carelli',primary_contact_relation:'Spouse',primary_contact_phone:'916-207-9990',status:'active',client_code:''},
-  {id:'c_richardson_dean',full_name:'Dean Richardson',client_phone:'916-521-7755',client_email:'Linda1@mycci.net',address:'4403 Whitland Court, Rocklin, CA 95677',home_situation:'Spouse – Linda',primary_contact_name:'Linda Richardson',primary_contact_relation:'Spouse',primary_contact_phone:'916-316-4201',status:'active',client_code:'RICD051926'},
-  {id:'c_westbrook_beverly',full_name:'Beverly Westbrook',client_phone:'916-718-4491',client_email:'bnbwestbrook@gmail.com',address:'7421 Westgate Drive, Citrus Heights, CA 95610',home_situation:'Lives alone — own home',primary_contact_name:'Natalie Rickman',primary_contact_relation:'Daughter',primary_contact_phone:'916-803-2950',status:'active',client_code:'WESB052126'},
-  // Inactive clients
-  {id:'c_camarlinghi_al',full_name:'Al Camarlinghi',client_phone:'408-821-6995',client_email:'klcamarlinghi@gmail.com',address:'4053 Harlington Circle, El Dorado Hills, CA 95762',home_situation:'Lives with Daughter',primary_contact_name:'Khristine Camarlinghi',primary_contact_relation:'Daughter',primary_contact_phone:'408-821-6995',status:'inactive',notes:'No longer needed',client_code:''},
-  {id:'c_westbrook_robert',full_name:'Robert Westbrook',client_phone:'916-967-1345',client_email:'bnbwestbrook@gmail.com',address:'7421 Westgate Drive, Citrus Heights, CA 95610',home_situation:'Spouse – Beverly',primary_contact_name:'Beverly Westbrook',primary_contact_relation:'Spouse',primary_contact_phone:'916-967-1345',status:'inactive',notes:'Expired',client_code:'WESB7421'},
-  {id:'c_knipp_debbie',full_name:'Debbie Knipp',client_phone:'925-787-5613',client_email:'arniek1240@comcast.net',address:'715 Stockman Lane, Lincoln, CA 95648',home_situation:'Spouse – Arnie',primary_contact_name:'Arnie Knipp',primary_contact_relation:'Spouse',primary_contact_phone:'925-787-5613',status:'inactive',notes:'Moved to ALF',client_code:''},
-  {id:'c_hada_gary',full_name:'Gary Hada',client_phone:'916-719-0900',client_email:'akacejay@comcast.net',address:'4239 Arnold Way, Mather, CA 95655',home_situation:'Spouse – Carole',primary_contact_name:'Carole Hada',primary_contact_relation:'Spouse',primary_contact_phone:'916-803-0109',status:'inactive',notes:'Moved to ALF',client_code:'HADG052525'},
-  {id:'c_thomas_jim',full_name:'Jim Thomas',client_phone:'916-300-5312',client_email:'coinin4@yahoo.com',address:'1871 Hidden View Lane, Roseville, CA 95661',home_situation:'Spouse – Sheri',primary_contact_name:'Sheri Thomas',primary_contact_relation:'Spouse',primary_contact_phone:'916-300-5312',status:'on-hold',notes:'On Hold',client_code:'THOJ082825'},
-  {id:'c_scoville_sandra',full_name:'Sandra Scoville',client_phone:'916-727-3428',client_email:'sscoville@pestcontrolcenter.com',address:'8448 Cobble Creek Lane, Orangevale, CA 95662',home_situation:'Lives Alone',primary_contact_name:'Steve Scoville',primary_contact_relation:'Son',primary_contact_phone:'916-601-7300',status:'on-hold',notes:'On Hold',client_code:'SCOS031325'},
+  {id:'c_christner_devin',  full_name:'Devin Christner',  preferred_name:'',          client_code:'CHRD092424', dob:'2002-11-08', intake_date:'2024-09-24', referral_source:'Friend/Antoinette', address:'5005 Chelshire Downs Road, Granite Bay, CA 95746', home_situation:'Parents – Richard / Annie', client_phone:'916-797-3622', client_email:'christnerfamily5@gmail.com', primary_contact_name:'Richard Christner', primary_contact_relation:'Father', primary_contact_phone:'916-300-6626', status:'active'},
+  {id:'c_farman_peggy',     full_name:'Peggy Farman',     preferred_name:'',          client_code:'FARP011325', dob:'1943-05-21', intake_date:'2025-01-13', referral_source:'LeTip', address:'5500 Freeman Circle, Rocklin, CA 95677', home_situation:'Spouse – Jerry', client_phone:'510-517-4490', client_email:'jerryfarman@gmail.com', primary_contact_name:'Jerry Farman', primary_contact_relation:'Spouse', primary_contact_phone:'510-579-3230', status:'active'},
+  {id:'c_hada_gary',        full_name:'Gary Hada',        preferred_name:'',          client_code:'HADG052525', dob:'1939-05-25', intake_date:'2025-05-25', referral_source:'Mercy SNF Team/Aggie', address:'4239 Arnold Way, Mather, CA 95655', home_situation:'Spouse – Carole', client_phone:'916-719-0900', client_email:'akacejay@comcast.net', primary_contact_name:'Carole Hada', primary_contact_relation:'Spouse', primary_contact_phone:'916-803-0109', status:'inactive', notes:'Moved to ALF'},
+  {id:'c_smith_mary',       full_name:'Mary Smith',       preferred_name:'',          client_code:'SMIM061225', dob:'1953-02-15', intake_date:'2025-06-12', referral_source:'Social Media', address:'2564 Ranchland Way, Roseville, CA 95747', home_situation:'Son – Matt', client_phone:'714-336-9627', client_email:'smithmat@surewest.net', primary_contact_name:'Matt Smith', primary_contact_relation:'Son', primary_contact_phone:'714-336-9627', status:'inactive', notes:'Moved to ALF'},
+  {id:'c_thomas_jim',       full_name:'Jim Thomas',       preferred_name:'',          client_code:'THOJ082825', dob:null, intake_date:'2025-08-28', referral_source:'Friend/Shannon', address:'1871 Hidden View Lane, Roseville, CA 95661', home_situation:'Spouse – Sheri', client_phone:'916-300-5312', client_email:'coinin4@yahoo.com', primary_contact_name:'Sheri Thomas', primary_contact_relation:'Spouse', primary_contact_phone:'916-300-5312', status:'on-hold', notes:'On Hold'},
+  {id:'c_demauro_catherine',full_name:'Catherine DeMauro',preferred_name:'JJ',        client_code:'DEMC063025', dob:'1942-09-03', intake_date:'2025-06-30', referral_source:'Bellestar Home Health', address:'116 Grey Canyon Drive, Folsom, CA 95630', home_situation:'Lives Alone', client_phone:'916-989-3999', client_email:'yecatsketaws@yahoo.com', primary_contact_name:'Stacey Huie', primary_contact_relation:'Daughter', primary_contact_phone:'925-324-5823', status:'active'},
+  {id:'c_woods_bob',        full_name:'Bob Woods',        preferred_name:'Bob',       client_code:'WOOR111625', dob:'1938-07-18', intake_date:'2025-11-16', referral_source:'Mark Smith PT (Council)', address:'11276 Stanford Court Lane #508, Gold River, CA 95670', home_situation:'Lives with Grandson Hunter', client_phone:'', client_email:'bwoods@nwtf.net', primary_contact_name:'Barry Woods', primary_contact_relation:'Son', primary_contact_phone:'620-417-0692', status:'active'},
+  {id:'c_klassen_dennis',   full_name:'Dennis Klassen',   preferred_name:'',          client_code:'KLAD120225', dob:'1944-03-24', intake_date:'2025-12-02', referral_source:'Cindy Melkee', address:'2596 Francisco Drive, El Dorado Hills, CA 95762', home_situation:'Spouse – Terry', client_phone:'805-742-7220', client_email:'kklassen04@gmail.com', primary_contact_name:'Matt Klassen', primary_contact_relation:'Son', primary_contact_phone:'', status:'active'},
+  {id:'c_fujimoto_ed',      full_name:'Ed Fujimoto',      preferred_name:'',          client_code:'FUJE122925', dob:'1942-12-16', intake_date:'2025-12-29', referral_source:'Google', address:'6528 Garland Way, Roseville, CA 95747', home_situation:'Spouse – Karen', client_phone:'916-698-4355', client_email:'sharonfj@gmail.com', primary_contact_name:'Sharon Fujimoto-Johnson', primary_contact_relation:'Daughter', primary_contact_phone:'916-698-4355', status:'active'},
+  {id:'c_wright_gene',      full_name:'Gene Wright',      preferred_name:'',          client_code:'WRIG020426', dob:'1940-05-03', intake_date:'2026-02-04', referral_source:'Council', address:'707 Sunrise Ave #242, Roseville, CA 95661', home_situation:'Lives alone – Assisted Living', client_phone:'510-949-1677', client_email:'philup1@hotmail.com', primary_contact_name:'Philip Wright', primary_contact_relation:'Son', primary_contact_phone:'510-320-0698', status:'active'},
+  {id:'c_fujimoto_karen',   full_name:'Karen Fujimoto',   preferred_name:'',          client_code:'FUJK021226', dob:'1941-12-11', intake_date:'2026-02-12', referral_source:'Google', address:'6528 Garland Way, Roseville, CA 95747', home_situation:'Spouse – Ed', client_phone:'916-698-4355', client_email:'sharonfj@gmail.com', primary_contact_name:'Sharon Fujimoto-Johnson', primary_contact_relation:'Daughter', primary_contact_phone:'916-698-4355', status:'active'},
+  {id:'c_carelli_ron',      full_name:'Ron Carelli',      preferred_name:'',          client_code:'CARR021526', dob:'1944-11-25', intake_date:'2026-02-15', referral_source:'Google', address:'1134 Longhorn Lane, Lincoln, CA 95648', home_situation:'Spouse – Julia', client_phone:'916-207-9990', client_email:'jcarelli@gmail.com', primary_contact_name:'Julia Carelli', primary_contact_relation:'Spouse', primary_contact_phone:'916-207-9990', status:'active'},
+  {id:'c_parrish_elaine',   full_name:'Elaine Parrish',   preferred_name:'',          client_code:'PARE032626', dob:'1937-08-23', intake_date:'2026-03-26', referral_source:'Dr. Mandal', address:'1745 Green Valley Road, Yuba City, CA 95993', home_situation:'Lives with Friend (Ingrid)', client_phone:'', client_email:'arenglish12@gmail.com', primary_contact_name:'Andrea English', primary_contact_relation:'Daughter', primary_contact_phone:'510-530-2304', status:'active'},
+  {id:'c_gaston_ingrid',    full_name:'Ingrid Gaston',    preferred_name:'',          client_code:'GASI032626', dob:'1939-07-29', intake_date:'2026-03-26', referral_source:'Dr. Mandal', address:'1745 Green Valley Road, Yuba City, CA 95993', home_situation:'Lives with Friend (Elaine)', client_phone:'', client_email:'mercator154@gmail.com', primary_contact_name:'Stefan Gaston', primary_contact_relation:'Son', primary_contact_phone:'408-528-5132', status:'active'},
+  {id:'c_robinson_leonard', full_name:'Leonard Robinson', preferred_name:'Len',       client_code:'ROBL040126', dob:'1938-04-29', intake_date:'2026-04-01', referral_source:'Cindy Melkee', address:'500 J Street #1710, Sacramento, CA 95814', home_situation:'Spouse – Jeanne Haskell Robinson', client_phone:'', client_email:'gigi@repfuel.com', primary_contact_name:'Jeanne Haskell-Robinson', primary_contact_relation:'Spouse', primary_contact_phone:'916-837-4451', status:'active'},
+  {id:'c_white_bill',       full_name:'Bill White',       preferred_name:'',          client_code:'WHIB041026', dob:'1954-01-19', intake_date:'2026-04-06', referral_source:'Class-PANC', address:'5040 Whisper Way, Granite Bay, CA 95746', home_situation:'Spouse – Janice', client_phone:'650-796-8853', client_email:'jlynnsmo@gmail.com', primary_contact_name:'Janice White', primary_contact_relation:'Spouse', primary_contact_phone:'650-796-8853', status:'active'},
+  {id:'c_steele_jim',       full_name:'Jim Steele',       preferred_name:'Jim',       client_code:'STEJ041726', dob:'1940-01-23', intake_date:'2026-04-17', referral_source:'', address:'2615 Third Street, Lincoln, CA 95648', home_situation:'', client_phone:'916-712-8989', client_email:'pamelasteeleengman@gmail.com', primary_contact_name:'Pamela Engman', primary_contact_relation:'Daughter', primary_contact_phone:'916-712-8989', status:'active'},
+  {id:'c_evangelho_darlene',full_name:'Darlene Evangelho',preferred_name:'',          client_code:'EVAD012426', dob:'1948-11-14', intake_date:'2026-01-24', referral_source:'Andrew (wealth manager)', address:'8077 Olive Place, Granite Bay, CA 95746', home_situation:'Spouse – Daryl', client_phone:'916-534-0605', client_email:'ddgoodies@icloud.com', primary_contact_name:'Daryl Evangelho', primary_contact_relation:'Spouse', primary_contact_phone:'916-534-0605', status:'active'},
+  {id:'c_revitt_evelyn',    full_name:'Evelyn Revitt',    preferred_name:'',          client_code:'REVE022626', dob:'1926-05-17', intake_date:'2026-02-26', referral_source:'Homa Rostami', address:'720 Dunbarton Circle, Sacramento, CA 95825', home_situation:'Lives Alone', client_phone:'916-927-4955', client_email:'vibrationtravel@gmail.com', primary_contact_name:'Evonne Reveitt', primary_contact_relation:'Daughter', primary_contact_phone:'916-995-9506', status:'active'},
+  {id:'c_lopez_joan',       full_name:'Joan Lopez',       preferred_name:'',          client_code:'LOPJ112425', dob:'1943-04-16', intake_date:'2026-01-12', referral_source:'Homa Rostami', address:'5312 Bee Jay Court, Fair Oaks, CA 95628', home_situation:'Lives Alone', client_phone:'916-967-5876', client_email:'joanlopez978@yahoo.com', primary_contact_name:'', primary_contact_relation:'', primary_contact_phone:'', status:'active'},
+  {id:'c_jang_lenora',      full_name:'Lenora Jang',      preferred_name:'',          client_code:'JANL042326', dob:'1937-03-04', intake_date:'2026-04-23', referral_source:'', address:'18 Kado Ct. Room #1121, Sacramento, CA 95831', home_situation:'Assisted Living Facility', client_phone:'916-245-2680', client_email:'teacherjang23@att.net', primary_contact_name:'Terri Jang-Hefner', primary_contact_relation:'Daughter', primary_contact_phone:'916-995-8240', status:'active'},
+  {id:'c_westbrook_beverly',full_name:'Beverly Westbrook',preferred_name:'',          client_code:'WESB052126', dob:'1934-11-03', intake_date:'2026-05-21', referral_source:'', address:'7421 Westgate Drive, Citrus Heights, CA 95610', home_situation:'Lives alone – own home', client_phone:'916-718-4491', client_email:'bnbwestbrook@gmail.com', primary_contact_name:'Natalie Rickman', primary_contact_relation:'Daughter', primary_contact_phone:'916-803-2950', status:'active'},
+  {id:'c_richardson_dean',  full_name:'Dean Richardson',  preferred_name:'',          client_code:'RICD051926', dob:'1956-05-07', intake_date:'2026-05-19', referral_source:'', address:'4403 Whitland Court, Rocklin, CA 95677', home_situation:'Spouse – Linda', client_phone:'916-521-7755', client_email:'Linda1@mycci.net', primary_contact_name:'Linda Richardson', primary_contact_relation:'Spouse', primary_contact_phone:'916-316-4201', status:'active'},
+  {id:'c_anatolia_belita',  full_name:'Belita Anatolia',  preferred_name:'',          client_code:'ANAB051726', dob:'1960-01-13', intake_date:'2026-05-17', referral_source:'', address:'', home_situation:'', client_phone:'', client_email:'', primary_contact_name:'', primary_contact_relation:'', primary_contact_phone:'', status:'active'},
+  {id:'c_foster_david',     full_name:'David Foster',     preferred_name:'',          client_code:'FOSD051826', dob:'1941-05-20', intake_date:'2026-05-18', referral_source:'', address:'', home_situation:'', client_phone:'', client_email:'', primary_contact_name:'', primary_contact_relation:'', primary_contact_phone:'', status:'active'},
+  {id:'c_sickert_paul',     full_name:'Paul Sickert',     preferred_name:'',          client_code:'SICP052626', dob:'1958-04-05', intake_date:'2026-05-26', referral_source:'', address:'', home_situation:'', client_phone:'', client_email:'', primary_contact_name:'', primary_contact_relation:'', primary_contact_phone:'', status:'active'},
+  // Inactive / On-Hold
+  {id:'c_scoville_sandra',  full_name:'Sandra Scoville',  preferred_name:'',          client_code:'SCOS031325', dob:null, intake_date:'2025-03-13', referral_source:'LeTip', address:'8448 Cobble Creek Lane, Orangevale, CA 95662', home_situation:'Lives Alone', client_phone:'916-727-3428', client_email:'sscoville@pestcontrolcenter.com', primary_contact_name:'Steve Scoville', primary_contact_relation:'Son', primary_contact_phone:'916-601-7300', status:'on-hold', notes:'On Hold'},
 ];
 
 // ============================================================
 // STATE
 // ============================================================
 let clients = [];
-let touches = [];
+let touchpoints = []; // all client_touchpoints rows
 let currentFilter = 'active';
 let selectedClientId = null;
 let currentDetailTab = 'overview';
 let editingClientId = null;
+let pendingDoneTP = null; // {tpKey, clientId, existingId}
 
 // ============================================================
 // INIT
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
+  showSaveIndicator('Loading…', true);
   await loadData();
   renderClients();
   renderAlerts();
-  renderTouchLog();
-  populateTouchClientDropdown();
-  populateTouchlogFilterDropdown();
 });
 
 async function loadData() {
-  // Load clients
   try {
     const rows = await sbFetch('clients?select=*&order=full_name.asc');
     if (rows && rows.length > 0) {
       clients = rows;
     } else {
-      // Seed from built-in data on first load
-      clients = SEED_CLIENTS.map(c => ({
-        language: 'English', gender_pref: 'none', mobility_risk: 'low',
-        deposit_status: 'received', ...c,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }));
-      // Push seed data to Supabase
-      try {
-        for (const c of clients) {
-          await sbFetch('clients', {
-            method: 'POST',
-            headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-            body: JSON.stringify(c)
-          });
-        }
-      } catch(e) { console.warn('Seed upload partial:', e); }
+      await seedClients();
     }
   } catch(e) {
-    console.warn('Could not load clients from Supabase:', e);
-    clients = SEED_CLIENTS.map(c => ({
-      language: 'English', gender_pref: 'none', mobility_risk: 'low',
-      deposit_status: 'received', ...c
-    }));
+    console.warn('Supabase clients load failed, using seed:', e);
+    clients = SEED_CLIENTS.map(c => ({ language:'English', gender_pref:'none', mobility_risk:'low', deposit_status:'received', ...c }));
   }
 
-  // Load touches
   try {
-    const rows = await sbFetch('client_touches?select=*&order=touch_date.desc');
-    touches = rows || [];
+    const rows = await sbFetch('client_touchpoints?select=*&order=due_date.asc');
+    touchpoints = rows || [];
   } catch(e) {
-    console.warn('Could not load touches:', e);
-    touches = [];
+    console.warn('client_touchpoints table not found — run SQL setup first.', e);
+    touchpoints = [];
   }
+
+  showSaveIndicator('✓ Loaded');
+}
+
+async function seedClients() {
+  clients = SEED_CLIENTS.map(c => ({
+    language: 'English', gender_pref: 'none', mobility_risk: 'low', deposit_status: 'received',
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString(), ...c
+  }));
+  try {
+    for (const c of clients) {
+      await sbFetch('clients', { method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(c) });
+    }
+  } catch(e) { console.warn('Seed error:', e); }
 }
 
 // ============================================================
 // TABS
 // ============================================================
-function switchTab(tab) {
+function switchTab(tab, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + tab).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
   if (tab === 'alerts') renderAlerts();
-  if (tab === 'touchlog') { renderTouchLog(); populateTouchlogFilterDropdown(); }
 }
 
 function setFilter(f) {
@@ -809,13 +528,12 @@ function renderClients() {
   const q = document.getElementById('clientSearch').value.toLowerCase();
   let filtered = clients.filter(c => {
     const matchStatus = currentFilter === 'all' ? true :
-      currentFilter === 'active' ? c.status === 'active' :
-      c.status !== 'active';
-    const matchSearch = !q ||
-      c.full_name.toLowerCase().includes(q) ||
-      (c.address || '').toLowerCase().includes(q) ||
-      (c.primary_contact_name || '').toLowerCase().includes(q) ||
-      (c.client_code || '').toLowerCase().includes(q);
+      currentFilter === 'active' ? c.status === 'active' : c.status !== 'active';
+    const matchSearch = !q || c.full_name.toLowerCase().includes(q) ||
+      (c.address||'').toLowerCase().includes(q) ||
+      (c.primary_contact_name||'').toLowerCase().includes(q) ||
+      (c.client_code||'').toLowerCase().includes(q) ||
+      (c.referral_source||'').toLowerCase().includes(q);
     return matchStatus && matchSearch;
   });
 
@@ -828,29 +546,49 @@ function renderClients() {
   grid.innerHTML = filtered.map(c => {
     const statusClass = c.status === 'active' ? 'status-active' : c.status === 'on-hold' ? 'status-on-hold' : 'status-inactive';
     const statusLabel = c.status === 'active' ? 'Active' : c.status === 'on-hold' ? 'On Hold' : 'Inactive';
-    const touchCount = touches.filter(t => t.client_id === c.id).length;
-    const lastTouch = touches.filter(t => t.client_id === c.id)[0];
+    const cTPs = touchpoints.filter(t => t.client_id === c.id);
+    const done = cTPs.filter(t => t.completed_date).length;
+    const total = cTPs.length;
+    const pct = total ? Math.round(done / total * 100) : 0;
     const daysToB = c.dob ? daysUntilBirthday(c.dob) : null;
+    const urgentAlerts = getClientUrgentAlerts(c);
 
     return `<div class="client-card${selectedClientId === c.id ? ' selected' : ''}" onclick="openDetail('${c.id}')">
       <div class="client-card-header">
         <div>
-          <div class="client-name">${c.full_name}</div>
-          ${c.preferred_name ? `<div class="client-preferred">Goes by: ${c.preferred_name}</div>` : ''}
+          <div class="client-name">${c.full_name}${c.preferred_name ? ` <span style="font-size:12px;color:var(--gray-400);font-weight:400">(${c.preferred_name})</span>` : ''}</div>
         </div>
         <span class="status-badge ${statusClass}">${statusLabel}</span>
       </div>
       <div class="client-card-meta">
-        ${c.address ? `<div class="meta-row"><span class="meta-label">Address</span><span>${c.address.split(',').slice(-3).join(',').trim()}</span></div>` : ''}
+        ${c.intake_date ? `<div class="meta-row"><span class="meta-label">Intake</span><span>${fmtDate(c.intake_date)}</span></div>` : ''}
         ${c.home_situation ? `<div class="meta-row"><span class="meta-label">Home</span><span>${c.home_situation}</span></div>` : ''}
-        ${c.primary_contact_name ? `<div class="meta-row"><span class="meta-label">Contact</span><span>${c.primary_contact_name}${c.primary_contact_relation ? ' (' + c.primary_contact_relation + ')' : ''}</span></div>` : ''}
-        ${c.service_start_date ? `<div class="meta-row"><span class="meta-label">Since</span><span>${fmtDate(c.service_start_date)}</span></div>` : ''}
-        ${daysToB !== null && daysToB <= 30 ? `<div class="meta-row"><span style="color:var(--red);font-size:11px">🎂 Birthday in ${daysToB} day${daysToB !== 1 ? 's' : ''}!</span></div>` : ''}
-        ${touchCount ? `<div class="meta-row"><span class="meta-label">Touches</span><span>${touchCount} logged${lastTouch ? ' · last ' + fmtDate(lastTouch.touch_date) : ''}</span></div>` : ''}
+        ${c.primary_contact_name ? `<div class="meta-row"><span class="meta-label">Contact</span><span>${c.primary_contact_name}${c.primary_contact_relation ? ' ('+c.primary_contact_relation+')' : ''}</span></div>` : ''}
+        ${urgentAlerts.length ? `<div class="meta-row" style="color:var(--red);font-size:11px;font-weight:600">⚠️ ${urgentAlerts[0]}</div>` : ''}
+        ${daysToB !== null && daysToB <= 21 ? `<div class="meta-row" style="color:var(--amber);font-size:11px">🎂 Birthday in ${daysToB}d</div>` : ''}
       </div>
+      ${total > 0 ? `<div class="touch-progress">
+        <div class="touch-progress-bar"><div class="touch-progress-fill" style="width:${pct}%"></div></div>
+        <div class="touch-progress-label"><span>Touchpoints</span><span>${done}/${total} done</span></div>
+      </div>` : ''}
       ${c.client_code ? `<div class="client-code">${c.client_code}</div>` : ''}
     </div>`;
   }).join('');
+}
+
+function getClientUrgentAlerts(c) {
+  const alerts = [];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const cTPs = touchpoints.filter(t => t.client_id === c.id && !t.completed_date && t.due_date);
+  cTPs.forEach(t => {
+    const due = new Date(t.due_date); due.setHours(0,0,0,0);
+    const days = Math.floor((due - today) / 86400000);
+    if (days < 0 && days >= -7) {
+      const def = TP_TYPES.find(x => x.key === t.touch_type);
+      alerts.push(`${def ? def.label : t.touch_type} overdue`);
+    }
+  });
+  return alerts;
 }
 
 // ============================================================
@@ -863,7 +601,7 @@ function openDetail(id) {
   const c = clients.find(x => x.id === id);
   if (!c) return;
   document.getElementById('detailName').textContent = c.full_name + (c.preferred_name ? ` (${c.preferred_name})` : '');
-  const statusLabel = c.status === 'active' ? '● Active' : c.status === 'on-hold' ? '◐ On Hold' : '○ Inactive';
+  const statusLabel = {active:'● Active','on-hold':'◐ On Hold',inactive:'○ Inactive'}[c.status] || c.status;
   document.getElementById('detailSub').textContent = statusLabel + (c.client_code ? ' · ' + c.client_code : '');
   document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.detail-tab')[0].classList.add('active');
@@ -882,100 +620,253 @@ function handleOverlayClick(e) {
   if (e.target === document.getElementById('detailOverlay')) closeDetail();
 }
 
-function switchDetailTab(tab) {
+function switchDetailTab(tab, btn) {
   currentDetailTab = tab;
   document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   const c = clients.find(x => x.id === selectedClientId);
   if (c) renderDetailBody(c);
 }
 
 function renderDetailBody(c) {
   const body = document.getElementById('detailBody');
-  if (currentDetailTab === 'overview') {
+  const tab = currentDetailTab;
+
+  if (tab === 'overview') {
     body.innerHTML = `
-      <div class="detail-section">
-        <div class="detail-section-title">Personal</div>
-        <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">${c.full_name}</span></div>
-        ${c.preferred_name ? `<div class="info-row"><span class="info-label">Goes By</span><span class="info-value">${c.preferred_name}</span></div>` : ''}
-        <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value${!c.dob ? ' empty' : ''}">${c.dob ? fmtDate(c.dob) + birthdayNote(c.dob) : 'Not entered'}</span></div>
-        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.client_phone ? `<a href="tel:${c.client_phone}">${c.client_phone}</a>` : '<span class="empty">—</span>'}</span></div>
-        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${c.client_email ? `<a href="mailto:${c.client_email}">${c.client_email}</a>` : '<span class="empty">—</span>'}</span></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">Address & Home</div>
-        <div class="info-row"><span class="info-label">Address</span><span class="info-value">${c.address || '<span class="empty">Not entered</span>'}</span></div>
-        <div class="info-row"><span class="info-label">Home Situation</span><span class="info-value">${c.home_situation || '<span class="empty">Not entered</span>'}</span></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">Service</div>
-        <div class="info-row"><span class="info-label">Service Start</span><span class="info-value${!c.service_start_date ? ' empty' : ''}">${c.service_start_date ? fmtDate(c.service_start_date) + anniversaryNote(c.service_start_date) : 'Not entered'}</span></div>
-        <div class="info-row"><span class="info-label">Deposit</span><span class="info-value">${depositBadge(c.deposit_status)}</span></div>
-        <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusBadge(c.status)}</span></div>
-        ${c.notes ? `<div class="info-row"><span class="info-label">Notes</span><span class="info-value">${c.notes}</span></div>` : ''}
-      </div>`;
-  } else if (currentDetailTab === 'care') {
-    body.innerHTML = `
-      <div class="detail-section">
-        <div class="detail-section-title">Care Information</div>
-        <div class="info-row"><span class="info-label">Care Needs</span><span class="info-value">${c.care_needs || '<span class="empty">Not entered</span>'}</span></div>
-        <div class="info-row"><span class="info-label">Mobility / Fall Risk</span><span class="info-value">${riskBadge(c.mobility_risk || 'low')}</span></div>
-        <div class="info-row"><span class="info-label">Language</span><span class="info-value">${c.language || 'English'}</span></div>
-        <div class="info-row"><span class="info-label">Gender Pref.</span><span class="info-value">${genderPrefLabel(c.gender_pref)}</span></div>
-        <div class="info-row"><span class="info-label">Preferences</span><span class="info-value">${c.preferences || '<span class="empty">Not entered</span>'}</span></div>
-      </div>`;
-  } else if (currentDetailTab === 'contacts') {
-    body.innerHTML = `
-      <div class="detail-section">
-        <div class="detail-section-title">Primary Contact</div>
-        ${c.primary_contact_name ? `
-          <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.primary_contact_name}</span></div>
-          <div class="info-row"><span class="info-label">Relationship</span><span class="info-value">${c.primary_contact_relation || '—'}</span></div>
-          <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.primary_contact_phone ? `<a href="tel:${c.primary_contact_phone}">${c.primary_contact_phone}</a>` : '—'}</span></div>
-        ` : '<div class="empty" style="color:var(--gray-400);font-size:13px">No primary contact entered.</div>'}
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">Secondary Contact</div>
-        ${c.secondary_contact_name ? `
-          <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.secondary_contact_name}</span></div>
-          <div class="info-row"><span class="info-label">Relationship</span><span class="info-value">${c.secondary_contact_relation || '—'}</span></div>
-          <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.secondary_contact_phone ? `<a href="tel:${c.secondary_contact_phone}">${c.secondary_contact_phone}</a>` : '—'}</span></div>
-        ` : '<div class="empty" style="color:var(--gray-400);font-size:13px">No secondary contact entered.</div>'}
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">Billing Contact</div>
-        ${c.billing_contact_name ? `
-          <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.billing_contact_name}</span></div>
-          <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.billing_contact_phone ? `<a href="tel:${c.billing_contact_phone}">${c.billing_contact_phone}</a>` : '—'}</span></div>
-          <div class="info-row"><span class="info-label">Email</span><span class="info-value">${c.billing_contact_email ? `<a href="mailto:${c.billing_contact_email}">${c.billing_contact_email}</a>` : '—'}</span></div>
-        ` : '<div class="empty" style="color:var(--gray-400);font-size:13px">Same as primary contact.</div>'}
-      </div>`;
-  } else if (currentDetailTab === 'touches') {
-    const cTouches = touches.filter(t => t.client_id === c.id);
-    body.innerHTML = `
-      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
-        <button class="btn btn-gold btn-sm" onclick="openLogTouch('${c.id}')">+ Log a Touch</button>
-      </div>
-      ${cTouches.length ? cTouches.map(t => touchEntryHtml(t, false)).join('') :
-        '<div class="empty-state"><div class="icon">📋</div>No touches logged yet.</div>'}`;
+      <div class="section-header-sm">Personal</div>
+      <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value${!c.dob?' empty':''}">${c.dob ? fmtDate(c.dob) + (daysUntilBirthday(c.dob) <= 30 ? ` <span style="color:var(--amber)">🎂 ${daysUntilBirthday(c.dob)}d</span>` : '') : 'Not entered'}</span></div>
+      <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.client_phone ? `<a href="tel:${c.client_phone}">${c.client_phone}</a>` : '<span class="empty">—</span>'}</span></div>
+      <div class="info-row"><span class="info-label">Email</span><span class="info-value">${c.client_email ? `<a href="mailto:${c.client_email}">${c.client_email}</a>` : '<span class="empty">—</span>'}</span></div>
+      <div class="info-row"><span class="info-label">Address</span><span class="info-value">${c.address || '<span class="empty">—</span>'}</span></div>
+      <div class="info-row"><span class="info-label">Home Situation</span><span class="info-value">${c.home_situation || '<span class="empty">—</span>'}</span></div>
+      <div class="section-header-sm" style="margin-top:18px">Service</div>
+      <div class="info-row"><span class="info-label">Intake Date</span><span class="info-value${!c.intake_date?' empty':''}">${c.intake_date ? fmtDate(c.intake_date) : 'Not entered'}</span></div>
+      <div class="info-row"><span class="info-label">Deposit</span><span class="info-value">${depositBadge(c.deposit_status)}</span></div>
+      <div class="info-row"><span class="info-label">Referral Source</span><span class="info-value">${c.referral_source || '<span class="empty">—</span>'}</span></div>
+      <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusBadge(c.status)}</span></div>
+      ${c.notes ? `<div class="info-row"><span class="info-label">Notes</span><span class="info-value">${c.notes}</span></div>` : ''}`;
   }
+  else if (tab === 'touchpoints') {
+    renderTouchpoints(c, body);
+  }
+  else if (tab === 'care') {
+    body.innerHTML = `
+      <div class="section-header-sm">Care Information</div>
+      <div class="info-row"><span class="info-label">Care Needs</span><span class="info-value">${c.care_needs || '<span class="empty">Not entered</span>'}</span></div>
+      <div class="info-row"><span class="info-label">Mobility / Fall Risk</span><span class="info-value">${riskBadge(c.mobility_risk||'low')}</span></div>
+      <div class="info-row"><span class="info-label">Language</span><span class="info-value">${c.language||'English'}</span></div>
+      <div class="info-row"><span class="info-label">Gender Pref.</span><span class="info-value">${genderPrefLabel(c.gender_pref)}</span></div>
+      <div class="info-row"><span class="info-label">Preferences</span><span class="info-value">${c.preferences || '<span class="empty">Not entered</span>'}</span></div>`;
+  }
+  else if (tab === 'contacts') {
+    body.innerHTML = `
+      <div class="section-header-sm">Primary Contact</div>
+      ${c.primary_contact_name ? `
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.primary_contact_name}</span></div>
+        <div class="info-row"><span class="info-label">Relationship</span><span class="info-value">${c.primary_contact_relation||'—'}</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.primary_contact_phone ? `<a href="tel:${c.primary_contact_phone}">${c.primary_contact_phone}</a>` : '—'}</span></div>
+      ` : '<p class="empty" style="color:var(--gray-400);font-size:13px">No primary contact entered.</p>'}
+      <div class="section-header-sm" style="margin-top:18px">Secondary Contact</div>
+      ${c.secondary_contact_name ? `
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.secondary_contact_name}</span></div>
+        <div class="info-row"><span class="info-label">Relationship</span><span class="info-value">${c.secondary_contact_relation||'—'}</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.secondary_contact_phone ? `<a href="tel:${c.secondary_contact_phone}">${c.secondary_contact_phone}</a>` : '—'}</span></div>
+      ` : '<p class="empty" style="color:var(--gray-400);font-size:13px">No secondary contact entered.</p>'}
+      <div class="section-header-sm" style="margin-top:18px">Billing Contact</div>
+      ${c.billing_contact_name ? `
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">${c.billing_contact_name}</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${c.billing_contact_phone||'—'}</span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${c.billing_contact_email||'—'}</span></div>
+      ` : '<p class="empty" style="color:var(--gray-400);font-size:13px">Same as primary contact.</p>'}`;
+  }
+}
+
+function renderTouchpoints(c, body) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const cTPs = touchpoints.filter(t => t.client_id === c.id);
+  const groups = ['Onboarding', 'Ongoing', 'Special', 'Events'];
+
+  let html = '';
+  if (!c.intake_date) {
+    html = '<div style="color:var(--amber);font-size:13px;padding:12px 0">⚠️ Intake date required to generate touchpoint schedule. Edit the profile to add it.</div>';
+  }
+
+  // Button to generate if none exist
+  if (c.intake_date && !cTPs.length) {
+    html = `<div style="text-align:center;padding:20px 0">
+      <p style="color:var(--gray-600);font-size:13px;margin-bottom:16px">No touchpoints generated yet.</p>
+      <button class="btn btn-gold" onclick="generateTouchpoints('${c.id}')">Generate Touchpoint Schedule</button>
+    </div>`;
+  } else if (cTPs.length) {
+    const done = cTPs.filter(t => t.completed_date).length;
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-size:12px;color:var(--gray-400)">${done}/${cTPs.length} completed</span>
+      <button class="btn btn-secondary btn-sm" onclick="generateTouchpoints('${c.id}')">↺ Regenerate</button>
+    </div>`;
+
+    groups.forEach(group => {
+      const groupDefs = TP_TYPES.filter(d => d.group === group);
+      const groupTPs = cTPs.filter(t => groupDefs.some(d => d.key === t.touch_type));
+      if (!groupTPs.length) return;
+
+      html += `<div class="tp-group"><div class="tp-group-title">${group}</div>`;
+      groupDefs.forEach(def => {
+        const tp = cTPs.find(t => t.touch_type === def.key);
+        if (!tp) return;
+        const isDone = !!tp.completed_date;
+        const due = tp.due_date ? new Date(tp.due_date) : null;
+        const daysFromToday = due ? Math.floor((due - today) / 86400000) : null;
+        let dueClass = '';
+        let dueLabel = tp.due_date ? fmtDate(tp.due_date) : '—';
+        if (isDone) {
+          dueClass = 'done-date';
+          dueLabel = '✓ ' + fmtDate(tp.completed_date) + (tp.completed_by ? ' by ' + tp.completed_by : '');
+        } else if (daysFromToday !== null) {
+          if (daysFromToday < 0) { dueClass = 'overdue'; dueLabel = 'Overdue · ' + fmtDate(tp.due_date); }
+          else if (daysFromToday <= 14) { dueClass = 'soon'; dueLabel = `${daysFromToday}d · ${fmtDate(tp.due_date)}`; }
+        }
+
+        html += `<div class="tp-item${isDone?' done':''}" id="tp-item-${tp.id}">
+          <input type="checkbox" class="tp-checkbox" ${isDone?'checked':''} onchange="handleTPCheck('${tp.id}','${def.key}','${c.id}',this)" title="Mark done">
+          <span class="tp-label">${def.icon} ${def.label}</span>
+          <span class="tp-due ${dueClass}">${dueLabel}</span>
+        </div>`;
+      });
+      html += '</div>';
+    });
+  }
+
+  body.innerHTML = `<div class="tp-checklist">${html}</div>`;
+}
+
+async function generateTouchpoints(clientId) {
+  const c = clients.find(x => x.id === clientId);
+  if (!c || !c.intake_date) return;
+
+  const toInsert = TP_TYPES.map(def => ({
+    client_id: clientId,
+    client_name: c.full_name,
+    touch_type: def.key,
+    due_date: calculateDueDate(def, c),
+    completed_date: null,
+    completed_by: null,
+    notes: null,
+    created_at: new Date().toISOString()
+  }));
+
+  try {
+    // Delete existing for this client first
+    await sbFetch(`client_touchpoints?client_id=eq.${clientId}`, { method:'DELETE', headers:{'Prefer':'return=minimal'} });
+    // Insert all
+    await sbFetch('client_touchpoints', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(toInsert)
+    });
+    // Reload
+    const rows = await sbFetch('client_touchpoints?select=*&order=due_date.asc');
+    touchpoints = rows || [];
+    openDetail(clientId);
+    showSaveIndicator('✓ Schedule generated');
+  } catch(e) {
+    alert('Error generating touchpoints: ' + e.message);
+  }
+}
+
+// ============================================================
+// MARK DONE
+// ============================================================
+function handleTPCheck(tpId, tpKey, clientId, checkbox) {
+  if (checkbox.checked) {
+    pendingDoneTP = { tpId, tpKey, clientId };
+    document.getElementById('doneDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('doneNotes').value = '';
+    const def = TP_TYPES.find(d => d.key === tpKey);
+    document.getElementById('doneModalTitle').textContent = `Mark Done: ${def ? def.icon + ' ' + def.label : tpKey}`;
+    document.getElementById('doneModal').classList.add('open');
+  } else {
+    // Unmark done
+    unmarkDone(tpId, clientId);
+  }
+}
+
+function closeDoneModal() {
+  document.getElementById('doneModal').classList.remove('open');
+  // Uncheck the checkbox if user cancelled
+  if (pendingDoneTP) {
+    const checkbox = document.querySelector(`#tp-item-${pendingDoneTP.tpId} .tp-checkbox`);
+    if (checkbox) checkbox.checked = false;
+  }
+  pendingDoneTP = null;
+}
+
+async function confirmMarkDone() {
+  if (!pendingDoneTP) return;
+  const { tpId, clientId } = pendingDoneTP;
+  const date = document.getElementById('doneDate').value;
+  const by = document.getElementById('doneBy').value;
+  const notes = document.getElementById('doneNotes').value.trim() || null;
+
+  try {
+    await sbFetch(`client_touchpoints?id=eq.${tpId}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ completed_date: date, completed_by: by, notes })
+    });
+    const tp = touchpoints.find(t => t.id === tpId);
+    if (tp) { tp.completed_date = date; tp.completed_by = by; tp.notes = notes; }
+    document.getElementById('doneModal').classList.remove('open');
+    pendingDoneTP = null;
+    const c = clients.find(x => x.id === clientId);
+    if (c) renderDetailBody(c);
+    renderClients();
+    showSaveIndicator('✓ Marked done');
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function unmarkDone(tpId, clientId) {
+  try {
+    await sbFetch(`client_touchpoints?id=eq.${tpId}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ completed_date: null, completed_by: null, notes: null })
+    });
+    const tp = touchpoints.find(t => t.id === tpId);
+    if (tp) { tp.completed_date = null; tp.completed_by = null; }
+    const c = clients.find(x => x.id === clientId);
+    if (c) renderDetailBody(c);
+    renderClients();
+    showSaveIndicator('✓ Unmarked');
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 function renderDetailActions(c) {
   document.getElementById('detailActions').innerHTML = `
     <button class="btn btn-primary" onclick="openEditClient('${c.id}')">✏️ Edit Profile</button>
-    <button class="btn btn-gold btn-sm" onclick="openLogTouch('${c.id}')">+ Log Touch</button>
-    <button class="btn btn-${c.status === 'active' ? 'secondary' : 'green'} btn-sm" style="margin-left:auto"
+    <button class="btn btn-secondary btn-sm" style="margin-left:auto"
       onclick="toggleStatus('${c.id}')">${c.status === 'active' ? 'Deactivate' : 'Set Active'}</button>`;
 }
 
 // ============================================================
 // ADD / EDIT CLIENT
 // ============================================================
+const FORM_FIELDS = ['full_name','preferred_name','client_code','status','dob','intake_date',
+  'client_phone','client_email','address','home_situation','deposit_status','referral_source',
+  'care_needs','mobility_risk','gender_pref','language','preferences','notes',
+  'primary_contact_name','primary_contact_relation','primary_contact_phone',
+  'secondary_contact_name','secondary_contact_relation','secondary_contact_phone',
+  'billing_contact_name','billing_contact_phone','billing_contact_email'];
+
 function openAddClient() {
   editingClientId = null;
   document.getElementById('modalTitle').textContent = 'Add Client';
-  clearClientForm();
+  FORM_FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = ''; });
+  document.getElementById('f-status').value = 'active';
+  document.getElementById('f-deposit_status').value = 'received';
+  document.getElementById('f-mobility_risk').value = 'low';
+  document.getElementById('f-gender_pref').value = 'none';
+  document.getElementById('f-language').value = 'English';
   document.getElementById('clientModal').classList.add('open');
 }
 
@@ -984,85 +875,39 @@ function openEditClient(id) {
   const c = clients.find(x => x.id === id);
   if (!c) return;
   document.getElementById('modalTitle').textContent = 'Edit — ' + c.full_name;
-  const fields = ['full_name','preferred_name','dob','status','service_start_date','deposit_status',
-    'client_phone','client_email','address','home_situation','care_needs','mobility_risk',
-    'gender_pref','language','client_code','preferences','notes',
-    'primary_contact_name','primary_contact_relation','primary_contact_phone',
-    'secondary_contact_name','secondary_contact_relation','secondary_contact_phone',
-    'billing_contact_name','billing_contact_phone','billing_contact_email'];
-  fields.forEach(f => {
-    const el = document.getElementById('f-' + f);
-    if (el) el.value = c[f] || '';
-  });
+  FORM_FIELDS.forEach(f => { const el = document.getElementById('f-'+f); if (el) el.value = c[f] || ''; });
   document.getElementById('clientModal').classList.add('open');
 }
 
-function clearClientForm() {
-  ['full_name','preferred_name','dob','service_start_date','client_phone','client_email',
-   'address','home_situation','care_needs','language','client_code','preferences','notes',
-   'primary_contact_name','primary_contact_relation','primary_contact_phone',
-   'secondary_contact_name','secondary_contact_relation','secondary_contact_phone',
-   'billing_contact_name','billing_contact_phone','billing_contact_email'].forEach(f => {
-    const el = document.getElementById('f-' + f);
-    if (el) el.value = '';
-  });
-  document.getElementById('f-status').value = 'active';
-  document.getElementById('f-deposit_status').value = 'received';
-  document.getElementById('f-mobility_risk').value = 'low';
-  document.getElementById('f-gender_pref').value = 'none';
-  document.getElementById('f-language').value = 'English';
-}
-
-function closeClientModal() {
-  document.getElementById('clientModal').classList.remove('open');
-}
+function closeClientModal() { document.getElementById('clientModal').classList.remove('open'); }
 
 async function saveClient() {
   const name = document.getElementById('f-full_name').value.trim();
   if (!name) { alert('Client name is required.'); return; }
 
-  const fields = ['preferred_name','dob','status','service_start_date','deposit_status',
-    'client_phone','client_email','address','home_situation','care_needs','mobility_risk',
-    'gender_pref','language','client_code','preferences','notes',
-    'primary_contact_name','primary_contact_relation','primary_contact_phone',
-    'secondary_contact_name','secondary_contact_relation','secondary_contact_phone',
-    'billing_contact_name','billing_contact_phone','billing_contact_email'];
-
-  const data = { full_name: name };
-  fields.forEach(f => {
-    const val = (document.getElementById('f-' + f)?.value || '').trim();
+  const data = { full_name: name, updated_at: new Date().toISOString() };
+  FORM_FIELDS.filter(f => f !== 'full_name').forEach(f => {
+    const val = (document.getElementById('f-'+f)?.value || '').trim();
     data[f] = val || null;
   });
-  data.updated_at = new Date().toISOString();
 
   if (editingClientId) {
     data.id = editingClientId;
   } else {
-    data.id = 'c_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g,'_');
+    data.id = 'c_' + name.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
     data.created_at = new Date().toISOString();
   }
 
   try {
-    await sbFetch('clients', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify(data)
-    });
-
-    const existing = clients.findIndex(c => c.id === data.id);
-    if (existing >= 0) clients[existing] = { ...clients[existing], ...data };
+    await sbFetch('clients', { method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(data) });
+    const idx = clients.findIndex(c => c.id === data.id);
+    if (idx >= 0) clients[idx] = { ...clients[idx], ...data };
     else clients.push(data);
-
     closeClientModal();
     renderClients();
-    populateTouchClientDropdown();
-    populateTouchlogFilterDropdown();
     if (selectedClientId === data.id) openDetail(data.id);
     showSaveIndicator('✓ Client saved');
-  } catch(e) {
-    console.error(e);
-    alert('Failed to save: ' + e.message);
-  }
+  } catch(e) { alert('Failed to save: ' + e.message); }
 }
 
 async function toggleStatus(id) {
@@ -1071,251 +916,87 @@ async function toggleStatus(id) {
   const newStatus = c.status === 'active' ? 'inactive' : 'active';
   if (!confirm(`Set ${c.full_name} to ${newStatus}?`)) return;
   try {
-    await sbFetch(`clients?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ status: newStatus, updated_at: new Date().toISOString() })
-    });
+    await sbFetch(`clients?id=eq.${id}`, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({ status: newStatus, updated_at: new Date().toISOString() }) });
     c.status = newStatus;
     renderClients();
-    if (selectedClientId === id) { openDetail(id); }
+    openDetail(id);
     showSaveIndicator('✓ Status updated');
   } catch(e) { alert('Error: ' + e.message); }
-}
-
-// ============================================================
-// TOUCH LOG
-// ============================================================
-function openLogTouch(clientId) {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('t-touch_date').value = today;
-  document.getElementById('t-client_id').value = clientId || '';
-  document.getElementById('t-notes').value = '';
-  document.getElementById('touchModal').classList.add('open');
-}
-
-function closeTouchModal() {
-  document.getElementById('touchModal').classList.remove('open');
-}
-
-function updateTouchClientName() {}
-
-async function saveTouch() {
-  const clientId = document.getElementById('t-client_id').value;
-  const touchDate = document.getElementById('t-touch_date').value;
-  if (!clientId) { alert('Please select a client.'); return; }
-  if (!touchDate) { alert('Please enter a date.'); return; }
-
-  const c = clients.find(x => x.id === clientId);
-  const data = {
-    client_id: clientId,
-    client_name: c ? c.full_name : '',
-    touch_type: document.getElementById('t-touch_type').value,
-    touch_date: touchDate,
-    method: document.getElementById('t-method').value,
-    performed_by: document.getElementById('t-performed_by').value,
-    outcome: document.getElementById('t-outcome').value,
-    notes: document.getElementById('t-notes').value.trim() || null,
-    created_at: new Date().toISOString()
-  };
-
-  try {
-    await sbFetch('client_touches', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify(data)
-    });
-    // Reload touches
-    const rows = await sbFetch('client_touches?select=*&order=touch_date.desc');
-    touches = rows || [];
-    closeTouchModal();
-    renderTouchLog();
-    if (selectedClientId === clientId && currentDetailTab === 'touches') {
-      renderDetailBody(clients.find(x => x.id === clientId));
-    }
-    showSaveIndicator('✓ Touch logged');
-  } catch(e) { alert('Error saving touch: ' + e.message); }
-}
-
-function populateTouchClientDropdown() {
-  const sel = document.getElementById('t-client_id');
-  const active = clients.filter(c => c.status === 'active').sort((a,b) => a.full_name.localeCompare(b.full_name));
-  sel.innerHTML = '<option value="">Select client...</option>' +
-    active.map(c => `<option value="${c.id}">${c.full_name}</option>`).join('');
-}
-
-function populateTouchlogFilterDropdown() {
-  const sel = document.getElementById('touchlogFilter');
-  const all = [...clients].sort((a,b) => a.full_name.localeCompare(b.full_name));
-  sel.innerHTML = '<option value="">All Clients</option>' +
-    all.map(c => `<option value="${c.id}">${c.full_name}</option>`).join('');
-}
-
-function renderTouchLog() {
-  const filterClientId = document.getElementById('touchlogFilter')?.value || '';
-  let filtered = filterClientId ? touches.filter(t => t.client_id === filterClientId) : touches;
-  const container = document.getElementById('touchlogContent');
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No touches logged yet.</div>';
-    return;
-  }
-  container.innerHTML = `<div style="background:var(--white);border-radius:8px;border:1px solid var(--gray-200);padding:4px 16px">` +
-    filtered.map(t => touchEntryHtml(t, true)).join('') + '</div>';
-}
-
-function touchEntryHtml(t, showClient) {
-  const icons = {
-    'quarterly-checkin':'📞','birthday-card':'🎂','family-birthday':'🎂',
-    'anniversary':'🌟','welcome-gift':'🎁','holiday-card':'🎄',
-    'in-person-visit':'🏠','family-call':'📱','custom':'✏️'
-  };
-  const labels = {
-    'quarterly-checkin':'Quarterly Check-in','birthday-card':'Birthday Card',
-    'family-birthday':'Family Birthday','anniversary':'Service Anniversary',
-    'welcome-gift':'Welcome Gift','holiday-card':'Holiday Card',
-    'in-person-visit':'In-Person Visit','family-call':'Family/Contact Call','custom':'Custom Touch'
-  };
-  const colors = {
-    'quarterly-checkin':'var(--teal-light)','birthday-card':'var(--red-light)',
-    'family-birthday':'var(--red-light)','anniversary':'var(--purple-light)',
-    'welcome-gift':'var(--green-light)','holiday-card':'var(--amber-light)',
-    'in-person-visit':'var(--navy)','family-call':'var(--teal-light)','custom':'var(--gray-100)'
-  };
-  return `<div class="touch-entry">
-    <div class="touch-icon" style="background:${colors[t.touch_type]||'var(--gray-100)'}">
-      ${icons[t.touch_type]||'📋'}
-    </div>
-    <div style="flex:1">
-      ${showClient && t.client_name ? `<div class="touch-client">${t.client_name}</div>` : ''}
-      <div class="touch-title">${labels[t.touch_type]||t.touch_type}</div>
-      <div class="touch-date">${fmtDate(t.touch_date)} · ${t.method||''} · ${t.outcome||''} · by ${t.performed_by||''}</div>
-      ${t.notes ? `<div class="touch-notes">${t.notes}</div>` : ''}
-    </div>
-  </div>`;
 }
 
 // ============================================================
 // ALERTS
 // ============================================================
 function renderAlerts() {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  const upcoming = [];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const urgent = [], warning = [], info = [];
 
   clients.filter(c => c.status === 'active').forEach(c => {
-    // Birthday alerts (30-day window)
+    const cTPs = touchpoints.filter(t => t.client_id === c.id && !t.completed_date && t.due_date);
+
+    cTPs.forEach(t => {
+      const def = TP_TYPES.find(d => d.key === t.touch_type);
+      if (!def) return;
+      const due = new Date(t.due_date); due.setHours(0,0,0,0);
+      const days = Math.floor((due - today) / 86400000);
+      if (days > 30) return; // only show 30-day window
+
+      const item = {
+        client: c, days, icon: def.icon,
+        title: `${c.full_name} — ${def.label}`,
+        sub: days < 0 ? `Overdue since ${fmtDate(t.due_date)}` : days === 0 ? 'Due TODAY' : `Due ${fmtDate(t.due_date)} (${days} days)`
+      };
+      if (days < 0) urgent.push({ ...item, severity: 'urgent' });
+      else if (days <= 7) warning.push({ ...item, severity: 'warning' });
+      else info.push({ ...item, severity: 'info' });
+    });
+
+    // Birthday alerts (30 days)
     if (c.dob) {
       const days = daysUntilBirthday(c.dob);
       if (days <= 30) {
-        upcoming.push({
-          type: 'birthday', days, client: c,
-          title: `${c.full_name}'s Birthday`,
-          sub: `${fmtDate(c.dob.replace(/(\d{4})-/, today.getFullYear() + '-'))} · ${days === 0 ? 'TODAY!' : days + ' days away'}`,
-          icon: '🎂', severity: days <= 7 ? 'urgent' : 'warning'
-        });
-      }
-    }
-
-    // Service anniversary (30-day window)
-    if (c.service_start_date) {
-      const days = daysUntilAnniversary(c.service_start_date);
-      if (days !== null && days <= 30 && days >= 0) {
-        const years = anniversaryYears(c.service_start_date);
-        upcoming.push({
-          type: 'anniversary', days, client: c,
-          title: `${c.full_name} — ${years} Year${years !== 1 ? 's' : ''} with GWCC`,
-          sub: `Service anniversary coming up · ${days === 0 ? 'TODAY!' : days + ' days away'}`,
-          icon: '🌟', severity: 'info'
-        });
-      }
-    }
-
-    // Quarterly check-in (90 days since last check-in or service start)
-    const lastCheckin = touches.filter(t => t.client_id === c.id && t.touch_type === 'quarterly-checkin')
-      .sort((a,b) => b.touch_date.localeCompare(a.touch_date))[0];
-    const refDate = lastCheckin ? new Date(lastCheckin.touch_date) : (c.service_start_date ? new Date(c.service_start_date) : null);
-    if (refDate) {
-      const daysSince = Math.floor((today - refDate) / 86400000);
-      if (daysSince >= 75) { // alert at 75 days (overdue starts at 90)
-        upcoming.push({
-          type: 'checkin', days: Math.max(0, 90 - daysSince), client: c,
-          title: `${c.full_name} — Quarterly Check-in`,
-          sub: `Last check-in: ${lastCheckin ? fmtDate(lastCheckin.touch_date) : 'Never'} · ${daysSince >= 90 ? 'OVERDUE' : 'Due in ' + (90 - daysSince) + ' days'}`,
-          icon: '📞', severity: daysSince >= 90 ? 'urgent' : 'warning'
-        });
+        const item = { client: c, days, icon: '🎂', title: `${c.full_name}'s Birthday`, sub: `${days === 0 ? 'TODAY!' : days + ' days away'}`, severity: days <= 7 ? 'urgent' : 'warning' };
+        (days <= 7 ? urgent : warning).push(item);
       }
     }
   });
 
-  // Missing info alerts
-  const missingDob = clients.filter(c => c.status === 'active' && !c.dob);
-  const missingStart = clients.filter(c => c.status === 'active' && !c.service_start_date);
-
-  upcoming.sort((a,b) => {
-    const sev = {urgent:0, warning:1, info:2};
-    if (sev[a.severity] !== sev[b.severity]) return sev[a.severity] - sev[b.severity];
-    return a.days - b.days;
-  });
-
-  const urgent = upcoming.filter(x => x.severity === 'urgent');
-  const warning = upcoming.filter(x => x.severity === 'warning');
-  const info = upcoming.filter(x => x.severity === 'info');
+  // Sort each group
+  const sortDays = arr => arr.sort((a,b) => a.days - b.days);
+  sortDays(urgent); sortDays(warning); sortDays(info);
 
   let html = '';
-
-  if (!upcoming.length && !missingDob.length && !missingStart.length) {
-    html = '<div class="empty-state"><div class="icon">✅</div>All caught up! No alerts at this time.</div>';
+  if (!urgent.length && !warning.length && !info.length) {
+    html = '<div class="empty-state"><div class="icon">✅</div>All caught up — no alerts in the next 30 days.</div>';
   }
 
-  if (urgent.length) {
-    html += `<div class="section-header">🔴 Urgent <span class="count-chip">${urgent.length}</span></div>`;
-    html += urgent.map(a => alertCardHtml(a)).join('');
-  }
-  if (warning.length) {
-    html += `<div class="section-header">🟡 Coming Up <span class="count-chip">${warning.length}</span></div>`;
-    html += warning.map(a => alertCardHtml(a)).join('');
-  }
-  if (info.length) {
-    html += `<div class="section-header">🔵 Upcoming <span class="count-chip">${info.length}</span></div>`;
-    html += info.map(a => alertCardHtml(a)).join('');
-  }
+  const makeSection = (arr, label, icon) => {
+    if (!arr.length) return '';
+    return `<div class="alert-section">
+      <div class="section-header">${icon} ${label} <span class="count-chip">${arr.length}</span></div>
+      ${arr.map(a => `<div class="alert-card ${a.severity}" onclick="openDetail('${a.client.id}');switchTab('clients',document.querySelector('.nav-tab'))">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-text"><div class="alert-title">${a.title}</div><div class="alert-sub">${a.sub}</div></div>
+        <div class="alert-days ${a.severity}">${a.days < 0 ? Math.abs(a.days)+'d ago' : a.days === 0 ? 'TODAY' : a.days+'d'}</div>
+      </div>`).join('')}
+    </div>`;
+  };
 
-  if (missingDob.length || missingStart.length) {
-    html += `<div class="section-header">⚠️ Incomplete Profiles</div>`;
-    if (missingDob.length) {
-      html += `<div class="alert-card warning" style="cursor:default">
-        <div class="alert-icon">🎂</div>
-        <div class="alert-text">
-          <div class="alert-title">Missing Date of Birth</div>
-          <div class="alert-sub">${missingDob.map(c => c.full_name).join(', ')}</div>
-        </div>
-      </div>`;
-    }
-    if (missingStart.length) {
-      html += `<div class="alert-card warning" style="cursor:default">
-        <div class="alert-icon">📅</div>
-        <div class="alert-text">
-          <div class="alert-title">Missing Service Start Date</div>
-          <div class="alert-sub">${missingStart.map(c => c.full_name).join(', ')}</div>
-        </div>
-      </div>`;
-    }
+  html += makeSection(urgent, 'Overdue / Urgent', '🔴');
+  html += makeSection(warning, 'Due This Week', '🟡');
+  html += makeSection(info, 'Coming Up (30 days)', '🔵');
+
+  // Incomplete profiles
+  const missingDob = clients.filter(c => c.status === 'active' && !c.dob);
+  const missingIntake = clients.filter(c => c.status === 'active' && !c.intake_date);
+  if (missingDob.length || missingIntake.length) {
+    html += `<div class="alert-section"><div class="section-header">⚠️ Incomplete Profiles</div>`;
+    if (missingIntake.length) html += `<div class="alert-card warning" style="cursor:default"><div class="alert-icon">📅</div><div class="alert-text"><div class="alert-title">Missing Intake Date</div><div class="alert-sub">${missingIntake.map(c=>c.full_name).join(', ')}</div></div></div>`;
+    if (missingDob.length) html += `<div class="alert-card info" style="cursor:default"><div class="alert-icon">🎂</div><div class="alert-text"><div class="alert-title">Missing Date of Birth</div><div class="alert-sub">${missingDob.map(c=>c.full_name).join(', ')}</div></div></div>`;
+    html += '</div>';
   }
 
   document.getElementById('alertsContent').innerHTML = html;
-}
-
-function alertCardHtml(a) {
-  const daysLabel = a.days === 0 ? 'TODAY' : `${a.days}d`;
-  return `<div class="alert-card ${a.severity}" onclick="openDetail('${a.client.id}')">
-    <div class="alert-icon">${a.icon}</div>
-    <div class="alert-text">
-      <div class="alert-title">${a.title}</div>
-      <div class="alert-sub">${a.sub}</div>
-    </div>
-    <div class="alert-days ${a.severity}">${daysLabel}</div>
-  </div>`;
 }
 
 // ============================================================
@@ -1326,74 +1007,37 @@ function fmtDate(d) {
   const [y, m, day] = d.split('T')[0].split('-');
   return new Date(+y, +m - 1, +day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-
 function daysUntilBirthday(dob) {
   const today = new Date(); today.setHours(0,0,0,0);
-  const [y, m, d] = dob.split('-').map(Number);
-  let next = new Date(today.getFullYear(), m - 1, d);
-  if (next < today) next = new Date(today.getFullYear() + 1, m - 1, d);
+  const [,m,d] = dob.split('-').map(Number);
+  let next = new Date(today.getFullYear(), m-1, d);
+  if (next < today) next = new Date(today.getFullYear()+1, m-1, d);
   return Math.floor((next - today) / 86400000);
 }
-
-function daysUntilAnniversary(startDate) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const [, m, d] = startDate.split('-').map(Number);
-  let next = new Date(today.getFullYear(), m - 1, d);
-  if (next < today) next = new Date(today.getFullYear() + 1, m - 1, d);
-  return Math.floor((next - today) / 86400000);
+function statusBadge(s) {
+  const map = {active:'tag-green','on-hold':'tag-amber',inactive:'tag-gray'};
+  const label = {active:'Active','on-hold':'On Hold',inactive:'Inactive'}[s]||s;
+  return `<span class="tag ${map[s]||'tag-gray'}">${label}</span>`;
 }
-
-function anniversaryYears(startDate) {
-  const today = new Date();
-  const start = new Date(startDate);
-  return today.getFullYear() - start.getFullYear();
-}
-
-function birthdayNote(dob) {
-  const days = daysUntilBirthday(dob);
-  if (days === 0) return ' 🎂 Today!';
-  if (days <= 14) return ` · 🎂 in ${days} day${days!==1?'s':''}`;
-  return '';
-}
-
-function anniversaryNote(startDate) {
-  const days = daysUntilAnniversary(startDate);
-  if (days === null) return '';
-  if (days <= 30) return ` · 🌟 anniversary in ${days === 0 ? 'today' : days + 'd'}`;
-  return '';
-}
-
-function statusBadge(status) {
-  const map = { active: 'tag-green', 'on-hold': 'tag-amber', inactive: 'tag-gray' };
-  const label = status === 'active' ? 'Active' : status === 'on-hold' ? 'On Hold' : 'Inactive';
-  return `<span class="tag ${map[status]||'tag-gray'}">${label}</span>`;
-}
-
 function depositBadge(d) {
-  if (!d || d === 'received') return '<span class="tag tag-green">Received</span>';
-  if (d === 'pending') return '<span class="tag tag-amber">Pending</span>';
-  if (d === 'waived') return '<span class="tag tag-gray">Waived</span>';
-  return d;
+  if (!d||d==='received') return '<span class="tag tag-green">Received</span>';
+  if (d==='pending') return '<span class="tag tag-amber">Pending</span>';
+  return '<span class="tag tag-gray">Waived</span>';
 }
-
 function riskBadge(r) {
-  if (r === 'high') return '<span class="tag tag-red">High</span>';
-  if (r === 'medium') return '<span class="tag tag-amber">Medium</span>';
+  if (r==='high') return '<span class="tag tag-red">High</span>';
+  if (r==='medium') return '<span class="tag tag-amber">Medium</span>';
   return '<span class="tag tag-green">Low</span>';
 }
-
 function genderPrefLabel(g) {
-  if (g === 'female') return 'Female preferred';
-  if (g === 'male') return 'Male preferred';
-  return 'No preference';
+  return g==='female'?'Female preferred':g==='male'?'Male preferred':'No preference';
 }
-
-function showSaveIndicator(msg) {
+function showSaveIndicator(msg, persist) {
   const el = document.getElementById('saveIndicator');
-  el.textContent = msg || '✓ Saved';
-  el.classList.toggle('amber', (msg||'').includes('⚠️'));
+  el.textContent = msg||'✓ Saved';
+  el.classList.toggle('amber', (msg||'').includes('⚠️')||msg==='Loading…');
   el.classList.add('visible');
-  setTimeout(() => el.classList.remove('visible'), 2500);
+  if (!persist) setTimeout(() => el.classList.remove('visible'), 2500);
 }
 </script>
 </body>
