@@ -1186,6 +1186,21 @@
   </div>
 </div>
 
+<!-- PRE-SEND CHECKLIST MODAL -->
+<div class="modal-overlay" id="preSendModal">
+  <div class="modal" style="width:640px">
+    <div class="modal-header">
+      <div class="modal-title">📋 Schedule Review — Before You Send</div>
+      <button class="modal-close" onclick="document.getElementById('preSendModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="preSendBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('preSendModal').classList.remove('open')">Go Back & Fix</button>
+      <button class="btn btn-gold" id="preSendConfirmBtn">✉️ Looks Good — Open in Gmail</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // DATA STORE
@@ -1636,20 +1651,27 @@ function renderAlerts() {
   const warnings = getWarnings();
   const doubles = warnings.filter(w=>w.type==='double');
   const unintro = warnings.filter(w=>w.type==='unintroduced');
-  const confirmed = getWeekShifts().filter(s=>s.confirmed).length;
-  const total = getWeekShifts().length;
+  const unscheduled = getUnscheduledClients();
+  const weekShifts = getWeekShifts();
+  const confirmed = weekShifts.filter(s=>s.confirmed).length;
+  const total = weekShifts.length;
 
   bar.innerHTML = '';
-  if (doubles.length > 0) {
-    bar.innerHTML += `<div class="alert-chip error">🚨 ${doubles.length} Double Booking${doubles.length>1?'s':''}</div>`;
-  }
-  if (unintro.length > 0) {
-    bar.innerHTML += `<div class="alert-chip warning">⚠️ ${unintro.length} Unintroduced Caregiver${unintro.length>1?'s':''}</div>`;
-  }
-  if (doubles.length === 0 && unintro.length === 0) {
+  if (doubles.length > 0)
+    bar.innerHTML += `<div class="alert-chip error" onclick="showPanel('warnings')" style="cursor:pointer">🚨 ${doubles.length} Double Booking${doubles.length>1?'s':''}</div>`;
+  if (unintro.length > 0)
+    bar.innerHTML += `<div class="alert-chip warning" onclick="showPanel('warnings')" style="cursor:pointer">⚠️ ${unintro.length} Unintroduced Caregiver${unintro.length>1?'s':''}</div>`;
+  if (unscheduled.length > 0)
+    bar.innerHTML += `<div class="alert-chip warning" onclick="showPanel('warnings')" style="cursor:pointer">📋 ${unscheduled.length} Client${unscheduled.length>1?'s':''} Not Scheduled</div>`;
+  if (doubles.length === 0 && unintro.length === 0 && unscheduled.length === 0)
     bar.innerHTML += `<div class="alert-chip ok">✓ No scheduling conflicts</div>`;
-  }
   bar.innerHTML += `<div class="alert-chip ok">✅ ${confirmed}/${total} Shifts Confirmed</div>`;
+}
+
+function getUnscheduledClients() {
+  const weekShifts = getWeekShifts();
+  const scheduledIds = new Set(weekShifts.map(s => s.clientId));
+  return CLIENTS.filter(c => c.active && !scheduledIds.has(c.id));
 }
 
 // ============================================================
@@ -1691,9 +1713,10 @@ function getWarnings() {
 
 function renderWarnings() {
   const warnings = getWarnings();
+  const unscheduled = getUnscheduledClients();
   const el = document.getElementById('warningsContent');
 
-  if (warnings.length === 0) {
+  if (warnings.length === 0 && unscheduled.length === 0) {
     el.innerHTML = '<div class="warnings-panel"><div class="warnings-panel-header ok">✓ No warnings this week — schedule looks clean</div></div>';
     return;
   }
@@ -1710,6 +1733,11 @@ function renderWarnings() {
   if (unintro.length > 0) {
     html += `<div class="warnings-panel" style="margin-top:12px"><div class="warnings-panel-header" style="background:var(--amber)">⚠️ Unintroduced Caregivers (${unintro.length})</div>`;
     unintro.forEach(w => { html += `<div class="warning-item"><span class="warning-icon">⚠️</span>${w.msg}</div>`; });
+    html += '</div>';
+  }
+  if (unscheduled.length > 0) {
+    html += `<div class="warnings-panel" style="margin-top:12px"><div class="warnings-panel-header" style="background:var(--amber)">📋 Active Clients With No Shifts This Week (${unscheduled.length})</div>`;
+    unscheduled.forEach(c => { html += `<div class="warning-item"><span class="warning-icon">📋</span>${c.name}</div>`; });
     html += '</div>';
   }
 
@@ -1934,7 +1962,7 @@ Geriatric Wellness and Caregiving of California
 Reliability · Dignity · Communication</textarea>
           </div>
           <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="openInGmail('${toEmail}', 'caregiver')">✉️ Open in Gmail</button>
+            <button class="btn btn-primary" onclick="openPreSendChecklist('${toEmail}', 'caregiver')">✉️ Open in Gmail</button>
             <button class="btn btn-secondary" onclick="simulateConfirm('${personId}')">✓ Mark Caregiver Confirmed</button>
           </div>
         </div>
@@ -1999,6 +2027,92 @@ Reliability · Dignity · Communication</textarea>
       </div>
     `;
   }
+}
+
+function openPreSendChecklist(toEmail, type) {
+  const cgId = document.getElementById('emailPersonSelect').value;
+  const cg = getCaregiver(cgId);
+  if (!cg) return;
+
+  const weekShifts = getWeekShifts();
+  const myShifts = weekShifts.filter(s => s.caregivers.some(c => c.id === cgId));
+  const warnings = getWarnings();
+  const doubles = warnings.filter(w => w.type === 'double');
+  const unintro = warnings.filter(w => w.type === 'unintroduced' && myShifts.some(s => s.id === w.shiftId));
+  const unscheduled = getUnscheduledClients();
+  const totalScheduled = CLIENTS.filter(c => c.active).length - unscheduled.length;
+
+  let html = '';
+
+  // Summary row
+  html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    <div class="dollar-card"><div class="dollar-label">Sending To</div><div style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px">${cg.name}</div></div>
+    <div class="dollar-card"><div class="dollar-label">Their Shifts</div><div style="font-size:22px;font-weight:700;color:var(--navy);margin-top:4px">${myShifts.length}</div></div>
+    <div class="dollar-card"><div class="dollar-label">Clients Scheduled</div><div style="font-size:22px;font-weight:700;color:var(--navy);margin-top:4px">${totalScheduled} / ${totalScheduled + unscheduled.length}</div></div>
+  </div>`;
+
+  // Issues
+  const hasIssues = doubles.length > 0 || unintro.length > 0 || unscheduled.length > 0;
+  if (!hasIssues) {
+    html += `<div style="background:var(--green-light);border:1px solid var(--green);border-radius:8px;padding:14px;display:flex;align-items:center;gap:10px;margin-bottom:16px;font-weight:700;color:var(--green)">✓ No issues found — schedule looks clean for this week.</div>`;
+  } else {
+    if (doubles.length > 0) {
+      html += `<div style="background:var(--red-light);border:1px solid var(--red);border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;color:var(--red);margin-bottom:8px">🚨 Double Bookings (${doubles.length}) — fix before sending</div>`;
+      doubles.forEach(w => { html += `<div style="font-size:12px;color:var(--red);padding:3px 0">• ${w.msg}</div>`; });
+      html += `</div>`;
+    }
+    if (unintro.length > 0) {
+      html += `<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;color:var(--amber);margin-bottom:8px">⚠️ Unintroduced Pairings in ${cg.name.split(' ')[0]}'s Schedule</div>`;
+      unintro.forEach(w => { html += `<div style="font-size:12px;color:var(--amber);padding:3px 0">• ${w.msg}</div>`; });
+      html += `</div>`;
+    }
+    if (unscheduled.length > 0) {
+      html += `<div style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:8px">📋 ${unscheduled.length} Active Client${unscheduled.length>1?'s':''} With No Shifts This Week</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">`;
+      unscheduled.forEach(c => { html += `<span style="background:white;border:1px solid var(--gold);border-radius:12px;padding:2px 10px;font-size:12px;color:var(--navy)">${c.name}</span>`; });
+      html += `</div><div style="font-size:11px;color:var(--gray-600);margin-top:8px">This may be intentional — confirm before sending.</div></div>`;
+    }
+  }
+
+  // Caregiver's shift list
+  if (myShifts.length > 0) {
+    html += `<div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Shifts Being Sent to ${cg.name.split(' ')[0]}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="background:var(--navy);color:white">
+        <th style="padding:8px 10px;text-align:left">Date</th><th style="padding:8px 10px;text-align:left">Client</th>
+        <th style="padding:8px 10px;text-align:left">Time</th><th style="padding:8px 10px;text-align:left">Type</th>
+      </tr></thead><tbody>`;
+    myShifts.sort((a,b)=>a.date.localeCompare(b.date)).forEach((s,i) => {
+      const cl = getClient(s.clientId);
+      html += `<tr style="background:${i%2===0?'white':'var(--gray-100)'}">
+        <td style="padding:7px 10px">${formatDateShort(s.date)}${isHoliday(s.date)?' 🎉':''}</td>
+        <td style="padding:7px 10px;font-weight:600">${cl?.name||'?'}</td>
+        <td style="padding:7px 10px">${formatTime(s.startTime)} – ${formatTime(s.endTime)}</td>
+        <td style="padding:7px 10px">${s.type}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  } else {
+    html += `<div style="color:var(--gray-400);font-size:13px;font-style:italic">No shifts scheduled for ${cg.name} this week.</div>`;
+  }
+
+  document.getElementById('preSendBody').innerHTML = html;
+
+  // Wire confirm button
+  const confirmBtn = document.getElementById('preSendConfirmBtn');
+  confirmBtn.onclick = () => {
+    document.getElementById('preSendModal').classList.remove('open');
+    openInGmail(toEmail, type);
+  };
+  // Disable confirm if double bookings exist
+  confirmBtn.disabled = doubles.length > 0;
+  confirmBtn.style.opacity = doubles.length > 0 ? '0.4' : '1';
+  confirmBtn.title = doubles.length > 0 ? 'Fix double bookings before sending' : '';
+
+  document.getElementById('preSendModal').classList.add('open');
 }
 
 async function openInGmail(toEmail, type) {
