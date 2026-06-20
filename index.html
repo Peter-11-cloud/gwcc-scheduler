@@ -948,8 +948,8 @@
       <button class="week-nav-btn" onclick="changeWeek(1)">Next Week ▶</button>
       <div class="week-nav-actions">
         <button class="btn btn-secondary btn-sm" onclick="openCopyModal()">📋 Copy Week</button>
-        <button class="btn btn-secondary btn-sm" onclick="openExportModal()">💾 Export / Backup</button>
-        <button class="btn btn-secondary btn-sm" id="syncBtn" onclick="syncFromSheets()">🔄 Sync from Sheets</button>
+        <button class="btn btn-secondary btn-sm" onclick="quickBackup()" title="Download a full backup of all shifts and introductions">💾 Backup Now</button>
+        <button class="btn btn-secondary btn-sm" onclick="openExportModal()">📤 Export</button>
         <button class="btn btn-gold btn-sm" onclick="openShiftModal(null, formatDate(new Date()))">＋ Add Shift</button>
       </div>
     </div>
@@ -1252,16 +1252,14 @@ async function sbFetch(path, options = {}) {
 // ============================================================
 async function saveData() {
   if (!storageReady) return;
+  // Always write to localStorage as a local safety copy
+  try { localStorage.setItem('gwcc-shifts', JSON.stringify(shifts)); } catch(e) {}
   try {
     await saveShiftsToSupabase();
-    // NOTE: Introductions saved separately via toggleIntro() only
     showSaveIndicator();
   } catch(e) {
-    console.error('Save failed:', e);
-    try {
-      localStorage.setItem('gwcc-shifts', JSON.stringify(shifts));
-      showSaveIndicator();
-    } catch(e2) { console.error('LocalStorage fallback failed:', e2); }
+    console.error('Supabase save failed — data is safe in localStorage:', e);
+    showSaveIndicator('⚠️ Saved locally only');
   }
 }
 
@@ -1408,18 +1406,21 @@ async function loadData() {
   renderAll();
 }
 
-function showSaveIndicator() {
+function showSaveIndicator(msg) {
   let el = document.getElementById('saveIndicator');
   if (!el) {
     el = document.createElement('div');
     el.id = 'saveIndicator';
-    el.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--green);color:white;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;transition:opacity 0.5s;box-shadow:0 2px 8px rgba(0,0,0,0.2)';
+    el.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;transition:opacity 0.5s;box-shadow:0 2px 8px rgba(0,0,0,0.2)';
     document.body.appendChild(el);
   }
-  el.textContent = '✓ Saved';
+  const isWarning = msg && msg.startsWith('⚠️');
+  el.style.background = isWarning ? 'var(--amber)' : 'var(--green)';
+  el.style.color = isWarning ? 'var(--navy)' : 'white';
+  el.textContent = msg || '✓ Saved';
   el.style.opacity = '1';
   clearTimeout(el._timeout);
-  el._timeout = setTimeout(() => { el.style.opacity = '0'; }, 2000);
+  el._timeout = setTimeout(() => { el.style.opacity = '0'; }, isWarning ? 4000 : 2000);
 }
 
 // ============================================================
@@ -3049,12 +3050,19 @@ function exportClientsCSV() {
 }
 
 function exportFullBackup() {
+  const introductions = [];
+  CAREGIVERS.forEach(g => {
+    (g.introductions || []).forEach(clientId => {
+      introductions.push({ caregiver_id: g.id, client_id: clientId });
+    });
+  });
   const backup = {
     exportDate: new Date().toISOString(),
-    version: '1.0',
+    version: '1.1',
     clients: CLIENTS,
     caregivers: CAREGIVERS,
-    shifts: shifts
+    shifts: shifts,
+    introductions: introductions
   };
   downloadFile(
     `GWCC_Full_Backup_${new Date().toISOString().split('T')[0]}.json`,
@@ -3062,6 +3070,29 @@ function exportFullBackup() {
     'application/json'
   );
   closeExportModal();
+}
+
+function quickBackup() {
+  const introductions = [];
+  CAREGIVERS.forEach(g => {
+    (g.introductions || []).forEach(clientId => {
+      introductions.push({ caregiver_id: g.id, client_id: clientId });
+    });
+  });
+  const backup = {
+    exportDate: new Date().toISOString(),
+    version: '1.1',
+    clients: CLIENTS,
+    caregivers: CAREGIVERS,
+    shifts: shifts,
+    introductions: introductions
+  };
+  downloadFile(
+    `GWCC_Backup_${new Date().toISOString().split('T')[0]}.json`,
+    JSON.stringify(backup, null, 2),
+    'application/json'
+  );
+  showSaveIndicator('✓ Backup downloaded');
 }
 
 
