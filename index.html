@@ -1050,9 +1050,10 @@
     <div class="section-title">👥 People Management</div>
 
     <!-- SUB TABS -->
-    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--gray-200);padding-bottom:0">
+    <div style="display:flex;gap:4px;align-items:center;margin-bottom:20px;border-bottom:2px solid var(--gray-200);padding-bottom:0">
       <button class="people-sub-tab active" id="subtab-clients" onclick="showPeopleTab('clients')">👤 Clients (${CLIENTS.length})</button>
       <button class="people-sub-tab" id="subtab-caregivers" onclick="showPeopleTab('caregivers')">🧑‍⚕️ Caregivers</button>
+      <button class="btn btn-secondary btn-sm" id="syncBtn" onclick="syncFromSheets()" style="margin-left:auto">🔄 Sync from Sheets</button>
     </div>
 
     <!-- CLIENTS SUB PANEL -->
