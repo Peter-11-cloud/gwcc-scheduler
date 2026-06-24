@@ -2713,18 +2713,18 @@ function toggleFinSummary() {
 
 function renderIntroMap() {
   const activeClients = CLIENTS.filter(c=>c.active);
-  const PINNED_FIRST = ['peter', 'lisa'];
+  const PINNED_FIRST = ['peter adamek', 'lisa adamek'];
   const activeCaregivers = CAREGIVERS.filter(g=>g.active).sort((a, b) => {
-    const aFirst = a.name.split(' ')[0].toLowerCase();
-    const bFirst = b.name.split(' ')[0].toLowerCase();
-    const aPin = PINNED_FIRST.indexOf(aFirst);
-    const bPin = PINNED_FIRST.indexOf(bFirst);
+    const aName = a.name.toLowerCase();
+    const bName = b.name.toLowerCase();
+    const aPin = PINNED_FIRST.indexOf(aName);
+    const bPin = PINNED_FIRST.indexOf(bName);
     if (aPin !== -1 || bPin !== -1) {
       if (aPin === -1) return 1;
       if (bPin === -1) return -1;
       return aPin - bPin;
     }
-    return aFirst.localeCompare(bFirst);
+    return a.name.split(' ')[0].toLowerCase().localeCompare(b.name.split(' ')[0].toLowerCase());
   });
   const el = document.getElementById('introMapContent');
 
