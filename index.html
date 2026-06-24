@@ -186,10 +186,11 @@
     gap: 0;
     border: 1px solid var(--gray-200);
     border-radius: 8px;
-    overflow: hidden;
     background: var(--white);
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
+  .calendar-grid > :first-child { border-top-left-radius: 8px; }
+  .calendar-grid > :nth-child(8) { border-top-right-radius: 8px; }
   .cal-header {
     background: var(--navy);
     color: var(--white);
