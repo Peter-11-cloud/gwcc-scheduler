@@ -698,8 +698,9 @@
   .people-sub-tab:hover { color: var(--navy); }
   .people-sub-tab.active { color: var(--navy); border-bottom-color: var(--gold); }
 
-  .people-table { width:100%; border-collapse:collapse; background:var(--white); border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); border:1px solid var(--gray-200); }
-  .people-table th { background:var(--navy); color:var(--white); padding:10px 14px; font-size:12px; font-weight:700; text-align:left; text-transform:uppercase; letter-spacing:0.5px; }
+  .people-table-wrap { max-height:70vh; overflow:auto; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); border:1px solid var(--gray-200); }
+  .people-table { width:100%; border-collapse:collapse; background:var(--white); }
+  .people-table th { background:var(--navy); color:var(--white); padding:10px 14px; font-size:12px; font-weight:700; text-align:left; text-transform:uppercase; letter-spacing:0.5px; position:sticky; top:0; z-index:2; }
   .people-table td { padding:10px 14px; font-size:13px; border-bottom:1px solid var(--gray-200); vertical-align:middle; }
   .people-table tr:last-child td { border-bottom:none; }
   .people-table tr:hover td { background:var(--gray-100); cursor:pointer; }
@@ -2736,11 +2737,11 @@ function renderIntroMap() {
   // Grid — clients as ROWS, caregivers as COLUMNS
   const cgCount = activeCaregivers.length;
   let gridHtml = `
-    <div style="overflow-x:auto;border:1px solid var(--gray-200);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+    <div style="overflow:auto;max-height:75vh;border:1px solid var(--gray-200);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
     <table style="border-collapse:collapse;background:var(--white);min-width:100%">
     <thead>
       <tr>
-        <th style="background:var(--navy);color:var(--white);padding:10px 14px;font-size:12px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;left:0;z-index:2;min-width:160px">Client</th>`;
+        <th style="background:var(--navy);color:var(--white);padding:10px 14px;font-size:12px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;left:0;top:0;z-index:3;min-width:160px">Client</th>`;
 
   activeCaregivers.forEach(cg => {
     const certDot = cg.certStatus === 'certified'
@@ -2749,7 +2750,7 @@ function renderIntroMap() {
     // Split name for compact display
     const nameParts = cg.name.split(' ');
     const shortName = nameParts.length > 1 ? `${nameParts[0]}<br><span style="opacity:0.8">${nameParts.slice(1).join(' ')}</span>` : cg.name;
-    gridHtml += `<th style="background:var(--navy);color:var(--white);padding:8px 6px;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:80px;max-width:90px">${shortName}${certDot}</th>`;
+    gridHtml += `<th style="background:var(--navy);color:var(--white);padding:8px 6px;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:80px;max-width:90px;position:sticky;top:0;z-index:2">${shortName}${certDot}</th>`;
   });
 
   gridHtml += '</tr></thead><tbody>';
@@ -3116,7 +3117,7 @@ function showPeopleTab(tab) {
 function renderClientsTable() {
   const el = document.getElementById('clientsTableContent');
   if (!el) return;
-  let html = `<table class="people-table"><thead><tr>
+  let html = `<div class="people-table-wrap"><table class="people-table"><thead><tr>
     <th>Name</th><th>Contact Email</th><th>Contact Person</th><th>Gender Pref</th><th>Status</th>
   </tr></thead><tbody>`;
   if (CLIENTS.length === 0) {
@@ -3132,7 +3133,7 @@ function renderClientsTable() {
       <td><span class="active-badge ${c.active ? 'active' : 'inactive'}">${c.active ? 'Active' : 'Inactive'}</span></td>
     </tr>`;
   });
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   el.innerHTML = html;
   document.getElementById('subtab-clients').textContent = `👤 Clients (${CLIENTS.filter(c=>c.active).length})`;
 }
@@ -3140,7 +3141,7 @@ function renderClientsTable() {
 function renderCaregiversTable() {
   const el = document.getElementById('caregiversTableContent');
   if (!el) return;
-  let html = `<table class="people-table"><thead><tr>
+  let html = `<div class="people-table-wrap"><table class="people-table"><thead><tr>
     <th>Name</th><th>Email</th><th>Gender</th><th>Cert Status</th><th>Pay Rate</th><th>Intros</th><th>Status</th>
   </tr></thead><tbody>`;
   if (CAREGIVERS.length === 0) {
@@ -3159,7 +3160,7 @@ function renderCaregiversTable() {
       <td><span class="active-badge ${g.active ? 'active' : 'inactive'}">${g.active ? 'Active' : 'Inactive'}</span></td>
     </tr>`;
   });
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   el.innerHTML = html;
   document.getElementById('subtab-caregivers').textContent = `🧑‍⚕️ Caregivers (${CAREGIVERS.filter(g=>g.active).length})`;
 }
