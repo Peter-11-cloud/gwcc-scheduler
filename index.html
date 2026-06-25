@@ -2809,7 +2809,20 @@ function renderIntroMap() {
     ⏳ = cert in process — blocked until certified. ⚠ = client gender preference mismatch.
   </div>`;
 
+  // Preserve scroll position of the grid's inner scroll container across re-renders
+  const prevScrollEl = el.querySelector('div[style*="overflow:auto"]');
+  const prevScrollTop = prevScrollEl ? prevScrollEl.scrollTop : 0;
+  const prevScrollLeft = prevScrollEl ? prevScrollEl.scrollLeft : 0;
+  const prevPageScroll = window.scrollY;
+
   el.innerHTML = summaryHtml + gridHtml + notesHtml;
+
+  const newScrollEl = el.querySelector('div[style*="overflow:auto"]');
+  if (newScrollEl) {
+    newScrollEl.scrollTop = prevScrollTop;
+    newScrollEl.scrollLeft = prevScrollLeft;
+  }
+  window.scrollTo(0, prevPageScroll);
 }
 
 async function toggleIntro(cgId, clientId) {
